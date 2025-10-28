@@ -8,8 +8,8 @@
 @if (GameContext.IsInitialized)
 {
     <div class="d-flex flex-row flex-wrap">
-        <div class="me-2 d-flex flex-column rounded">
-            <h3 class="p-2 rounded text-bg-dark">Box (<span>@GameContext.BoxCount</span>)</h3>
+        <div class="me-1 mb-1 d-flex flex-column rounded">
+            <h3 class="p-2 mb-1  rounded text-bg-dark">Box (<span>@GameContext.BoxCount</span>)</h3>
             @if (GameContext.BoxCount >= 1)
             {
                 <Button class="m-1 p-1" Type="ButtonType.Button" Color="ButtonColor.Warning" @onclick="() => GameContext?.TakeFromBox()">
@@ -35,11 +35,11 @@
                 </Button>
             }
         </div>
-        <div class="me-2 d-flex flex-column rounded">
-            <h3 class="p-2 rounded text-bg-primary">Deck (<span>@GameContext.DeckCount</span>)</h3>
+        <div class="me-1 mb-1 d-flex flex-column rounded">
+            <h3 class="p-2 mb-1  rounded text-bg-primary">Deck (<span>@GameContext.DeckCount</span>)</h3>
             <div class="position-relative to-hover" id="deck">
                 <GameCard CardContext="@GameContext.DeckTop" />
-                <div class="w-100 h-100 position-absolute top-0 start-0" style="background-color: rgba(13, 110, 253, 0.5);"></div>
+                <div class="w-100 h-100 position-absolute top-0 start-0 game-card" style="background-color: rgba(13, 110, 253, 0.5);"></div>
                 <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
                     @if (GameContext.DeckCount == 0)
                     {
@@ -73,8 +73,8 @@
         </div>
         @if (GameContext.InPlayCount > 0)
         {
-            <div class="me-2 d-flex flex-column rounded">
-                <h3 class="p-2 rounded text-bg-secondary">In play (<span>@GameContext.InPlayCount</span>)</h3>
+            <div class="me-1 mb-1 d-flex flex-column rounded">
+                <h3 class="p-2 mb-1  rounded text-bg-secondary">In play (<span>@GameContext.InPlayCount</span>)</h3>
                 <div class="d-flex flex-row flex-wrap rounded">
                     @foreach (var card in GameContext.InPlay)
                     {
@@ -99,8 +99,8 @@
                 </div>
             </div>
         }
-        <div class="me-2 d-flex flex-column rounded">
-            <h3 class="p-2 rounded text-bg-success">Hand (<span>@GameContext.HandCount</span>)</h3>
+        <div class="me-1 mb-1 d-flex flex-column rounded">
+            <h3 class="p-2 mb-1  rounded text-bg-success">Hand (<span>@GameContext.HandCount</span>)</h3>
             <div class="d-flex flex-row flex-wrap rounded">
                 @foreach (var card in GameContext.Hand)
                 {
@@ -127,11 +127,11 @@
                 }
             </div>
         </div>
-        <div class="me-2 d-flex flex-column rounded">
-            <h3 class="p-2 rounded text-bg-warning">Discard (<span>@GameContext.DiscardedCount</span>)</h3>
+        <div class="me-1 mb-1 d-flex flex-column rounded">
+            <h3 class="p-2 mb-1  rounded text-bg-warning">Discard (<span>@GameContext.DiscardedCount</span>)</h3>
             <div class="position-relative to-hover" id="discarded">
                 <GameCard CardContext="@GameContext.DiscardedLast" />
-                <div class="w-100 h-100 position-absolute top-0 start-0" style="background-color: rgba(255, 193, 7, 0.5);"></div>
+                <div class="w-100 h-100 position-absolute top-0 start-0 game-card" style="background-color: rgba(255, 193, 7, 0.5);"></div>
                 <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
                     @if (GameContext.DiscardedCount > 0)
                     {
@@ -142,11 +142,11 @@
                 </div>
             </div>
         </div>
-        <div class="me-2 d-flex flex-column rounded">
-            <h3 class="p-2 rounded text-bg-danger">Trash (<span>@GameContext.TrashCount</span>)</h3>
+        <div class="me-1 mb-1 d-flex flex-column rounded">
+            <h3 class="p-2 mb-1  rounded text-bg-danger">Trash (<span>@GameContext.TrashCount</span>)</h3>
             <div class="position-relative to-hover" id="trashed">
                 <GameCard CardContext="@GameContext.TrashedLast" />
-                <div class="w-100 h-100 position-absolute top-0 start-0" style="background-color: rgba(220, 53, 69, 0.5);"></div>
+                <div class="w-100 h-100 position-absolute top-0 start-0 game-card" style="background-color: rgba(220, 53, 69, 0.5);"></div>
                 <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
                     @if (GameContext.TrashCount > 0)
                     {

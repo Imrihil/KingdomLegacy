@@ -91,4 +91,5 @@ code {
 .game-card {
     width: 373px;
     height: 520px;
+    border-radius: 5px;
 }
