@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using System.Text
 
 @inject Game GameContext
 
@@ -7,7 +8,7 @@
 @if (GameContext.IsInitialized)
 {
     <div class="d-flex flex-row flex-wrap">
-        <div class="me-1 mb-1 d-flex flex-column rounded">
+        <div class="me-2 d-flex flex-column rounded">
             <h3 class="p-2 rounded text-bg-dark">Box (<span>@GameContext.BoxCount</span>)</h3>
             @if (GameContext.BoxCount >= 1)
             {
@@ -34,11 +35,11 @@
                 </Button>
             }
         </div>
-        <div class="me-1 mb-1 d-flex flex-column rounded">
+        <div class="me-2 d-flex flex-column rounded">
             <h3 class="p-2 rounded text-bg-primary">Deck (<span>@GameContext.DeckCount</span>)</h3>
             <div class="position-relative to-hover" id="deck">
                 <GameCard CardContext="@GameContext.DeckTop" />
-                <div class="w-100 h-100 position-absolute top-0 start-0" style="background-color: #404040A0;"></div>
+                <div class="w-100 h-100 position-absolute top-0 start-0" style="background-color: rgba(13, 110, 253, 0.5);"></div>
                 <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
                     @if (GameContext.DeckCount == 0)
                     {
@@ -70,32 +71,35 @@
                 </div>
             </div>
         </div>
-        <div class="me-1 mb-1 d-flex flex-column rounded">
-            <h3 class="p-2 rounded text-bg-secondary">In play (<span>@GameContext.InPlayCount</span>)</h3>
-            <div class="d-flex flex-row flex-wrap rounded">
-                @foreach (var card in GameContext.InPlay)
-                {
-                    <div class="me-1 mb-1 position-relative to-hover" id="deck">
-                        <GameCard CardContext="@card" />
-                        <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
-                            <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Secondary" Position="Position.Relative" @onclick="() => card.RotateRight()">
-                                ⇒
-                            </Button>
-                            <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Secondary" Position="Position.Relative" @onclick="() => card.RotateDown()">
-                                ⇓
-                            </Button>
-                            <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Warning" Position="Position.Relative" @onclick="() => GameContext?.Discard(card)">
-                                ✓
-                            </Button>
-                            <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Danger" Position="Position.Relative" @onclick="() => GameContext?.Trash(card)">
-                                x
-                            </Button>
+        @if (GameContext.InPlayCount > 0)
+        {
+            <div class="me-2 d-flex flex-column rounded">
+                <h3 class="p-2 rounded text-bg-secondary">In play (<span>@GameContext.InPlayCount</span>)</h3>
+                <div class="d-flex flex-row flex-wrap rounded">
+                    @foreach (var card in GameContext.InPlay)
+                    {
+                        <div class="me-1 mb-1 position-relative to-hover" id="deck">
+                            <GameCard CardContext="@card" />
+                            <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
+                                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Secondary" Position="Position.Relative" @onclick="() => card.RotateRight()">
+                                    ⇒
+                                </Button>
+                                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Secondary" Position="Position.Relative" @onclick="() => card.RotateDown()">
+                                    ⇓
+                                </Button>
+                                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Warning" Position="Position.Relative" @onclick="() => GameContext?.Discard(card)">
+                                    ✓
+                                </Button>
+                                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Danger" Position="Position.Relative" @onclick="() => GameContext?.Trash(card)">
+                                    x
+                                </Button>
+                            </div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
-        </div>
-        <div class="me-1 mb-1 d-flex flex-column rounded">
+        }
+        <div class="me-2 d-flex flex-column rounded">
             <h3 class="p-2 rounded text-bg-success">Hand (<span>@GameContext.HandCount</span>)</h3>
             <div class="d-flex flex-row flex-wrap rounded">
                 @foreach (var card in GameContext.Hand)
@@ -123,11 +127,11 @@
                 }
             </div>
         </div>
-        <div class="me-1 mb-1 d-flex flex-column rounded">
+        <div class="me-2 d-flex flex-column rounded">
             <h3 class="p-2 rounded text-bg-warning">Discard (<span>@GameContext.DiscardedCount</span>)</h3>
             <div class="position-relative to-hover" id="discarded">
                 <GameCard CardContext="@GameContext.DiscardedLast" />
-                <div class="w-100 h-100 position-absolute top-0 start-0" style="background-color: #404040A0;"></div>
+                <div class="w-100 h-100 position-absolute top-0 start-0" style="background-color: rgba(255, 193, 7, 0.5);"></div>
                 <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
                     @if (GameContext.DiscardedCount > 0)
                     {
@@ -138,11 +142,11 @@
                 </div>
             </div>
         </div>
-        <div class="me-1 mb-1 d-flex flex-column rounded">
+        <div class="me-2 d-flex flex-column rounded">
             <h3 class="p-2 rounded text-bg-danger">Trash (<span>@GameContext.TrashCount</span>)</h3>
             <div class="position-relative to-hover" id="trashed">
                 <GameCard CardContext="@GameContext.TrashedLast" />
-                <div class="w-100 h-100 position-absolute top-0 start-0" style="background-color: #404040A0;"></div>
+                <div class="w-100 h-100 position-absolute top-0 start-0" style="background-color: rgba(220, 53, 69, 0.5);"></div>
                 <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
                     @if (GameContext.TrashCount > 0)
                     {
@@ -160,30 +164,19 @@ else
     <lead>What do you want to do?</lead>
 
     <div class="d-flex flex-column mb-3">
-        <Button class="m-2" Type="ButtonType.Button" Color="ButtonColor.Primary">
-            <InputFile title="Load game" OnChange="LoadGame" />
-        </Button>
+        <Button class="m-2" Type="ButtonType.Button" Color="ButtonColor.Primary"><InputFile title="Load game" OnChange="LoadGame" /></Button>
         <Button class="m-2" Type="ButtonType.Link" Color="ButtonColor.Primary" @onclick=NewGame>New game</Button>
     </div>
 }
 
 @code {
-    private void LoadGame(InputFileChangeEventArgs args)
+    private async Task LoadGame(InputFileChangeEventArgs args)
     {
-        using var stream = args.File.OpenReadStream();
-        using var reader = new StreamReader(stream);
-
-        GameContext.Load(Read(reader));
-    }
-
-    private IEnumerable<string> Read(StreamReader reader)
-    {
-        while (reader.Peek() >= 0)
-        {
-            var line = reader.ReadLine();
-            if (line != null)
-                yield return line;
-        }
+        MemoryStream stream = new MemoryStream();
+        await args.File.OpenReadStream().CopyToAsync(stream);
+        var bytes = stream.ToArray();
+        var data = Encoding.Default.GetString(bytes);
+        GameContext.Load(data);
     }
 
     private void NewGame(MouseEventArgs args) =>
