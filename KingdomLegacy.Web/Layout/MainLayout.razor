@@ -1,8 +1,25 @@
-﻿@inherits LayoutComponentBase
+﻿@using System.Text
+@inherits LayoutComponentBase
+
+@inject IJSRuntime JS
+@inject Game GameContext
 
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
-        <ThemeSwitcher Class="ps-3 ps-lg-2" />
+        <div class="d-flex w-100 justify-content-between">
+            <div class="">
+                <Button Color="ButtonColor.Link" Class="text-decoration-none" Link="@("/")">
+                    <h2 class="m-0 p-0">Kingdom Legacy</h2>
+                </Button>
+                @if (GameContext.IsInitialized)
+                {
+                    <Button Color="ButtonColor.Primary" @onclick="Save">
+                        Save
+                    </Button>
+                }
+            </div>
+            <ThemeSwitcher Class="ps-3 ps-lg-2 my-auto" />
+        </div>
     </HeaderSection>
 
     <ContentSection>
@@ -13,3 +30,21 @@
         Footer links...
     </FooterSection>
 </BlazorBootstrapLayout>
+
+@code {
+    protected override void OnInitialized()
+    {
+        GameContext.Subscribe(new GameObserver(_ => StateHasChanged()));
+        base.OnInitialized();
+    }
+
+    private async Task Save()
+    {
+        var text = GameContext.Save();
+
+        using var stream = new MemoryStream(Encoding.Default.GetBytes(text));
+        using var streamRef = new DotNetStreamReference(stream);
+
+        await JS.InvokeVoidAsync("downloadFileFromStream", "KingdomLegacy.save", streamRef);
+    }
+}

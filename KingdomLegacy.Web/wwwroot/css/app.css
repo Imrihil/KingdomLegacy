@@ -88,7 +88,7 @@ code {
     transform: rotate(180deg);
 }
 
-.card {
+.game-card {
     width: 373px;
     height: 520px;
 }

@@ -4,12 +4,12 @@
 }
 else
 {
-    <div class="text-center pt-4 card">Empty</div>
+    <div class="text-center pt-4 game-card">Empty</div>
 }
 
 @code {
     [Parameter]
     public KingdomLegacy.Domain.Card? CardContext { get; set; }
 
-    public string CardClass => $"card{(CardContext?.Orientation == Domain.Orientation.L2 || CardContext?.Orientation == Domain.Orientation.L3 ? " rotate-180" : "")}";
+    public string CardClass => $"game-card{(CardContext?.Orientation == Domain.Orientation.L2 || CardContext?.Orientation == Domain.Orientation.L3 ? " rotate-180" : "")}";
 }

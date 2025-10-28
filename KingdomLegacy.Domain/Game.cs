@@ -1,7 +1,7 @@
 ﻿using System.Text;
 
 namespace KingdomLegacy.Domain;
-public class Game
+public class Game : IObservable<Game>
 {
     public int BoxCount => _box.Count;
     public int DeckCount => _deck.Count;
@@ -9,6 +9,7 @@ public class Game
     public int InPlayCount => _inPlay.Count;
     public int DiscardedCount => _discarded.Count;
     public int TrashCount => _trash.Count;
+    public bool IsInitialized { get; private set; }
 
     public Card? DeckTop => _deck.Count > 0 ? _deck.Peek() : null;
     public Card? DiscardedLast => _discarded.Count > 0 ? _discarded.Peek() : null;
@@ -80,6 +81,9 @@ public class Game
                 }
             }
         }
+
+        IsInitialized = true;
+        Norify();
     }
 
     public string Save() =>
@@ -109,6 +113,9 @@ public class Game
         TakeFromBox();
 
         Reshuffle();
+
+        IsInitialized = true;
+        Norify();
     }
 
     public void TakeFromBox(int i = 1)
@@ -183,4 +190,32 @@ public class Game
             _inPlay.Add(card);
         }
     }
+
+    private readonly List<IObserver<Game>> _observers = new();
+
+    public IDisposable Subscribe(IObserver<Game> observer)
+    {
+        _observers.Add(observer);
+        return new Unsubscriber(_observers, observer);
+    }
+
+    public void Norify()
+    {
+        foreach (var observer in _observers)
+            observer.OnNext(this);
+    }
+
+    private class Unsubscriber(List<IObserver<Game>> observers,
+        IObserver<Game> observer) : IDisposable
+    {
+        public void Dispose() => observers.Remove(observer);
+    }
+}
+
+public class GameObserver(Action<Game> onNext) : IObserver<Game>
+{
+    public void OnCompleted() { }
+    public void OnError(Exception error) { }
+    public void OnNext(Game value) =>
+        onNext(value);
 }
