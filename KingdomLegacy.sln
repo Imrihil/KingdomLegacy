@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36616.10
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KingdomLegacy.Web", "KingdomLegacy.Web\KingdomLegacy.Web\KingdomLegacy.Web.csproj", "{D5D8833B-FA88-41E8-9FC9-042E46873C0D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KingdomLegacy.Web.Client", "KingdomLegacy.Web\KingdomLegacy.Web.Client\KingdomLegacy.Web.Client.csproj", "{73CC87D1-E9FD-4277-BA81-3C5E1494E43C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KingdomLegacy.Web", "KingdomLegacy.Web\KingdomLegacy.Web.csproj", "{6297D633-B2B6-46AB-8ECC-F2832E690DCD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KingdomLegacy.Scraper", "KingdomLegacy.Scraper\KingdomLegacy.Scraper.csproj", "{82F1A344-30D9-4FCD-A543-650724F1E17C}"
 EndProject
@@ -25,14 +23,10 @@ Global
 		{21B56CC6-A196-4467-AE2F-B940743BBFB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21B56CC6-A196-4467-AE2F-B940743BBFB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21B56CC6-A196-4467-AE2F-B940743BBFB1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D5D8833B-FA88-41E8-9FC9-042E46873C0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D5D8833B-FA88-41E8-9FC9-042E46873C0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D5D8833B-FA88-41E8-9FC9-042E46873C0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D5D8833B-FA88-41E8-9FC9-042E46873C0D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{73CC87D1-E9FD-4277-BA81-3C5E1494E43C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{73CC87D1-E9FD-4277-BA81-3C5E1494E43C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{73CC87D1-E9FD-4277-BA81-3C5E1494E43C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{73CC87D1-E9FD-4277-BA81-3C5E1494E43C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6297D633-B2B6-46AB-8ECC-F2832E690DCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6297D633-B2B6-46AB-8ECC-F2832E690DCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6297D633-B2B6-46AB-8ECC-F2832E690DCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6297D633-B2B6-46AB-8ECC-F2832E690DCD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
