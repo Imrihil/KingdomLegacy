@@ -16,45 +16,72 @@
 else
 {
     <div class="d-flex flex-row flex-wrap mb-3">
-        <div class="d-flex flex-column rounded text-bg-secondary">
+        <div class="p-2 me-2 d-flex flex-column rounded text-bg-secondary">
             <p>Box (<span>@GameContext.BoxCount</span>)</p>
-            <Button class="p-1" Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="() => GameContext?.AddToDeck()">
-                <p>+1</p>
-            </Button>
-            <Button class="p-1" Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="() => GameContext?.AddToDeck(2)">
-                <p>+2</p>
-            </Button>
-            <Button class="p-1" Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="() => GameContext?.AddToDeck(5)">
-                <p>+5</p>
-            </Button>
-            <Button class="p-1" Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="() => GameContext?.AddToDeck(10)">
-                <p>+10</p>
-            </Button>
+            @if (GameContext.BoxCount >= 1)
+            {
+                <Button class="p-1" Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="() => GameContext?.AddToDeck()">
+                    +1
+                </Button>
+            }
+            @if (GameContext.BoxCount >= 2)
+            {
+                <Button class="p-1" Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="() => GameContext?.AddToDeck(2)">
+                    +2
+                </Button>
+            }
+            @if (GameContext.BoxCount >= 5)
+            {
+                <Button class="p-1" Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="() => GameContext?.AddToDeck(5)">
+                    +5
+                </Button>
+            }
+            @if (GameContext.BoxCount >= 10)
+            {
+                <Button class="p-1" Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="() => GameContext?.AddToDeck(10)">
+                    +10
+                </Button>
+            }
         </div>
-        <div class="pe-2 position-relative to-hover" id="deck">
+        <div class="me-2 position-relative to-hover" id="deck">
             <GameCard CardContext="@GameContext.DeckTop" />
             <div class="w-100 h-100 position-absolute top-0 start-0" style="background-color: #404040A0;"></div>
             <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
-                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Draw()">
-                    +1
-                </Button>
-                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Draw(2)">
-                    +2
-                </Button>
-                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Draw(4)">
-                    +4
-                </Button>
-                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Danger" Position="Position.Relative" @onclick="() => GameContext?.Reshuffle()">
-                    ♺
-                </Button>
-                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Info" Position="Position.Relative" Disabled="true">
-                    @GameContext.DeckCount
+                @if (GameContext.DeckCount == 0)
+                {
+                    <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Danger" Position="Position.Relative" @onclick="() => GameContext?.Reshuffle()">
+                        ♺
+                    </Button>
+                }
+                else
+                {
+                    @if (GameContext.DeckCount >= 1)
+                    {
+                        <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Draw()">
+                            +1
+                        </Button>
+                    }
+                    @if (GameContext.DeckCount >= 2)
+                    {
+                        <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Draw(2)">
+                            +2
+                        </Button>
+                    }
+                    @if (GameContext.DeckCount >= 4)
+                    {
+                        <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Draw(4)">
+                            +4
+                        </Button>
+                    }
+                }
+                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Light" Position="Position.Relative" Disabled="true">
+                    (<span>@GameContext.DeckCount</span>)
                 </Button>
             </div>
         </div>
         @foreach (var card in GameContext.Hand)
         {
-            <div class="pe-2 position-relative to-hover" id="deck">
+            <div class="me-2 position-relative to-hover" id="deck">
                 <GameCard CardContext="@card" />
                 <div class="w-100 h-100 position-absolute top-0 start-0" style="background-color: #404040A0;"></div>
                 <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
@@ -75,7 +102,7 @@ else
         }
         @foreach (var card in GameContext.InPlay)
         {
-            <div class="pe-2 position-relative to-hover" id="deck">
+            <div class="me-2 position-relative to-hover" id="deck">
                 <GameCard CardContext="@card" />
                 <div class="w-100 h-100 position-absolute top-0 start-0" style="background-color: #404040A0;"></div>
                 <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
