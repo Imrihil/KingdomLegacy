@@ -11,6 +11,7 @@ public class Game
     public int TrashCount => _trash.Count;
 
     public Card? DeckTop => _deck.Count > 0 ? _deck.Peek() : null;
+    public Card? DiscardedLast => _discarded.Count > 0 ? _discarded.Peek() : null;
 
     private Queue<Card> _box = new();
     private Queue<Card> _deck = new();
@@ -18,8 +19,7 @@ public class Game
     public IReadOnlyCollection<Card> Hand => _hand.AsReadOnly();
     private List<Card> _inPlay = [];
     public IReadOnlyCollection<Card> InPlay => _inPlay.AsReadOnly();
-    private List<Card> _discarded = [];
-    public IReadOnlyCollection<Card> Discarded => _discarded.AsReadOnly();
+    private Stack<Card> _discarded = [];
     private List<Card> _trash = [];
     private IEnumerable<Card> All => _box
         .Concat(_deck)
@@ -70,7 +70,7 @@ public class Game
                         _inPlay.Add(card);
                         break;
                     case State.Discarded:
-                        _discarded.Add(card);
+                        _discarded.Push(card);
                         break;
                     case State.Removed:
                         _trash.Add(card);
@@ -106,18 +106,18 @@ public class Game
         _discarded = [];
         _trash = [];
 
-        AddToDeck();
+        TakeFromBox();
 
         Reshuffle();
     }
 
-    public void AddToDeck(int i = 1)
+    public void TakeFromBox(int i = 1)
     {
         while (i-- > 0 && _box.Count > 0)
         {
             var card = _box.Dequeue();
-            card.State = State.Deck;
-            _deck.Enqueue(card);
+            card.State = State.Discarded;
+            _discarded.Push(card);
         }
     }
 
@@ -142,13 +142,23 @@ public class Game
         if (_hand.Remove(card) || _inPlay.Remove(card))
         {
             card.State = State.Discarded;
-            _discarded.Add(card);
+            _discarded.Push(card);
+        }
+    }
+
+    public void UndoDiscard()
+    {
+        if (_discarded.Count > 0)
+        {
+            var card = _discarded.Pop();
+            card.State = State.Hand;
+            _hand.Add(card);
         }
     }
 
     public void Trash(Card card)
     {
-        if (_hand.Remove(card) || _inPlay.Remove(card) || _discarded.Remove(card))
+        if (_hand.Remove(card) || _inPlay.Remove(card))
         {
             card.State = State.Removed;
             _trash.Add(card);
@@ -162,6 +172,15 @@ public class Game
             var card = _deck.Dequeue();
             card.State = State.Hand;
             _hand.Add(card);
+        }
+    }
+
+    public void Play(Card card)
+    {
+        if (_hand.Remove(card))
+        {
+            card.State = State.InPlay;
+            _inPlay.Add(card);
         }
     }
 }
