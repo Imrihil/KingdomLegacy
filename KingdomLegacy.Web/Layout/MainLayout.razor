@@ -1,25 +1,22 @@
-﻿@using System.Text
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 
 @inject IJSRuntime JS
 @inject Game GameContext
+@inject AppConfig Config
 
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
-        <div class="d-flex w-100 justify-content-between">
-            <div class="">
-                <Button Color="ButtonColor.Link" Class="text-decoration-none" Link="@("/")">
-                    <h2 class="m-0 p-0">Kingdom Legacy</h2>
-                </Button>
-                @if (GameContext.IsInitialized)
-                {
-                    <Button Color="ButtonColor.Primary" @onclick="Save">
-                        Save
-                    </Button>
-                }
-            </div>
-            <ThemeSwitcher Class="ps-3 ps-lg-2 my-auto" />
-        </div>
+        <Button Color="ButtonColor.Link" Class="text-decoration-none" Link="@("/")">
+            <h2 class="m-0 p-0">Kingdom Legacy</h2>
+        </Button>
+        @if (GameContext.IsInitialized)
+        {
+            <Button Color="ButtonColor.Primary" @onclick="Save">
+                Save
+            </Button>
+            <Switch Class="my-auto" @bind-Value="Config.DiscardRotated" Label="Autodiscard" />
+        }
+        <ThemeSwitcher Class="ps-3 ps-lg-2 my-auto" />
     </HeaderSection>
 
     <ContentSection>
