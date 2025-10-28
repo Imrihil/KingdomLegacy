@@ -1,0 +1,13 @@
+﻿@if (CardContext != null)
+{
+    <Image Src="@("/cards/" + CardContext.Path)" Alt="@CardContext.Id.ToString()" Class="card" />
+}
+else
+{
+    <div style="width: 373px; height: 520px;">Empty</div>
+}
+
+@code {
+    [Parameter]
+    public KingdomLegacy.Domain.Card? CardContext { get; set; }
+}

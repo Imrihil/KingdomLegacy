@@ -7,20 +7,25 @@ public class Game
     public int DeckCount => _deck.Count;
     public int HandCount => _hand.Count;
     public int InPlayCount => _inPlay.Count;
-    public int DiscardCount => _discard.Count;
+    public int DiscardedCount => _discarded.Count;
     public int TrashCount => _trash.Count;
+
+    public Card? DeckTop => _deck.Count > 0 ? _deck.Peek() : null;
 
     private Queue<Card> _box = new();
     private Queue<Card> _deck = new();
     private List<Card> _hand = [];
+    public IReadOnlyCollection<Card> Hand => _hand.AsReadOnly();
     private List<Card> _inPlay = [];
-    private List<Card> _discard = [];
+    public IReadOnlyCollection<Card> InPlay => _inPlay.AsReadOnly();
+    private List<Card> _discarded = [];
+    public IReadOnlyCollection<Card> Discarded => _discarded.AsReadOnly();
     private List<Card> _trash = [];
     private IEnumerable<Card> All => _box
         .Concat(_deck)
         .Concat(_hand)
         .Concat(_inPlay)
-        .Concat(_discard)
+        .Concat(_discarded)
         .Concat(_trash);
 
     public void Load(string data)
@@ -62,7 +67,7 @@ public class Game
                         _inPlay.Add(card);
                         break;
                     case State.Discarded:
-                        _discard.Add(card);
+                        _discarded.Add(card);
                         break;
                     case State.Removed:
                         _trash.Add(card);
@@ -95,7 +100,7 @@ public class Game
         _deck = new();
         _hand = [];
         _inPlay = [];
-        _discard = [];
+        _discarded = [];
         _trash = [];
 
         for (var i = 0; i < 10; i++)
@@ -121,7 +126,7 @@ public class Game
         _deck = new Queue<Card>(_deck
             .Concat(_hand)
             .Concat(_inPlay)
-            .Concat(_discard)
+            .Concat(_discarded)
             .OrderBy(_ => Random.Shared.Next()));
 
         foreach (var card in _deck)
@@ -129,7 +134,7 @@ public class Game
 
         _hand.Clear();
         _inPlay.Clear();
-        _discard.Clear();
+        _discarded.Clear();
     }
 
     public void Discard(Card card)
@@ -137,13 +142,13 @@ public class Game
         if (_hand.Remove(card) || _inPlay.Remove(card))
         {
             card.State = State.Discarded;
-            _discard.Add(card);
+            _discarded.Add(card);
         }
     }
 
     public void Trash(Card card)
     {
-        if (_hand.Remove(card) || _inPlay.Remove(card) || _discard.Remove(card))
+        if (_hand.Remove(card) || _inPlay.Remove(card) || _discarded.Remove(card))
         {
             card.State = State.Removed;
             _trash.Add(card);

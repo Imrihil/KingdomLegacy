@@ -1,7 +1,19 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Kingdom Legacy</PageTitle>
 
-<h1>Hello, world!</h1>
+<lead>What do you want to do?</lead>
 
-Welcome to your new app.
+<div class="d-flex flex-column bd-highlight mb-3">
+    <Button class="m-2" Type="ButtonType.Button" Color="ButtonColor.Primary">
+        <InputFile title="Load game" OnChange="LoadGame" />
+    </Button>
+    <Button class="m-2" Type="ButtonType.Link" Color="ButtonColor.Primary" To="/game">New game</Button>
+</div>
+
+@code {
+    private void LoadGame(InputFileChangeEventArgs args)
+    {
+
+    }
+}
