@@ -1,0 +1,164 @@
+﻿using System.Text;
+
+namespace KingdomLegacy.Domain;
+public class Game
+{
+    public int BoxCount => _box.Count;
+    public int DeckCount => _deck.Count;
+    public int HandCount => _hand.Count;
+    public int InPlayCount => _inPlay.Count;
+    public int DiscardCount => _discard.Count;
+    public int TrashCount => _trash.Count;
+
+    private Queue<Card> _box = new();
+    private Queue<Card> _deck = new();
+    private List<Card> _hand = [];
+    private List<Card> _inPlay = [];
+    private List<Card> _discard = [];
+    private List<Card> _trash = [];
+    private IEnumerable<Card> All => _box
+        .Concat(_deck)
+        .Concat(_hand)
+        .Concat(_inPlay)
+        .Concat(_discard)
+        .Concat(_trash);
+
+    public void Load(string data)
+    {
+        string? expansion = null;
+        foreach (var line in data.Split(Environment.NewLine))
+        {
+            if (string.IsNullOrWhiteSpace(line))
+                expansion = null;
+            else if (expansion == null)
+                expansion = line.Trim();
+            else
+            {
+                var parts = line.Split('\t');
+                if (parts.Length != 3)
+                    throw new FormatException("Invalid card data format.");
+                var id = int.Parse(parts[0]);
+                var orientation = (Orientation)int.Parse(parts[1]);
+                var state = (State)int.Parse(parts[2]);
+                var card = new Card
+                {
+                    Id = id,
+                    Expansion = expansion,
+                    Orientation = orientation,
+                    State = state
+                };
+                switch (state)
+                {
+                    case State.Box:
+                        _box.Enqueue(card);
+                        break;
+                    case State.Deck:
+                        _deck.Enqueue(card);
+                        break;
+                    case State.Hand:
+                        _hand.Add(card);
+                        break;
+                    case State.InPlay:
+                        _inPlay.Add(card);
+                        break;
+                    case State.Discarded:
+                        _discard.Add(card);
+                        break;
+                    case State.Removed:
+                        _trash.Add(card);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+    }
+
+    public string Save() =>
+        string.Join($"{Environment.NewLine}{Environment.NewLine}",
+            All.GroupBy(card => card.Expansion)
+            .Select(SaveExpansion));
+
+
+    private string SaveExpansion(IGrouping<string, Card> expansion)
+    {
+        var sb = new StringBuilder(expansion.Key).AppendLine();
+        foreach (var card in expansion.OrderBy(card => card.Id))
+            sb.AppendLine($"{card.Id}\t{(int)card.Orientation}\t{(int)card.State}");
+
+        return sb.ToString();
+    }
+
+    public void Initialize(Expansion expansion)
+    {
+        _box = new Queue<Card>(expansion.Cards);
+        _deck = new();
+        _hand = [];
+        _inPlay = [];
+        _discard = [];
+        _trash = [];
+
+        for (var i = 0; i < 10; i++)
+            AddToDeck();
+
+        Reshuffle();
+    }
+
+    public Card? AddToDeck()
+    {
+        if (_box.Count == 0)
+            return null;
+
+        var card = _box.Dequeue();
+        card.State = State.Deck;
+        _deck.Enqueue(card);
+
+        return card;
+    }
+
+    public void Reshuffle()
+    {
+        _deck = new Queue<Card>(_deck
+            .Concat(_hand)
+            .Concat(_inPlay)
+            .Concat(_discard)
+            .OrderBy(_ => Random.Shared.Next()));
+
+        foreach (var card in _deck)
+            card.State = State.Deck;
+
+        _hand.Clear();
+        _inPlay.Clear();
+        _discard.Clear();
+    }
+
+    public void Discard(Card card)
+    {
+        if (_hand.Remove(card) || _inPlay.Remove(card))
+        {
+            card.State = State.Discarded;
+            _discard.Add(card);
+        }
+    }
+
+    public void Trash(Card card)
+    {
+        if (_hand.Remove(card) || _inPlay.Remove(card) || _discard.Remove(card))
+        {
+            card.State = State.Removed;
+            _trash.Add(card);
+        }
+    }
+
+    public Card? Draw()
+    {
+        if (_deck.Count == 0)
+            return null;
+
+        var card = _deck.Dequeue();
+        card.State = State.Hand;
+        _hand.Add(card);
+
+        return card;
+    }
+}

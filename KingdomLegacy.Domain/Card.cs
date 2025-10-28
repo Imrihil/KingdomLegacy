@@ -1,0 +1,13 @@
+﻿using System.Text.Json.Serialization;
+
+namespace KingdomLegacy.Domain;
+public record Card
+{
+    public int Id { get; set; }
+    public string Expansion { get; set; } = string.Empty;
+    public Orientation Orientation { get; set; }
+    public State State { get; set; }
+
+    [JsonIgnore]
+    public string Path => $"{Expansion}/{Expansion}_{Id}_{(Orientation > 0 ? "A" : "B")}.jpg";
+}
