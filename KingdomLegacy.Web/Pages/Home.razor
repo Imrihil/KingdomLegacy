@@ -2,18 +2,88 @@
 
 <PageTitle>Kingdom Legacy</PageTitle>
 
-<lead>What do you want to do?</lead>
+@if (GameContext == null)
+{
+    <lead>What do you want to do?</lead>
 
-<div class="d-flex flex-column bd-highlight mb-3">
-    <Button class="m-2" Type="ButtonType.Button" Color="ButtonColor.Primary">
-        <InputFile title="Load game" OnChange="LoadGame" />
-    </Button>
-    <Button class="m-2" Type="ButtonType.Link" Color="ButtonColor.Primary" To="/game">New game</Button>
-</div>
+    <div class="d-flex flex-column bd-highlight mb-3">
+        <Button class="m-2" Type="ButtonType.Button" Color="ButtonColor.Primary">
+            <InputFile title="Load game" OnChange="LoadGame" />
+        </Button>
+        <Button class="m-2" Type="ButtonType.Link" Color="ButtonColor.Primary" @onclick=NewGame>New game</Button>
+    </div>
+}
+else
+{
+    <div class="d-flex flex-row bd-highlight mb-3">
+        <div class="pe-2" id="deck">
+            <Button class="m-0 p-0 to-hover" Type="ButtonType.Button" Position="Position.Relative" @onclick="() => GameContext?.Draw()">
+                <GameCard CardContext="@GameContext.DeckTop" />
+                <div class="w-100 h-100 position-absolute top-0 start-0" style="background-color: #404040A0;"></div>
+                <Badge Color="BadgeColor.Info"
+                       Position="Position.Absolute"
+                       Placement="BadgePlacement.MiddleCenter"
+                       IndicatorType="BadgeIndicatorType.RoundedPill"
+                       VisuallyHiddenText="count"
+                       Class="to-show">@GameContext.DeckCount</Badge>
+            </Button>
+        </div>
+        @foreach (var card in GameContext.Hand)
+        {
+            <Button class="m-0 p-0" Type="ButtonType.Button" Position="Position.Relative" @onclick="() => GameContext?.Discard(card)">
+                <GameCard CardContext="@card" />
+                <Badge Color="BadgeColor.Danger"
+                       Position="Position.Absolute"
+                       Placement="BadgePlacement.MiddleCenter"
+                       IndicatorType="BadgeIndicatorType.RoundedPill"
+                       VisuallyHiddenText="trash"
+                       Class="to-show" @onclick="() => GameContext?.Trash(card)">x</Badge>
+            </Button>
+        }
+        @foreach (var card in GameContext.InPlay)
+        {
+            <Button class="m-0 p-0" Type="ButtonType.Button" Position="Position.Relative" @onclick="() => GameContext?.Discard(card)">
+                <GameCard CardContext="@card" />
+                <Badge Color="BadgeColor.Danger"
+                       Position="Position.Absolute"
+                       Placement="BadgePlacement.MiddleCenter"
+                       IndicatorType="BadgeIndicatorType.RoundedPill"
+                       VisuallyHiddenText="trash"
+                       Class="to-show" @onclick="() => GameContext?.Trash(card)">x</Badge>
+            </Button>
+        }
+    </div>
+}
 
 @code {
+    [Parameter]
+    public KingdomLegacy.Domain.Game? GameContext { get; set; }
+
     private void LoadGame(InputFileChangeEventArgs args)
     {
+        GameContext = new KingdomLegacy.Domain.Game();
+        using var stream = args.File.OpenReadStream();
+        using var reader = new StreamReader(stream);
 
+        GameContext.Load(Read(reader));
+    }
+
+    private IEnumerable<string> Read(StreamReader reader)
+    {
+        while (reader.Peek() >= 0)
+        {
+            var line = reader.ReadLine();
+            if (line != null)
+                yield return line;
+        }
+    }
+
+    private void NewGame(MouseEventArgs args)
+    {
+        if (GameContext == null)
+        {
+            GameContext = new KingdomLegacy.Domain.Game();
+            GameContext.Initialize(Expansions.FeudalKingdom);
+        }
     }
 }

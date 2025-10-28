@@ -28,10 +28,13 @@ public class Game
         .Concat(_discarded)
         .Concat(_trash);
 
-    public void Load(string data)
+    public void Load(string data) =>
+        Load(data.Split(Environment.NewLine));
+
+    public void Load(IEnumerable<string> lines)
     {
         string? expansion = null;
-        foreach (var line in data.Split(Environment.NewLine))
+        foreach (var line in lines)
         {
             if (string.IsNullOrWhiteSpace(line))
                 expansion = null;
@@ -103,8 +106,7 @@ public class Game
         _discarded = [];
         _trash = [];
 
-        for (var i = 0; i < 10; i++)
-            AddToDeck();
+        AddToDeck();
 
         Reshuffle();
     }
