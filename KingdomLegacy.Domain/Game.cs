@@ -106,21 +106,26 @@ public class Game
         _discarded = [];
         _trash = [];
 
-        AddToDeck();
+        AddToDeck().ToArray();
 
         Reshuffle();
     }
 
-    public Card? AddToDeck()
+    public IEnumerable<Card> AddToDeck(int i = 1) =>
+        AddToDeckEnumerable(i).ToArray();
+
+    public IEnumerable<Card> AddToDeckEnumerable(int i = 1)
     {
-        if (_box.Count == 0)
-            return null;
+        while (i-- > 0 && _box.Count > 0)
+        {
+            var card = _box.Dequeue();
+            card.State = State.Deck;
+            _deck.Enqueue(card);
 
-        var card = _box.Dequeue();
-        card.State = State.Deck;
-        _deck.Enqueue(card);
+            yield return card;
+        }
 
-        return card;
+        yield break;
     }
 
     public void Reshuffle()
@@ -157,15 +162,18 @@ public class Game
         }
     }
 
-    public Card? Draw()
+    public IEnumerable<Card> Draw(int i = 1) => DrawEnumerable(i).ToArray();
+    public IEnumerable<Card> DrawEnumerable(int i = 1)
     {
-        if (_deck.Count == 0)
-            return null;
+        while (i-- > 0 && _deck.Count > 0)
+        {
+            var card = _deck.Dequeue();
+            card.State = State.Hand;
+            _hand.Add(card);
 
-        var card = _deck.Dequeue();
-        card.State = State.Hand;
-        _hand.Add(card);
+            yield return card;
+        }
 
-        return card;
+        yield break;
     }
 }
