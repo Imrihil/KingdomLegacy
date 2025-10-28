@@ -13,6 +13,7 @@ public class Game : IObservable<Game>
 
     public Card? DeckTop => _deck.Count > 0 ? _deck.Peek() : null;
     public Card? DiscardedLast => _discarded.Count > 0 ? _discarded.Peek() : null;
+    public Card? TrashedLast => _trash.Count > 0 ? _trash.Peek() : null;
 
     private Queue<Card> _box = new();
     private Queue<Card> _deck = new();
@@ -21,7 +22,7 @@ public class Game : IObservable<Game>
     private List<Card> _inPlay = [];
     public IReadOnlyCollection<Card> InPlay => _inPlay.AsReadOnly();
     private Stack<Card> _discarded = [];
-    private List<Card> _trash = [];
+    private Stack<Card> _trash = [];
     private IEnumerable<Card> All => _box
         .Concat(_deck)
         .Concat(_hand)
@@ -74,7 +75,7 @@ public class Game : IObservable<Game>
                         _discarded.Push(card);
                         break;
                     case State.Removed:
-                        _trash.Add(card);
+                        _trash.Push(card);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -163,12 +164,22 @@ public class Game : IObservable<Game>
         }
     }
 
+    public void UndoTrash()
+    {
+        if (_trash.Count > 0)
+        {
+            var card = _trash.Pop();
+            card.State = State.Hand;
+            _hand.Add(card);
+        }
+    }
+
     public void Trash(Card card)
     {
         if (_hand.Remove(card) || _inPlay.Remove(card))
         {
             card.State = State.Removed;
-            _trash.Add(card);
+            _trash.Push(card);
         }
     }
 
