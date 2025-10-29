@@ -147,3 +147,11 @@ code {
     background-image: url('/icons/points.png');
     color: #000;
 }
+
+.btn-card {
+    width: 32px;
+    height: 32px;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(66, 68, 90, 1);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(66, 68, 90, 1);
+    box-shadow: 0px 0px 5px 0px rgba(66, 68, 90, 1);
+}

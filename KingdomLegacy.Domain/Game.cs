@@ -228,6 +228,17 @@ public class Game : Observable<Game>
         _deck = newDeck;
     }
 
+    public void AddToHand(Card card)
+    {
+        if (_discovered.Remove(card) || _hand.Remove(card) || _inPlay.Remove(card))
+        {
+            card.State = State.Hand;
+            _hand.Add(card);
+        }
+
+        Notify(this);
+    }
+
     public void Discard(Card card)
     {
         if (_discovered.Remove(card) || _hand.Remove(card) || _inPlay.Remove(card))

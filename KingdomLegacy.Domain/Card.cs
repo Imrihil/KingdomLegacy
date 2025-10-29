@@ -11,6 +11,9 @@ public record Card
     [JsonIgnore]
     public string Path => $"{Expansion}/{Expansion}_{Id}_{(Orientation > 0 ? "A" : "B")}.jpg";
 
+    public void RotationReset() =>
+        Orientation = Orientation.L1;
+
     public void RotateRight() =>
         Orientation = Orientation.RotateRight();
 
