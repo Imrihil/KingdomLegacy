@@ -13,27 +13,33 @@
             <h3 class="p-2 mb-1  rounded text-bg-dark">Box (<span>@GameContext.BoxCount</span>)</h3>
             @if (GameContext.BoxCount >= 1)
             {
-                <Button class="m-1 p-1" Type="ButtonType.Button" Color="ButtonColor.Warning" @onclick="() => GameContext?.TakeFromBox()">
+                <Button Class="m-1 p-1" Type="ButtonType.Button" Color="ButtonColor.Warning" @onclick="() => GameContext?.TakeFromBox()">
                     +1
                 </Button>
-            }
-            @if (GameContext.BoxCount >= 2)
-            {
-                <Button class="m-1 p-1" Type="ButtonType.Button" Color="ButtonColor.Warning" @onclick="() => GameContext?.TakeFromBox(2)">
-                    +2
-                </Button>
-            }
-            @if (GameContext.BoxCount >= 5)
-            {
-                <Button class="m-1 p-1" Type="ButtonType.Button" Color="ButtonColor.Warning" @onclick="() => GameContext?.TakeFromBox(5)">
-                    +5
-                </Button>
-            }
-            @if (GameContext.BoxCount >= 10)
-            {
-                <Button class="m-1 p-1" Type="ButtonType.Button" Color="ButtonColor.Warning" @onclick="() => GameContext?.TakeFromBox(10)">
-                    +10
-                </Button>
+                @if (GameContext.BoxCount >= 2)
+                {
+                    <Button Class="m-1 p-1" Type="ButtonType.Button" Color="ButtonColor.Warning" @onclick="() => GameContext?.TakeFromBox(2)">
+                        +2
+                    </Button>
+                }
+                @if (GameContext.BoxCount >= 5)
+                {
+                    <Button Class="m-1 p-1" Type="ButtonType.Button" Color="ButtonColor.Warning" @onclick="() => GameContext?.TakeFromBox(5)">
+                        +5
+                    </Button>
+                }
+                @if (GameContext.BoxCount >= 10)
+                {
+                    <Button Class="m-1 p-1" Type="ButtonType.Button" Color="ButtonColor.Warning" @onclick="() => GameContext?.TakeFromBox(10)">
+                        +10
+                    </Button>
+                }
+                <div class="d-flex d-row">
+                    <NumberInput Style="width: 70px;" TValue="int" @bind-Value="@_boxCardId" />
+                    <Button Class="m-1 p-1 w-100" Type="ButtonType.Button" Color="ButtonColor.Warning" @onclick="() => GameContext?.TakeFromBoxById(_boxCardId)">
+                        Add
+                    </Button>
+                </div>
             }
         </div>
         <div class="me-1 mb-1 d-flex flex-column rounded">
@@ -44,7 +50,7 @@
                 <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
                     @if (GameContext.DeckCount == 0)
                     {
-                        <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Primary" Position="Position.Relative" @onclick="() => GameContext?.Reshuffle()">
+                        <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Primary" Position="Position.Relative" @onclick="() => GameContext?.Reshuffle()">
                             ♺
                         </Button>
                     }
@@ -52,19 +58,19 @@
                     {
                         @if (GameContext.DeckCount >= 1)
                         {
-                            <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Draw()">
+                            <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Draw()">
                                 +1
                             </Button>
                         }
                         @if (GameContext.DeckCount >= 2)
                         {
-                            <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Draw(2)">
+                            <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Draw(2)">
                                 +2
                             </Button>
                         }
                         @if (GameContext.DeckCount >= 4)
                         {
-                            <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Draw(4)">
+                            <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Draw(4)">
                                 +4
                             </Button>
                         }
@@ -82,16 +88,16 @@
                         <div class="me-1 mb-1 position-relative to-hover" id="deck">
                             <GameCard CardContext="@card" />
                             <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
-                                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Secondary" Position="Position.Relative" @onclick="() => RotateRight(card)">
+                                <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Secondary" Position="Position.Relative" @onclick="() => RotateRight(card)">
                                     ⇒
                                 </Button>
-                                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Secondary" Position="Position.Relative" @onclick="() => RotateDown(card)">
+                                <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Secondary" Position="Position.Relative" @onclick="() => RotateDown(card)">
                                     ⇓
                                 </Button>
-                                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Warning" Position="Position.Relative" @onclick="() => GameContext?.Discard(card)">
+                                <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Warning" Position="Position.Relative" @onclick="() => GameContext?.Discard(card)">
                                     ✓
                                 </Button>
-                                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Danger" Position="Position.Relative" @onclick="() => GameContext?.Trash(card)">
+                                <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Danger" Position="Position.Relative" @onclick="() => GameContext?.Trash(card)">
                                     x
                                 </Button>
                             </div>
@@ -108,19 +114,19 @@
                     <div class="me-1 mb-1 position-relative to-hover" id="deck">
                         <GameCard CardContext="@card" />
                         <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
-                            <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Secondary" Position="Position.Relative" @onclick="() => GameContext?.Play(card)">
+                            <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Secondary" Position="Position.Relative" @onclick="() => GameContext?.Play(card)">
                                 ∞
                             </Button>
-                            <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Success" Position="Position.Relative" @onclick="() => RotateRight(card)">
+                            <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Success" Position="Position.Relative" @onclick="() => RotateRight(card)">
                                 ⇒
                             </Button>
-                            <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Success" Position="Position.Relative" @onclick="() => RotateDown(card)">
+                            <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Success" Position="Position.Relative" @onclick="() => RotateDown(card)">
                                 ⇓
                             </Button>
-                            <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Warning" Position="Position.Relative" @onclick="() => GameContext?.Discard(card)">
+                            <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Warning" Position="Position.Relative" @onclick="() => GameContext?.Discard(card)">
                                 ✓
                             </Button>
-                            <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Danger" Position="Position.Relative" @onclick="() => GameContext?.Trash(card)">
+                            <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Danger" Position="Position.Relative" @onclick="() => GameContext?.Trash(card)">
                                 x
                             </Button>
                         </div>
@@ -136,7 +142,7 @@
                 <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
                     @if (GameContext.DiscardedCount > 0)
                     {
-                        <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.UndoDiscard()">
+                        <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.UndoDiscard()">
                             ↺
                         </Button>
                     }
@@ -151,7 +157,7 @@
                 <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
                     @if (GameContext.TrashCount > 0)
                     {
-                        <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.UndoTrash()">
+                        <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.UndoTrash()">
                             ↺
                         </Button>
                     }
@@ -166,11 +172,13 @@ else
 
     <div class="d-flex flex-column mb-3">
         <InputFile class="m-2 btn btn-primary" title="Load game" OnChange="LoadGame" />
-        <Button class="m-2" Type="ButtonType.Link" Color="ButtonColor.Primary" @onclick=NewGame>New game</Button>
+        <Button Class="m-2" Type="ButtonType.Link" Color="ButtonColor.Primary" @onclick=NewGame>New game</Button>
     </div>
 }
 
 @code {
+    private int _boxCardId;
+
     protected override void OnInitialized()
     {
         GameContext.Subscribe(_ => StateHasChanged());

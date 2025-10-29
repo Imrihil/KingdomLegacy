@@ -14,6 +14,9 @@ public class Game : Observable<Game>
 
     private Queue<Card> _box = new();
 
+    private List<Card> _discovered = [];
+    public IReadOnlyCollection<Card> Discovered => _discovered.AsReadOnly();
+
     public Card? DeckTop => _deck.Count > 0 ? _deck.Peek() : null;
     private Queue<Card> _deck = new();
 
@@ -31,6 +34,7 @@ public class Game : Observable<Game>
 
     private IEnumerable<Card> All => _box
         .Concat(_deck)
+        .Concat(_discovered)
         .Concat(_hand)
         .Concat(_inPlay)
         .Concat(_discarded)
@@ -79,7 +83,13 @@ public class Game : Observable<Game>
                     case State.Box:
                         _box.Enqueue(card);
                         break;
+                    case State.Discovered:
+                        _discovered.Add(card);
+                        break;
                     case State.Deck:
+                        _deck.Enqueue(card);
+                        break;
+                    case State.DeckTop:
                         _deck.Enqueue(card);
                         break;
                     case State.Hand:
@@ -147,14 +157,36 @@ public class Game : Observable<Game>
         while (i-- > 0 && _box.Count > 0)
         {
             var card = _box.Dequeue();
-            card.State = State.Discarded;
-            _discarded.Push(card);
+            card.State = State.Discovered;
+            _discovered.Add(card);
         }
+    }
+
+    public void TakeFromBoxById(int id)
+    {
+        var tempQueue = new Queue<Card>();
+        Card? foundCard = null;
+        while (_box.Count > 0)
+        {
+            var card = _box.Dequeue();
+            if (card.Id == id && foundCard == null)
+            {
+                foundCard = card;
+                card.State = State.Discovered;
+                _discovered.Add(card);
+            }
+            else
+            {
+                tempQueue.Enqueue(card);
+            }
+        }
+        _box = tempQueue;
     }
 
     public void Reshuffle()
     {
         _deck = new Queue<Card>(_deck
+            .Concat(_discovered)
             .Concat(_hand)
             .Concat(_inPlay)
             .Concat(_discarded)
@@ -163,13 +195,27 @@ public class Game : Observable<Game>
         foreach (var card in _deck)
             card.State = State.Deck;
 
+        if (_deck.TryPeek(out var nextCard))
+            nextCard.State = State.DeckTop;
+
         _hand.Clear();
         _inPlay.Clear();
         _discarded.Clear();
     }
 
-    private void ReshuffleDeck() =>
-        _deck = new Queue<Card>(_deck.OrderBy(_ => Random.Shared.Next()));
+    private void ReshuffleDeck()
+    {
+        var top = _deck.FirstOrDefault(card => card.State == State.DeckTop);
+        var newDeck = new Queue<Card>();
+
+        if (top != null)
+            newDeck.Enqueue(top);
+
+        foreach (var card in _deck.Where(card => card.State != State.DeckTop).OrderBy(_ => Random.Shared.Next()))
+            newDeck.Enqueue(card);
+
+        _deck = newDeck;
+    }
 
     public void Discard(Card card)
     {
@@ -216,6 +262,8 @@ public class Game : Observable<Game>
             var card = _deck.Dequeue();
             card.State = State.Hand;
             _hand.Add(card);
+            if (_deck.TryPeek(out var nextCard))
+                nextCard.State = State.DeckTop;
         }
     }
 
