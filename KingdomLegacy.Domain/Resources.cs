@@ -1,5 +1,5 @@
 ﻿namespace KingdomLegacy.Domain;
-public class Resources : Observable<Resources>
+public class Resources(Game game) : Observable<Resources>
 {
     private int _coins;
     public int Coins
@@ -79,7 +79,7 @@ public class Resources : Observable<Resources>
         }
     }
 
-    private int _points;
+    private int _points = game.Points;
     public int Points
     {
         get => _points;
@@ -88,6 +88,7 @@ public class Resources : Observable<Resources>
             if (value < 0)
                 return;
             _points = value;
+            game.Points = value;
             Notify(this);
         }
     }

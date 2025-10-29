@@ -10,19 +10,25 @@ public class Game : Observable<Game>
     public int DiscardedCount => _discarded.Count;
     public int TrashCount => _trash.Count;
     public bool IsInitialized { get; private set; }
-
-    public Card? DeckTop => _deck.Count > 0 ? _deck.Peek() : null;
-    public Card? DiscardedLast => _discarded.Count > 0 ? _discarded.Peek() : null;
-    public Card? TrashedLast => _trash.Count > 0 ? _trash.Peek() : null;
+    public int Points { get; set; }
 
     private Queue<Card> _box = new();
+
+    public Card? DeckTop => _deck.Count > 0 ? _deck.Peek() : null;
     private Queue<Card> _deck = new();
-    private List<Card> _hand = [];
+
     public IReadOnlyCollection<Card> Hand => _hand.AsReadOnly();
-    private List<Card> _inPlay = [];
+    private List<Card> _hand = [];
+
     public IReadOnlyCollection<Card> InPlay => _inPlay.AsReadOnly();
+    private List<Card> _inPlay = [];
+
+    public Card? DiscardedLast => _discarded.Count > 0 ? _discarded.Peek() : null;
     private Stack<Card> _discarded = [];
+
+    public Card? TrashedLast => _trash.Count > 0 ? _trash.Peek() : null;
     private Stack<Card> _trash = [];
+
     private IEnumerable<Card> All => _box
         .Concat(_deck)
         .Concat(_hand)
@@ -35,9 +41,20 @@ public class Game : Observable<Game>
 
     public void Load(IEnumerable<string> lines)
     {
+        var firstLine = true;
         string? expansion = null;
         foreach (var line in lines)
         {
+            if (firstLine)
+            {
+                if (!string.IsNullOrEmpty(line) && int.TryParse(line, out var points))
+                {
+                    Points = points;
+                    continue;
+                }
+                firstLine = false;
+            }
+
             if (string.IsNullOrWhiteSpace(line))
                 expansion = null;
             else if (expansion == null)
@@ -83,15 +100,20 @@ public class Game : Observable<Game>
             }
         }
 
-        Reshuffle();
+        ReshuffleDeck();
         IsInitialized = true;
         Notify(this);
     }
 
-    public string Save() =>
-        string.Join($"{Environment.NewLine}{Environment.NewLine}",
+    public string Save()
+    {
+        var sb = new StringBuilder(Points.ToString()).AppendLine();
+        sb.Append(string.Join($"{Environment.NewLine}{Environment.NewLine}",
             All.GroupBy(card => card.Expansion)
-            .Select(SaveExpansion));
+            .Select(SaveExpansion)));
+
+        return sb.ToString();
+    }
 
 
     private string SaveExpansion(IGrouping<string, Card> expansion)
@@ -145,6 +167,9 @@ public class Game : Observable<Game>
         _inPlay.Clear();
         _discarded.Clear();
     }
+
+    private void ReshuffleDeck() =>
+        _deck = new Queue<Card>(_deck.OrderBy(_ => Random.Shared.Next()));
 
     public void Discard(Card card)
     {
@@ -217,6 +242,7 @@ public class Game : Observable<Game>
             Discard(card);
         TakeFromBox(2);
         Reshuffle();
+        Draw(4);
         Notify(this);
     }
 }
