@@ -32,7 +32,7 @@
                             <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle to-show">
                                 @if (Values.Count > 0)
                                 {
-                                    <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.UndoDiscard(card)">
+                                    <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Actions.Take(card)">
                                         ↺
                                     </Button>
                                 }
@@ -52,7 +52,7 @@
                     <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle to-show">
                         @if (Values.Count > 0)
                         {
-                            <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.UndoDiscard()">
+                            <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Actions.Take(Values.Last())">
                                 ↺
                             </Button>
                         }

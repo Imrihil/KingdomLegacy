@@ -6,17 +6,17 @@
 
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
-        <div class="w-100 d-flex flex-row justify-content-between">
+        <div class="w-100 d-flex flex-row">
             <Button Color="ButtonColor.Link" Class="text-decoration-none" Link="@("/")">
                 <h2 class="m-0 p-0">Kingdom Legacy</h2>
             </Button>
             @if (GameContext.IsInitialized)
             {
-                    <Button Class="m-2" Color="ButtonColor.Primary" @onclick="Save">
-                        Save
-                    </Button>
-                    <GameResources />
-                    <Switch Class="my-auto mx-2" @bind-Value="Config.DiscardRotated" Label="Autodiscard" />
+                <GameResources />
+                <Button Class="m-2" Color="ButtonColor.Primary" @onclick="Save">
+                    Save
+                </Button>
+                <Switch Class="my-auto mx-2" @bind-Value="Config.DiscardRotated" Label="Discard rotated" />
             }
             <ThemeSwitcher Class="ps-3 ps-lg-2 my-auto" />
         </div>
