@@ -29,7 +29,7 @@ public class Game : Observable<Game>
     private List<Card> _inPlay = [];
 
     public Card? DiscardedLast => _discarded.Count > 0 ? _discarded[^1] : null;
-    public IReadOnlyCollection<Card> Discarded => ((IEnumerable<Card>)_discarded).Reverse().ToArray();
+    public IReadOnlyCollection<Card> Discarded => _discarded.AsReadOnly();
     private List<Card> _discarded = [];
 
     public Card? TrashedLast => _trash.Count > 0 ? _trash.Peek() : null;

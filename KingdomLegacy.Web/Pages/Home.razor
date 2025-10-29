@@ -177,7 +177,7 @@
                 }
             </div>
         </div>
-        <Discarded />
+        <Discarded Values="@GameContext.Discarded" Disabled="@(GameContext.DiscoveredCount > 0)" />
         <div class="me-1 mb-1 d-flex flex-column rounded">
             <h3 class="mb-1 p-2 rounded text-bg-danger">Trash (@(GameContext.TrashCount))</h3>
             <div class="me-1 mb-1 position-relative to-hover">
