@@ -44,7 +44,13 @@
         <Button Class="mb-1 p-0 arrow-down" Color="ButtonColor.Danger" @onclick="() => Resources.Points--">-</Button>
     </div>
 
-    @if (GameContext.DeckCount > 0)
+    @if (GameContext.DiscoveredCount > 0)
+    {
+        <Button Class="m-2" Color="ButtonColor.Success" @onclick="EndDiscover">
+            End discover
+        </Button>
+    }
+    else if (GameContext.DeckCount > 0)
     {
         <Button Class="m-2" Color="ButtonColor.Warning" @onclick="EndTurn">
             End turn
@@ -52,13 +58,24 @@
     }
     else
     {
-        <Button Class="m-2" Color="ButtonColor.Info" @onclick="EndRound">
+        <Button Class="m-2" Color="ButtonColor.Light" @onclick="EndRound">
             End round
         </Button>
     }
 </div>
 
 @code {
+    override protected void OnInitialized()
+    {
+        GameContext.Subscribe(_ => StateHasChanged());
+        base.OnInitialized();
+    }
+
+    private void EndDiscover(MouseEventArgs args)
+    {
+        GameContext.EndDiscover();
+    }
+
     private void EndTurn(MouseEventArgs args)
     {
         GameContext.EndTurn();

@@ -28,7 +28,7 @@ public class Observable<T> : IObservable<T>
 
     protected void Notify(T item)
     {
-        foreach (var observer in _observers)
+        foreach (var observer in _observers.ToArray())
             observer.OnNext(item);
     }
 

@@ -4,6 +4,7 @@ namespace KingdomLegacy.Domain;
 public class Game : Observable<Game>
 {
     public int BoxCount => _box.Count;
+    public int DiscoveredCount => _discovered.Count;
     public int DeckCount => _deck.Count;
     public int HandCount => _hand.Count;
     public int InPlayCount => _inPlay.Count;
@@ -138,6 +139,7 @@ public class Game : Observable<Game>
     public void Initialize(Expansion expansion)
     {
         _box = new Queue<Card>(expansion.Cards);
+        _discovered = [];
         _deck = new();
         _hand = [];
         _inPlay = [];
@@ -146,9 +148,8 @@ public class Game : Observable<Game>
 
         TakeFromBox();
 
-        Reshuffle();
-
         IsInitialized = true;
+
         Notify(this);
     }
 
@@ -160,7 +161,12 @@ public class Game : Observable<Game>
             card.State = State.Discovered;
             _discovered.Add(card);
         }
+
+        Notify(this);
     }
+
+    public bool BoxContainsId(int id) =>
+        _box.Any(card => card.Id == id);
 
     public void TakeFromBoxById(int id)
     {
@@ -181,6 +187,8 @@ public class Game : Observable<Game>
             }
         }
         _box = tempQueue;
+
+        Notify(this);
     }
 
     public void Reshuffle()
@@ -198,9 +206,12 @@ public class Game : Observable<Game>
         if (_deck.TryPeek(out var nextCard))
             nextCard.State = State.DeckTop;
 
+        _discovered.Clear();
         _hand.Clear();
         _inPlay.Clear();
         _discarded.Clear();
+
+        Notify(this);
     }
 
     private void ReshuffleDeck()
@@ -219,11 +230,13 @@ public class Game : Observable<Game>
 
     public void Discard(Card card)
     {
-        if (_hand.Remove(card) || _inPlay.Remove(card))
+        if (_discovered.Remove(card) || _hand.Remove(card) || _inPlay.Remove(card))
         {
             card.State = State.Discarded;
             _discarded.Push(card);
         }
+
+        Notify(this);
     }
 
     public void UndoDiscard()
@@ -234,6 +247,8 @@ public class Game : Observable<Game>
             card.State = State.Hand;
             _hand.Add(card);
         }
+
+        Notify(this);
     }
 
     public void UndoTrash()
@@ -244,15 +259,19 @@ public class Game : Observable<Game>
             card.State = State.Hand;
             _hand.Add(card);
         }
+
+        Notify(this);
     }
 
     public void Trash(Card card)
     {
-        if (_hand.Remove(card) || _inPlay.Remove(card))
+        if (_discovered.Remove(card) || _hand.Remove(card) || _inPlay.Remove(card))
         {
             card.State = State.Removed;
             _trash.Push(card);
         }
+
+        Notify(this);
     }
 
     public void Draw(int i = 1)
@@ -265,6 +284,8 @@ public class Game : Observable<Game>
             if (_deck.TryPeek(out var nextCard))
                 nextCard.State = State.DeckTop;
         }
+
+        Notify(this);
     }
 
     public void Play(Card card)
@@ -274,13 +295,25 @@ public class Game : Observable<Game>
             card.State = State.InPlay;
             _inPlay.Add(card);
         }
+
+        Notify(this);
+    }
+
+    public void EndDiscover()
+    {
+        Reshuffle();
+        Draw(4);
+
+        Notify(this);
     }
 
     public void EndTurn()
     {
         foreach (var card in _hand.ToArray())
             Discard(card);
+
         Draw(4);
+
         Notify(this);
     }
 
@@ -288,9 +321,9 @@ public class Game : Observable<Game>
     {
         foreach (var card in _hand.Concat(_inPlay).ToArray())
             Discard(card);
+
         TakeFromBox(2);
-        Reshuffle();
-        Draw(4);
+
         Notify(this);
     }
 }
