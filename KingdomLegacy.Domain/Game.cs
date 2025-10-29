@@ -19,6 +19,7 @@ public class Game : Observable<Game>
     public IReadOnlyCollection<Card> Discovered => _discovered.AsReadOnly();
 
     public Card? DeckTop => _deck.Count > 0 ? _deck.Peek() : null;
+    public IReadOnlyCollection<Card> Deck => _deck.ToArray();
     private Queue<Card> _deck = new();
 
     public IReadOnlyCollection<Card> Hand => _hand.AsReadOnly();
@@ -27,10 +28,12 @@ public class Game : Observable<Game>
     public IReadOnlyCollection<Card> InPlay => _inPlay.AsReadOnly();
     private List<Card> _inPlay = [];
 
-    public Card? DiscardedLast => _discarded.Count > 0 ? _discarded.Peek() : null;
-    private Stack<Card> _discarded = [];
+    public Card? DiscardedLast => _discarded.Count > 0 ? _discarded[^1] : null;
+    public IReadOnlyCollection<Card> Discarded => ((IEnumerable<Card>)_discarded).Reverse().ToArray();
+    private List<Card> _discarded = [];
 
     public Card? TrashedLast => _trash.Count > 0 ? _trash.Peek() : null;
+    public IReadOnlyCollection<Card> Trashed => _trash.ToArray();
     private Stack<Card> _trash = [];
 
     private IEnumerable<Card> All => _box
@@ -38,7 +41,7 @@ public class Game : Observable<Game>
         .Concat(_discovered)
         .Concat(_hand)
         .Concat(_inPlay)
-        .Concat(_discarded.Reverse())
+        .Concat(_discarded)
         .Concat(_trash.Reverse());
 
     public void Load(string data) =>
@@ -100,7 +103,7 @@ public class Game : Observable<Game>
                         _inPlay.Add(card);
                         break;
                     case State.Discarded:
-                        _discarded.Push(card);
+                        _discarded.Add(card);
                         break;
                     case State.Removed:
                         _trash.Push(card);
@@ -244,30 +247,25 @@ public class Game : Observable<Game>
         if (_discovered.Remove(card) || _hand.Remove(card) || _inPlay.Remove(card))
         {
             card.State = State.Discarded;
-            _discarded.Push(card);
+            _discarded.Add(card);
         }
 
         Notify(this);
     }
 
-    public void UndoDiscard()
+    public void UndoDiscard(Card? card = null)
     {
-        if (_discarded.Count > 0)
+        if (card != null)
         {
-            var card = _discarded.Pop();
-            card.State = State.Hand;
-            _hand.Add(card);
+            if (_discarded.Remove(card))
+            {
+                card.State = State.Hand;
+                _hand.Add(card);
+            }
         }
-
-        Notify(this);
-    }
-
-    public void DiscoverDiscard()
-    {
-        while (_discarded.TryPop(out var card))
+        else if (_discarded.Count > 0)
         {
-            card.State = State.Discovered;
-            _discovered.Add(card);
+            UndoDiscard(_discarded[^1]);
         }
 
         Notify(this);
