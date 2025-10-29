@@ -177,65 +177,7 @@
                 }
             </div>
         </div>
-        <div class="me-1 mb-1 d-flex flex-column rounded">
-            <div class="mb-1 p-2 w-100 d-flex flex-row justify-content-between rounded text-bg-warning">
-                <h3 class="m-0 p-0">Discard (@(GameContext.DiscardedCount))</h3>
-                @if (GameContext.DiscoveredCount == 0)
-                {
-                    <Button Class="py-0" Color="ButtonColor.Light" Disabled="@(GameContext.DiscardedCount == 0)" @onclick="() => _showDiscard = !_showDiscard">
-                        @if (_showDiscard)
-                        {
-                            <span>Hide</span>
-                        }
-                        else
-                        {
-                            <span>Show</span>
-                        }
-                    </Button>
-                }
-            </div>
-            @if (_showDiscard)
-    {
-                <div class="d-flex flex-row flex-wrap rounded">
-                @foreach (var card in GameContext.Discarded)
-                {
-                    <div class="me-1 mb-1 position-relative to-hover">
-                        <GameCard CardContext="@card" />
-                        <div class="w-100 h-100 position-absolute top-0 start-0 game-card" style="background-color: rgba(255, 193, 7, 0.5);"></div>
-                        @if (GameContext.DiscoveredCount == 0)
-                        {
-                            <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle to-show">
-                                @if (GameContext.DiscardedCount > 0)
-                                {
-                                    <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.UndoDiscard(card)">
-                                        ↺
-                                    </Button>
-                                }
-                            </div>
-                        }
-                    </div>
-                }
-                </div>
-            }
-            else
-            {
-                <div class="me-1 mb-1 position-relative to-hover">
-                    <GameCard CardContext="@GameContext.DiscardedLast" />
-                    <div class="w-100 h-100 position-absolute top-0 start-0 game-card" style="background-color: rgba(255, 193, 7, 0.5);"></div>
-                    @if (GameContext.DiscoveredCount == 0)
-                    {
-                        <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle to-show">
-                            @if (GameContext.DiscardedCount > 0)
-                            {
-                                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.UndoDiscard()">
-                                    ↺
-                                </Button>
-                            }
-                        </div>
-                    }
-                </div>
-            }
-        </div>
+        <Discarded />
         <div class="me-1 mb-1 d-flex flex-column rounded">
             <h3 class="mb-1 p-2 rounded text-bg-danger">Trash (@(GameContext.TrashCount))</h3>
             <div class="me-1 mb-1 position-relative to-hover">
@@ -269,7 +211,6 @@ else
 @code {
     private int _boxCardId;
     private bool _showDeck;
-    private bool _showDiscard;
     private bool _showTrashed;
 
     protected override void OnInitialized()
