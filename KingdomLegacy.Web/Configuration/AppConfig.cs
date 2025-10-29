@@ -1,6 +1,17 @@
-﻿namespace KingdomLegacy.Web.Configuration;
+﻿using KingdomLegacy.Domain;
 
-public class AppConfig
+namespace KingdomLegacy.Web.Configuration;
+
+public class AppConfig : Observable<AppConfig>
 {
-    public bool DiscardRotated { get; set; }
+    private bool _discardRotated = false;
+    public bool DiscardRotated
+    {
+        get => _discardRotated;
+        set
+        {
+            _discardRotated = value;
+            Notify(this);
+        }
+    }
 }

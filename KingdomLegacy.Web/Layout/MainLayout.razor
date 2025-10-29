@@ -6,17 +6,21 @@
 
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
-        <Button Color="ButtonColor.Link" Class="text-decoration-none" Link="@("/")">
-            <h2 class="m-0 p-0">Kingdom Legacy</h2>
-        </Button>
-        @if (GameContext.IsInitialized)
-        {
-            <Button Color="ButtonColor.Primary" @onclick="Save">
-                Save
+        <div class="w-100 d-flex flex-row justify-content-between">
+            <Button Color="ButtonColor.Link" Class="text-decoration-none" Link="@("/")">
+                <h2 class="m-0 p-0">Kingdom Legacy</h2>
             </Button>
-            <Switch Class="my-auto" @bind-Value="Config.DiscardRotated" Label="Autodiscard" />
-        }
-        <ThemeSwitcher Class="ps-3 ps-lg-2 my-auto" />
+            @if (GameContext.IsInitialized)
+            {
+                <div class="d-flex flex-row justify-content-center">
+                    <Button Class="m-2" Color="ButtonColor.Primary" @onclick="Save">
+                        Save
+                    </Button>
+                    <Switch Class="my-auto mx-2" @bind-Value="Config.DiscardRotated" Label="Autodiscard" />
+                </div>
+            }
+            <ThemeSwitcher Class="ps-3 ps-lg-2 my-auto" />
+        </div>
     </HeaderSection>
 
     <ContentSection>
@@ -31,7 +35,7 @@
 @code {
     protected override void OnInitialized()
     {
-        GameContext.Subscribe(new GameObserver(_ => StateHasChanged()));
+        GameContext.Subscribe(_ => StateHasChanged());
         base.OnInitialized();
     }
 

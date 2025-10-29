@@ -1,7 +1,7 @@
 ﻿using System.Text;
 
 namespace KingdomLegacy.Domain;
-public class Game : IObservable<Game>
+public class Game : Observable<Game>
 {
     public int BoxCount => _box.Count;
     public int DeckCount => _deck.Count;
@@ -84,7 +84,7 @@ public class Game : IObservable<Game>
         }
 
         IsInitialized = true;
-        Norify();
+        Notify(this);
     }
 
     public string Save() =>
@@ -116,7 +116,7 @@ public class Game : IObservable<Game>
         Reshuffle();
 
         IsInitialized = true;
-        Norify();
+        Notify(this);
     }
 
     public void TakeFromBox(int i = 1)
@@ -201,32 +201,4 @@ public class Game : IObservable<Game>
             _inPlay.Add(card);
         }
     }
-
-    private readonly List<IObserver<Game>> _observers = new();
-
-    public IDisposable Subscribe(IObserver<Game> observer)
-    {
-        _observers.Add(observer);
-        return new Unsubscriber(_observers, observer);
-    }
-
-    public void Norify()
-    {
-        foreach (var observer in _observers)
-            observer.OnNext(this);
-    }
-
-    private class Unsubscriber(List<IObserver<Game>> observers,
-        IObserver<Game> observer) : IDisposable
-    {
-        public void Dispose() => observers.Remove(observer);
-    }
-}
-
-public class GameObserver(Action<Game> onNext) : IObserver<Game>
-{
-    public void OnCompleted() { }
-    public void OnError(Exception error) { }
-    public void OnNext(Game value) =>
-        onNext(value);
 }

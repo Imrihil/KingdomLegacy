@@ -2,6 +2,7 @@
 @using System.Text
 
 @inject Game GameContext
+@inject AppConfig Config
 
 <PageTitle>Kingdom Legacy</PageTitle>
 
@@ -81,10 +82,10 @@
                         <div class="me-1 mb-1 position-relative to-hover" id="deck">
                             <GameCard CardContext="@card" />
                             <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
-                                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Secondary" Position="Position.Relative" @onclick="() => card.RotateRight()">
+                                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Secondary" Position="Position.Relative" @onclick="() => RotateRight(card)">
                                     ⇒
                                 </Button>
-                                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Secondary" Position="Position.Relative" @onclick="() => card.RotateDown()">
+                                <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Secondary" Position="Position.Relative" @onclick="() => RotateDown(card)">
                                     ⇓
                                 </Button>
                                 <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Warning" Position="Position.Relative" @onclick="() => GameContext?.Discard(card)">
@@ -110,10 +111,10 @@
                             <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Secondary" Position="Position.Relative" @onclick="() => GameContext?.Play(card)">
                                 ∞
                             </Button>
-                            <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => card.RotateRight()">
+                            <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Success" Position="Position.Relative" @onclick="() => RotateRight(card)">
                                 ⇒
                             </Button>
-                            <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => card.RotateDown()">
+                            <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Success" Position="Position.Relative" @onclick="() => RotateDown(card)">
                                 ⇓
                             </Button>
                             <Button class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Warning" Position="Position.Relative" @onclick="() => GameContext?.Discard(card)">
@@ -170,6 +171,12 @@ else
 }
 
 @code {
+    protected override void OnInitialized()
+    {
+        Config.Subscribe(_ => StateHasChanged());
+        base.OnInitialized();
+    }
+
     private async Task LoadGame(InputFileChangeEventArgs args)
     {
         MemoryStream stream = new MemoryStream();
@@ -181,4 +188,18 @@ else
 
     private void NewGame(MouseEventArgs args) =>
         GameContext.Initialize(Expansions.FeudalKingdom);
+
+    private void RotateRight(KingdomLegacy.Domain.Card card)
+    {
+        card.RotateRight();
+        if (Config.DiscardRotated)
+            GameContext.Discard(card);
+    }
+
+    private void RotateDown(KingdomLegacy.Domain.Card card)
+    {
+        card.RotateDown();
+        if (Config.DiscardRotated)
+            GameContext.Discard(card);
+    }
 }
