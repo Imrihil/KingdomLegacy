@@ -12,6 +12,7 @@ builder.Services
     .AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
     .AddScoped<Game>()
     .AddScoped<AppConfig>()
+    .AddScoped<Resources>()
     .AddBlazorBootstrap();
 
 await builder.Build().RunAsync();

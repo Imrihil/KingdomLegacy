@@ -83,6 +83,7 @@ public class Game : Observable<Game>
             }
         }
 
+        Reshuffle();
         IsInitialized = true;
         Notify(this);
     }
@@ -200,5 +201,22 @@ public class Game : Observable<Game>
             card.State = State.InPlay;
             _inPlay.Add(card);
         }
+    }
+
+    public void EndTurn()
+    {
+        foreach (var card in _hand.ToArray())
+            Discard(card);
+        Draw(4);
+        Notify(this);
+    }
+
+    public void EndRound()
+    {
+        foreach (var card in _hand.Concat(_inPlay).ToArray())
+            Discard(card);
+        TakeFromBox(2);
+        Reshuffle();
+        Notify(this);
     }
 }

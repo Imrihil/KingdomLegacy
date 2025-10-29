@@ -165,7 +165,7 @@ else
     <lead>What do you want to do?</lead>
 
     <div class="d-flex flex-column mb-3">
-        <Button class="m-2" Type="ButtonType.Button" Color="ButtonColor.Primary"><InputFile title="Load game" OnChange="LoadGame" /></Button>
+        <InputFile class="m-2 btn btn-primary" title="Load game" OnChange="LoadGame" />
         <Button class="m-2" Type="ButtonType.Link" Color="ButtonColor.Primary" @onclick=NewGame>New game</Button>
     </div>
 }
@@ -173,6 +173,7 @@ else
 @code {
     protected override void OnInitialized()
     {
+        GameContext.Subscribe(_ => StateHasChanged());
         Config.Subscribe(_ => StateHasChanged());
         base.OnInitialized();
     }

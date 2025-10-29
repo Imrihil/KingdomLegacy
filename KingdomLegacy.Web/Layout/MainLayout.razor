@@ -12,12 +12,11 @@
             </Button>
             @if (GameContext.IsInitialized)
             {
-                <div class="d-flex flex-row justify-content-center">
                     <Button Class="m-2" Color="ButtonColor.Primary" @onclick="Save">
                         Save
                     </Button>
+                    <GameResources />
                     <Switch Class="my-auto mx-2" @bind-Value="Config.DiscardRotated" Label="Autodiscard" />
-                </div>
             }
             <ThemeSwitcher Class="ps-3 ps-lg-2 my-auto" />
         </div>

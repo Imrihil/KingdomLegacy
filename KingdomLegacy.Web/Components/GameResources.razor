@@ -1,0 +1,73 @@
+﻿@inject Game GameContext
+@inject Resources Resources
+
+<div class="d-flex flex-row">
+    <div class="mx-1 d-flex flex-column">
+        <Button Class="mt-1 p-0 arrow-up" Color="ButtonColor.Success" @onclick="() => Resources.Coins++">+</Button>
+        <div class="coins">@Resources.Coins</div>
+        <Button Class="mb-1 p-0 arrow-down" Color="ButtonColor.Danger" @onclick="() => Resources.Coins--">-</Button>
+    </div>
+
+    <div class="mx-1 d-flex flex-column">
+        <Button Class="mt-1 p-0 arrow-up" Color="ButtonColor.Success" @onclick="() => Resources.Wood++">+</Button>
+        <div class="wood">@Resources.Wood</div>
+        <Button Class="mb-1 p-0 arrow-down" Color="ButtonColor.Danger" @onclick="() => Resources.Wood--">-</Button>
+    </div>
+
+    <div class="mx-1 d-flex flex-column">
+        <Button Class="mt-1 p-0 arrow-up" Color="ButtonColor.Success" @onclick="() => Resources.Stones++">+</Button>
+        <div class="stones">@Resources.Stones</div>
+        <Button Class="mb-1 p-0 arrow-down" Color="ButtonColor.Danger" @onclick="() => Resources.Stones--">-</Button>
+    </div>
+
+    <div class="mx-1 d-flex flex-column">
+        <Button Class="mt-1 p-0 arrow-up" Color="ButtonColor.Success" @onclick="() => Resources.Steel++">+</Button>
+        <div class="steel">@Resources.Steel</div>
+        <Button Class="mb-1 p-0 arrow-down" Color="ButtonColor.Danger" @onclick="() => Resources.Steel--">-</Button>
+    </div>
+
+    <div class="mx-1 d-flex flex-column">
+        <Button Class="mt-1 p-0 arrow-up" Color="ButtonColor.Success" @onclick="() => Resources.Goods++">+</Button>
+        <div class="goods">@Resources.Goods</div>
+        <Button Class="mb-1 p-0 arrow-down" Color="ButtonColor.Danger" @onclick="() => Resources.Goods--">-</Button>
+    </div>
+
+    <div class="mx-1 d-flex flex-column">
+        <Button Class="mt-1 p-0 arrow-up" Color="ButtonColor.Success" @onclick="() => Resources.Swords++">+</Button>
+        <div class="swords">@Resources.Swords</div>
+        <Button Class="mb-1 p-0 arrow-down" Color="ButtonColor.Danger" @onclick="() => Resources.Swords--">-</Button>
+    </div>
+
+    <div class="mx-1 d-flex flex-column">
+        <Button Class="mt-1 p-0 arrow-up" Color="ButtonColor.Success" @onclick="() => Resources.Points++">+</Button>
+        <div class="points">@Resources.Points</div>
+        <Button Class="mb-1 p-0 arrow-down" Color="ButtonColor.Danger" @onclick="() => Resources.Points--">-</Button>
+    </div>
+
+    @if (GameContext.DeckCount > 0)
+    {
+        <Button Class="m-2" Color="ButtonColor.Warning" @onclick="EndTurn">
+            End turn
+        </Button>
+    }
+    else
+    {
+        <Button Class="m-2" Color="ButtonColor.Info" @onclick="EndRound">
+            End round
+        </Button>
+    }
+</div>
+
+@code {
+    private void EndTurn(MouseEventArgs args)
+    {
+        GameContext.EndTurn();
+        Resources.Reset();
+    }
+
+    private void EndRound(MouseEventArgs args)
+    {
+        GameContext.EndRound();
+        Resources.Reset();
+    }
+}
