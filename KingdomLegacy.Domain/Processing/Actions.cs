@@ -28,6 +28,15 @@ public class Actions(Game game)
     public void Draw(int count) =>
         Execute(new DrawAction(game, count));
 
+    public void EndDiscover() =>
+        Execute(new EndDiscoverAction(game));
+
+    public void EndTurn() =>
+        Execute(new EndTurnAction(game));
+
+    public void EndRound() =>
+        Execute(new EndRoundAction(game));
+
     public void Execute(IAction action)
     {
         if (!action.Execute())

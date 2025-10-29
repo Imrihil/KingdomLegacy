@@ -7,7 +7,7 @@ internal class TakeAction(Game game, Card card) : IAction
         || card.State == State.Discarded
         || card.State == State.Removed && game._trash.TryPeek(out var topCard) && topCard == card;
     public bool Disabled => false;
-    public string Text => "✓";
+    public string Text => card.State == State.Discarded || card.State == State.Removed ? "↺" : "✓";
 
     public bool Execute()
     {

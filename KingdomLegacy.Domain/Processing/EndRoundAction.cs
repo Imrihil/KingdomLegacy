@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace KingdomLegacy.Domain.Processing;
+﻿namespace KingdomLegacy.Domain.Processing;
 internal class EndRoundAction(Game game) : IAction
 {
     public State TargetState => State.Hand;
-    public bool Allowed => game._discovered.Count > 0;
+    public bool Allowed => game._discovered.Count == 0 && game._deck.Count == 0;
     public bool Disabled => false;
     public string Text => "End round";
     public bool Execute()

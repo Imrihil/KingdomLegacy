@@ -2,7 +2,7 @@
 internal class EndTurnAction(Game game) : IAction
 {
     public State TargetState => State.Hand;
-    public bool Allowed => game._discovered.Count > 0;
+    public bool Allowed => game._discovered.Count == 0 && game._deck.Count > 0;
     public bool Disabled => false;
     public string Text => "End turn";
     public bool Execute()
