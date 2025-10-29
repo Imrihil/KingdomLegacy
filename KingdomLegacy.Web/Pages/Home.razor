@@ -10,7 +10,7 @@
 {
     <div class="d-flex flex-row flex-wrap" @ondragend=OnDragEnd>
         <div class="me-1 mb-1 d-flex flex-column rounded">
-            <h3 class="p-2 mb-1  rounded text-bg-dark">Box (<span>@GameContext.BoxCount</span>)</h3>
+            <h3 class="mb-1 p-2 rounded text-bg-dark">Box (<span>@GameContext.BoxCount</span>)</h3>
             @if (GameContext.BoxCount >= 1)
             {
                 <Button Class="m-1 p-1" Type="ButtonType.Button" Color="ButtonColor.Light" @onclick="() => GameContext?.TakeFromBox()">
@@ -45,7 +45,7 @@
         @if (GameContext.DiscoveredCount > 0)
         {
             <div class="me-1 mb-1 d-flex flex-column rounded">
-                <h3 class="p-2 mb-1  rounded text-bg-light">Discovered (<span>@GameContext.DiscoveredCount</span>)</h3>
+                <h3 class="mb-1 p-2 rounded text-bg-light">Discovered (<span>@GameContext.DiscoveredCount</span>)</h3>
                 <div class="d-flex flex-row flex-wrap rounded">
                     @foreach (var card in GameContext.Discovered)
                     {
@@ -79,7 +79,7 @@
         else
         {
             <div class="me-1 mb-1 d-flex flex-column rounded">
-                <h3 class="p-2 mb-1  rounded text-bg-primary">Deck (<span>@GameContext.DeckCount</span>)</h3>
+                <h3 class="mb-1 p-2 rounded text-bg-primary">Deck (<span>@GameContext.DeckCount</span>)</h3>
                 <div class="position-relative to-hover">
                     <GameCard CardContext="@GameContext.DeckTop" />
                     <div class="w-100 h-100 position-absolute top-0 start-0 game-card" style="background-color: rgba(13, 110, 253, 0.5);"></div>
@@ -117,7 +117,7 @@
             @if (GameContext.InPlayCount > 0)
             {
                 <div class="me-1 mb-1 d-flex flex-column rounded">
-                    <h3 class="p-2 mb-1  rounded text-bg-secondary">In play (<span>@GameContext.InPlayCount</span>)</h3>
+                    <h3 class="mb-1 p-2 rounded text-bg-secondary">In play (<span>@GameContext.InPlayCount</span>)</h3>
                     <div class="d-flex flex-row flex-wrap rounded">
                         @foreach (var card in GameContext.InPlay)
                         {
@@ -143,7 +143,7 @@
                 </div>
             }
             <div class="me-1 mb-1 d-flex flex-column rounded">
-                <h3 class="p-2 mb-1  rounded text-bg-success">Hand (<span>@GameContext.HandCount</span>)</h3>
+                <h3 class="mb-1 p-2 rounded text-bg-success">Hand (<span>@GameContext.HandCount</span>)</h3>
                 <div class="d-flex flex-row flex-wrap rounded">
                     @foreach (var card in GameContext.Hand)
                     {
@@ -171,7 +171,12 @@
                 </div>
             </div>
             <div class="me-1 mb-1 d-flex flex-column rounded">
-                <h3 class="p-2 mb-1  rounded text-bg-warning">Discard (<span>@GameContext.DiscardedCount</span>)</h3>
+                <div class="mb-1 p-2 w-100 d-flex flex-row justify-content-between rounded text-bg-warning">
+                    <h3 class="m-0 p-0">Discard (@(GameContext.DiscardedCount))</h3>
+                    <Button Class="py-0" Color="ButtonColor.Light" Disabled="@(GameContext.DiscardedCount == 0)" @onclick="() => GameContext.DiscoverDiscard()">
+                        Discover
+                    </Button>
+                </div>
                 <div class="position-relative to-hover">
                     <GameCard CardContext="@GameContext.DiscardedLast" />
                     <div class="w-100 h-100 position-absolute top-0 start-0 game-card" style="background-color: rgba(255, 193, 7, 0.5);"></div>
@@ -186,7 +191,7 @@
                 </div>
             </div>
             <div class="me-1 mb-1 d-flex flex-column rounded">
-                <h3 class="p-2 mb-1  rounded text-bg-danger">Trash (<span>@GameContext.TrashCount</span>)</h3>
+                <h3 class="mb-1 p-2 rounded text-bg-danger">Trash (<span>@GameContext.TrashCount</span>)</h3>
                 <div class="position-relative to-hover">
                     <GameCard CardContext="@GameContext.TrashedLast" />
                     <div class="w-100 h-100 position-absolute top-0 start-0 game-card" style="background-color: rgba(220, 53, 69, 0.5);"></div>

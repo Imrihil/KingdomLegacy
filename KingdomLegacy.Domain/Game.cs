@@ -262,13 +262,12 @@ public class Game : Observable<Game>
         Notify(this);
     }
 
-    public void UndoTrash()
+    public void DiscoverDiscard()
     {
-        if (_trash.Count > 0)
+        while (_discarded.TryPop(out var card))
         {
-            var card = _trash.Pop();
-            card.State = State.Hand;
-            _hand.Add(card);
+            card.State = State.Discovered;
+            _discovered.Add(card);
         }
 
         Notify(this);
@@ -280,6 +279,18 @@ public class Game : Observable<Game>
         {
             card.State = State.Removed;
             _trash.Push(card);
+        }
+
+        Notify(this);
+    }
+
+    public void UndoTrash()
+    {
+        if (_trash.Count > 0)
+        {
+            var card = _trash.Pop();
+            card.State = State.Hand;
+            _hand.Add(card);
         }
 
         Notify(this);
@@ -312,10 +323,20 @@ public class Game : Observable<Game>
 
     public void EndDiscover()
     {
-        Reshuffle();
-        Draw(4);
+        if (_deck.Count + _inPlay.Count + _hand.Count == 0)
+        {
+            Reshuffle();
+            Draw(4);
 
-        Notify(this);
+            Notify(this);
+        }
+        else
+        {
+            foreach (var card in _discovered.ToArray())
+                Discard(card);
+
+            Notify(this);
+        }
     }
 
     public void EndTurn()
