@@ -38,8 +38,8 @@ public class Game : Observable<Game>
         .Concat(_discovered)
         .Concat(_hand)
         .Concat(_inPlay)
-        .Concat(_discarded)
-        .Concat(_trash);
+        .Concat(_discarded.Reverse())
+        .Concat(_trash.Reverse());
 
     public void Load(string data) =>
         Load(data.Split(Environment.NewLine));
@@ -130,7 +130,7 @@ public class Game : Observable<Game>
     private string SaveExpansion(IGrouping<string, Card> expansion)
     {
         var sb = new StringBuilder(expansion.Key).AppendLine();
-        foreach (var card in expansion.OrderBy(card => card.Id))
+        foreach (var card in expansion)
             sb.AppendLine($"{card.Id}\t{(int)card.Orientation}\t{(int)card.State}");
 
         return sb.ToString();
