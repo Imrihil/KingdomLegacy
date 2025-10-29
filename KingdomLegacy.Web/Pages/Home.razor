@@ -8,7 +8,7 @@
 
 @if (GameContext.IsInitialized)
 {
-    <div class="d-flex flex-row flex-wrap">
+    <div class="d-flex flex-row flex-wrap" @ondragend=OnDragEnd>
         <div class="me-1 mb-1 d-flex flex-column rounded">
             <h3 class="p-2 mb-1  rounded text-bg-dark">Box (<span>@GameContext.BoxCount</span>)</h3>
             @if (GameContext.BoxCount >= 1)
@@ -49,7 +49,7 @@
                 <div class="d-flex flex-row flex-wrap rounded">
                     @foreach (var card in GameContext.Discovered)
                     {
-                        <div class="me-1 mb-1 position-relative to-hover">
+                        <div class="me-1 mb-1 position-relative to-hover" @ondragleave="() => OnDragLeave(card)" @ondragover="() => OnDragOver(card)">
                             <GameCard CardContext="@card" />
                             <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
                                 <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Light" Position="Position.Relative" @onclick="() => card.RotateRight()">
@@ -115,7 +115,7 @@
                     <div class="d-flex flex-row flex-wrap rounded">
                         @foreach (var card in GameContext.InPlay)
                         {
-                            <div class="me-1 mb-1 position-relative to-hover">
+                            <div class="me-1 mb-1 position-relative to-hover" @ondragleave="() => OnDragLeave(card)" @ondragover="() => OnDragOver(card)">
                                 <GameCard CardContext="@card" />
                                 <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
                                     <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Secondary" Position="Position.Relative" @onclick="() => RotateRight(card)">
@@ -141,7 +141,7 @@
                 <div class="d-flex flex-row flex-wrap rounded">
                     @foreach (var card in GameContext.Hand)
                     {
-                        <div class="me-1 mb-1 position-relative to-hover">
+                        <div class="me-1 mb-1 position-relative to-hover" @ondragleave="() => OnDragLeave(card)" @ondragover="() => OnDragOver(card)">
                             <GameCard CardContext="@card" />
                             <div class="m-0 p-0 position-absolute top-50 start-50 translate-middle to-show">
                                 <Button Class="m-1 p-1 rounded-circle" Type="ButtonType.Button" Color="ButtonColor.Secondary" Position="Position.Relative" @onclick="() => GameContext?.Play(card)">
@@ -242,4 +242,14 @@ else
         if (Config.DiscardRotated)
             GameContext.Discard(card);
     }
+
+    private KingdomLegacy.Domain.Card? _dragged;
+    private void OnDragLeave(KingdomLegacy.Domain.Card card) =>
+        _dragged = card;
+
+    private void OnDragOver(KingdomLegacy.Domain.Card card) =>
+        GameContext.Swap(card, _dragged);
+
+    private void OnDragEnd(DragEventArgs args) =>
+        _dragged = null;
 }

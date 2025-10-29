@@ -326,4 +326,34 @@ public class Game : Observable<Game>
 
         Notify(this);
     }
+
+    public void Swap(Card card1, Card? card2)
+    {
+        if (card1 == card2)
+            return;
+
+        if (card1.State != card2?.State)
+            return;
+
+        var list = card1.State switch
+        {
+            State.Discovered => _discovered,
+            State.Hand => _hand,
+            State.InPlay => _inPlay,
+            _ => null
+        };
+
+        if (list == null)
+            return;
+
+        var index1 = list.IndexOf(card1);
+        var index2 = list.IndexOf(card2);
+        if (index1 >= 0 && index2 >= 0)
+        {
+            list[index1] = card2;
+            list[index2] = card1;
+        }
+
+        Notify(this);
+    }
 }
