@@ -2,23 +2,23 @@
     @if (CardContext != null)
     {
         <Image Src="@("/cards/" + CardContext.Path)" Alt="@CardContext.Id.ToString()" Class="@CardClass" />
-        @if (!string.IsNullOrEmpty(BackgroundColor))
-        {
-            <div class="w-100 h-100 position-absolute top-0 start-0 game-card opacity-50 @BackgroundColor" />
-        }
-        @if (!Disabled)
-        {
-            <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle to-show">
-                @foreach (var action in Actions)
-                {
-                    <ActionButton Class="m-1 p-1 rounded-circle btn-card" Position="Position.Relative" Action="@action" />
-                }
-            </div>
-        }
     }
     else
     {
         <div class="text-center pt-4 game-card">Empty</div>
+    }
+    @if (!string.IsNullOrEmpty(BackgroundColor))
+    {
+        <div class="w-100 h-100 position-absolute top-0 start-0 game-card opacity-50 @BackgroundColor" />
+    }
+    @if (!Disabled)
+    {
+        <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle to-show">
+            @foreach (var action in Actions ?? CardActions)
+            {
+                <ActionButton Class="m-1 p-1 rounded-circle btn-card" Position="Position.Relative" Action="@action" />
+            }
+        </div>
     }
 </div>
 
@@ -35,7 +35,10 @@
     [Parameter]
     public bool Disabled { get; set; }
 
-    private IAction[] Actions => CardContext == null ? [] : GameContext?.Actions.GetCardActions(CardContext) ?? [];
+    [Parameter]
+    public IAction[]? Actions { get; set; }
+
+    private IAction[] CardActions => CardContext == null ? [] : GameContext?.Actions.GetCardActions(CardContext) ?? [];
 
     public string CardClass => $"game-card{(CardContext?.Orientation == Domain.Orientation.L2 || CardContext?.Orientation == Domain.Orientation.L3 ? " rotate-180" : "")}";
 }

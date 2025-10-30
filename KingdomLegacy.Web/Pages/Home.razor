@@ -21,7 +21,7 @@
             </div>
         </div>
         <Cards Name="Discover" GameContext="@GameContext" Values="@GameContext.Discovered" BackgroundColor="text-bg-light" />
-        <Cards Name="Deck" GameContext="@GameContext" Values="@GameContext.Deck" BackgroundColor="text-bg-primary" IsCollapsed="true" Disabled="@(GameContext.DiscoveredCount > 0)" />
+        <Cards Name="Deck" GameContext="@GameContext" Values="@GameContext.Deck" BackgroundColor="text-bg-primary" IsCollapsed="true" Disabled="@(GameContext.DiscoveredCount > 0)" EmptyActions="@GameContext.Actions.GetDeckActions()" />
         <Cards Name="In play" GameContext="@GameContext" Values="@GameContext.InPlay" BackgroundColor="text-bg-secondary" Disabled="@(GameContext.DiscoveredCount > 0)" />
         <Cards Name="Hand" GameContext="@GameContext" Values="@GameContext.Hand" BackgroundColor="text-bg-success" Disabled="@(GameContext.DiscoveredCount > 0)" />
         <Cards Name="Discard" GameContext="@GameContext" Values="@GameContext.Discarded" BackgroundColor="text-bg-warning" IsCollapsed="true" Disabled="@(GameContext.DiscoveredCount > 0)" />
