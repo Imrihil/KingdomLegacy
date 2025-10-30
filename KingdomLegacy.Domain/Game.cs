@@ -1,4 +1,4 @@
-﻿using KingdomLegacy.Domain.Processing;
+﻿using KingdomLegacy.Domain.Logic;
 using System.Text;
 
 namespace KingdomLegacy.Domain;

@@ -1,11 +1,11 @@
-﻿namespace KingdomLegacy.Domain.Processing;
-internal class ReshuffleAction(Game game) : IAction
+﻿namespace KingdomLegacy.Domain.Logic;
+internal class ReshuffleAction(Game game) : RecordedActionBase(game)
 {
-    public State TargetState => State.Deck;
-    public bool Allowed => game.Deck.Count == 0;
-    public bool Disabled => false;
-    public string Text => "♺";
-    public bool Execute()
+    public override State TargetState => State.Deck;
+    public override bool Allowed => game.Deck.Count == 0;
+    public override bool Disabled => false;
+    public override string Text => "♺";
+    protected override bool ExecuteInternal()
     {
         game._deck = new Queue<Card>(game._deck
             .Concat(game._discovered)

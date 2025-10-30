@@ -1,15 +1,15 @@
-﻿namespace KingdomLegacy.Domain.Processing;
-internal class TakeAction(Game game, Card card) : IAction
+﻿namespace KingdomLegacy.Domain.Logic;
+internal class TakeAction(Game game, Card card) : RecordedActionBase(game)
 {
-    public State TargetState => State.Hand;
-    public bool Allowed => card.State == State.Discovered
+    public override State TargetState => State.Hand;
+    public override bool Allowed => card.State == State.Discovered
         || card.State == State.InPlay
         || card.State == State.Discarded
         || card.State == State.Removed && game._trash.TryPeek(out var topCard) && topCard == card;
-    public bool Disabled => false;
-    public string Text => card.State == State.Discarded || card.State == State.Removed ? "↺" : "✓";
+    public override bool Disabled => false;
+    public override string Text => card.State == State.Discarded || card.State == State.Removed ? "↺" : "✓";
 
-    public bool Execute()
+    protected override bool ExecuteInternal()
     {
         if (!game._discovered.Remove(card) && !game._inPlay.Remove(card) && !game._discarded.Remove(card) && (!game._trash.TryPop(out var poppedCard) || poppedCard != card))
             return false;
