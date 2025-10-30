@@ -9,8 +9,8 @@
                 {
                     <Image Src="@($"/icons/{type.Name}.png")"
                            Alt="@type.Name"
-                           Class="@(sticker.IsRotated ? "position-absolute sticker rotate-180" : "position-absolute sticker")"
-                           Style="@($"width: {type.Width}px; height: {type.Height}px; top: {Math.Abs(sticker.Y)}px; left: {Math.Abs(sticker.X)}px;")" />
+                           Class="@($"position-absolute sticker{(sticker.IsRotated ? " rotate-180" : "")}")"
+                           Style="@($"left: {Math.Abs(sticker.X)}px; top: {Math.Abs(sticker.Y)}px; width: {type.Width}px; height: {type.Height}px;")" />
                 }
             }
         </div>
@@ -67,8 +67,8 @@
                     {
                         <Image Src="@($"/icons/{type.Name}.png")"
                                Alt="@type.Name"
-                               Class="@(sticker.IsRotated ? "position-absolute sticker rotate-180" : "position-absolute sticker")"
-                               Style="@($"width: {type.Width}px; height: {type.Height}px; top: {Math.Abs(sticker.Y)}px; left: {Math.Abs(sticker.X)}px;")"
+                               Class="@($"position-absolute sticker{(sticker.IsRotated ? " rotate-180" : "")}")"
+                               Style="@($"left: {Math.Abs(sticker.X)}px; top: {Math.Abs(sticker.Y)}px; width: {type.Width}px; height: {type.Height}px;")"
                                @onclick="() => Remove(sticker)" />
                     }
                 }
@@ -99,9 +99,14 @@
     public IAction[]? Actions { get; set; }
 
     private IAction[] CardActions => CardContext == null ? [] : GameContext?.Actions.GetCardActions(CardContext) ?? [];
-    private IEnumerable<(Sticker, StickerTypeDetails?)> Stickers => CardContext?.Stickers
-        .Where(sticker => sticker.IsFlipped == CardContext.Orientation.IsFlipped())
-        .Zip(CardContext.Stickers.Select(s => s.Type.GetDetails())) ?? [];
+    private IEnumerable<(Sticker, StickerTypeDetails?)> Stickers
+    {
+        get
+        {
+            var stickers = CardContext?.Stickers.Where(sticker => sticker.IsFlipped == CardContext.Orientation.IsFlipped()).ToArray() ?? [];
+            return stickers.Zip(stickers.Select(s => s.Type.GetDetails()));
+        }
+    }
 
     private Modal _modal = default!;
     private StickerTypeDetails? _stickerType;
@@ -125,6 +130,8 @@
     {
         if (CardContext == null || _stickerType == null)
             return;
+
+        Console.WriteLine($"type: {_stickerType.Type}, sticker: {_sticker?.Type}, index: {(_sticker != null ? CardContext.Stickers.IndexOf(_sticker) : "")}");
 
         if (_sticker == null)
             _sticker = CardContext.AddSticker(_stickerType.Type, (int)args.OffsetX, (int)args.OffsetY);
