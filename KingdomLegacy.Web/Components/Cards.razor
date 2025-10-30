@@ -49,11 +49,11 @@ else if (EmptyActions != null)
     public string? Name { get; set; }
 
     [Parameter]
-    public KingdomLegacy.Domain.Game? GameContext { get; set; }
+    public Domain.Game? GameContext { get; set; }
 
     [Parameter]
-    public IReadOnlyCollection<KingdomLegacy.Domain.Card>? Values { get; set; }
-    private KingdomLegacy.Domain.Card? First => Values?.FirstOrDefault();
+    public IReadOnlyCollection<Domain.Card>? Values { get; set; }
+    private Domain.Card? First => Values?.FirstOrDefault();
 
     [Parameter]
     public string? BackgroundColor { get; set; }
@@ -79,11 +79,11 @@ else if (EmptyActions != null)
         base.OnParametersSet();
     }
 
-    private KingdomLegacy.Domain.Card? _dragged;
-    private void OnDragLeave(KingdomLegacy.Domain.Card card) =>
+    private Domain.Card? _dragged;
+    private void OnDragLeave(Domain.Card card) =>
         _dragged = IsDraggable ? card : null;
 
-    private void OnDragOver(KingdomLegacy.Domain.Card card) =>
+    private void OnDragOver(Domain.Card card) =>
         GameContext?.Insert(card, _dragged);
 
     private void OnDragEnd(DragEventArgs args) =>

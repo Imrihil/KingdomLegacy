@@ -46,10 +46,10 @@
 
 @code {
     [Parameter]
-    public KingdomLegacy.Domain.Game? GameContext { get; set; }
+    public Domain.Game? GameContext { get; set; }
 
     [Parameter]
-    public KingdomLegacy.Domain.Card? CardContext { get; set; }
+    public Domain.Card? CardContext { get; set; }
 
     [Parameter]
     public string? BackgroundColor { get; set; }
@@ -62,9 +62,6 @@
 
     private IAction[] CardActions => CardContext == null ? [] : GameContext?.Actions.GetCardActions(CardContext) ?? [];
 
-    private const int cardWidth = 373;
-    private const int cardHeight = 520;
-
     private double offsetX;
     private double offsetY;
     private void OnClick(MouseEventArgs args)
@@ -73,8 +70,8 @@
             return;
 
         bool rotated = CardContext.Orientation == Domain.Orientation.L1 || CardContext.Orientation == Domain.Orientation.L3;
-        offsetX = rotated ? args.OffsetX : cardWidth - args.OffsetX;
-        offsetY = rotated ? args.OffsetY : cardHeight - args.OffsetY;
+        offsetX = rotated ? args.OffsetX : Domain.Card.Width - args.OffsetX;
+        offsetY = rotated ? args.OffsetY : Domain.Card.Height - args.OffsetY;
     }
 
     private Modal modal = default!;
