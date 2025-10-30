@@ -6,12 +6,15 @@
         {
             <div class="w-100 h-100 position-absolute top-0 start-0 game-card opacity-50 @BackgroundColor" />
         }
-        <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle to-show">
-            @foreach (var action in Actions)
-            {
-                <ActionButton Class="m-1 p-1 rounded-circle btn-card" Position="Position.Relative" Action="@action" />
-            }
-        </div>
+        @if (!Disabled)
+        {
+            <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle to-show">
+                @foreach (var action in Actions)
+                {
+                    <ActionButton Class="m-1 p-1 rounded-circle btn-card" Position="Position.Relative" Action="@action" />
+                }
+            </div>
+        }
     }
     else
     {
@@ -28,6 +31,9 @@
 
     [Parameter]
     public string? BackgroundColor { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
 
     private IAction[] Actions => CardContext == null ? [] : GameContext?.Actions.GetCardActions(CardContext) ?? [];
 

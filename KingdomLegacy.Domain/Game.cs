@@ -20,7 +20,7 @@ public class Game : Observable<Game>
     public IReadOnlyCollection<Card> Discovered => _discovered.AsReadOnly();
 
     public Card? DeckTop => _deck.Count > 0 ? _deck.Peek() : null;
-    public IReadOnlyCollection<Card> Deck => _deck.Count > 0 ? _deck.Skip(1).OrderBy(card => card.Id).Append(_deck.Peek()).ToList().AsReadOnly() : [];
+    public IReadOnlyCollection<Card> Deck => _deck.Count > 0 ? new Card[] { _deck.Peek() }.Concat(_deck.Skip(1).OrderBy(card => card.Id)).ToList().AsReadOnly() : [];
     internal Queue<Card> _deck = new();
 
     public IReadOnlyCollection<Card> Hand => _hand.AsReadOnly();
@@ -30,7 +30,7 @@ public class Game : Observable<Game>
     internal List<Card> _inPlay = [];
 
     public Card? DiscardedLast => _discarded.Count > 0 ? _discarded[^1] : null;
-    public IReadOnlyCollection<Card> Discarded => _discarded.AsReadOnly();
+    public IReadOnlyCollection<Card> Discarded => ((IEnumerable<Card>)_discarded).Reverse().ToList().AsReadOnly();
     internal List<Card> _discarded = [];
 
     public Card? TrashedLast => _trash.Count > 0 ? _trash.Peek() : null;
@@ -185,6 +185,32 @@ public class Game : Observable<Game>
             newDeck.Enqueue(card);
 
         _deck = newDeck;
+    }
+
+    public void Insert(Card card1, Card? card2)
+    {
+        if (card1 == card2)
+            return;
+
+        if (card1.State != card2?.State)
+            return;
+
+        var list = card1.State switch
+        {
+            State.Discovered => _discovered,
+            State.Hand => _hand,
+            State.InPlay => _inPlay,
+            _ => null
+        };
+
+        if (list == null)
+            return;
+
+        var index1 = list.IndexOf(card1);
+        if (list.Remove(card2))
+            list.Insert(index1, card2);
+
+        Notify(this);
     }
 
     public void Swap(Card card1, Card? card2)
