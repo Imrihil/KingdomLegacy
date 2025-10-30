@@ -1,5 +1,5 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
-internal class DiscardAction(Game game, Card card) : RecordedActionBase(game), IReversibleAction
+internal class DiscardAction(Game game, Card card) : ReversibleActionBase(game)
 {
     public override State TargetState => State.Discarded;
     public override bool Allowed => card.State == State.Discovered || card.State == State.Hand || card.State == State.InPlay;
@@ -27,15 +27,17 @@ internal class DiscardAction(Game game, Card card) : RecordedActionBase(game), I
         return true;
     }
 
-    public void Undo()
+    protected override bool UndoInternal()
     {
         if (_sourceList == null || !game._discarded.Remove(card))
-            return;
+            return false;
 
         card.State =
             _sourceList == game._discovered ? State.Discovered
             : _sourceList == game._hand ? State.Hand
             : State.InPlay;
         _sourceList.Add(card);
+
+        return true;
     }
 }

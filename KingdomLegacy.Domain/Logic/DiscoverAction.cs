@@ -1,5 +1,5 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
-internal class DiscoverAction(Game game, int count) : RecordedActionBase(game)
+internal class DiscoverAction(Game game, int count) : ReversibleActionBase(game)
 {
     public override State TargetState => State.Discovered;
     public override bool Allowed => true;
@@ -12,7 +12,10 @@ internal class DiscoverAction(Game game, int count) : RecordedActionBase(game)
         {
             var card = game._box.First();
             if (!game._box.Remove(card))
+            {
+                UndoInternal();
                 return false;
+            }
 
             card.State = State.Discovered;
             game._discovered.Add(card);
@@ -20,8 +23,21 @@ internal class DiscoverAction(Game game, int count) : RecordedActionBase(game)
             _cards.Add(card);
         }
 
-        _cards.Sort();
         Description = $"Discovered {string.Join(", ", _cards.Select(card => card.Id))}.";
+
+        return true;
+    }
+
+    protected override bool UndoInternal()
+    {
+        foreach (var card in ((IEnumerable<Card>)_cards).Reverse())
+        {
+            if (!game._discovered.Remove(card))
+                return false;
+
+            card.State = State.Box;
+            game._box.Insert(0, card);
+        }
 
         return true;
     }

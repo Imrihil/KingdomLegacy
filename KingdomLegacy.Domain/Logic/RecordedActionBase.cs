@@ -17,3 +17,17 @@ internal abstract class RecordedActionBase(Game game) : IAction
 
     protected abstract bool ExecuteInternal();
 }
+
+internal abstract class ReversibleActionBase(Game game) : RecordedActionBase(game), IReversibleAction
+{
+    public void Undo()
+    {
+        if (!UndoInternal())
+            return;
+
+        game.Actions._history.Remove(this);
+        game.Notify();
+    }
+
+    protected abstract bool UndoInternal();
+}
