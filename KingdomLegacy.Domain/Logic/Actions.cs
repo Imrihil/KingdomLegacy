@@ -38,14 +38,14 @@ public class Actions(Game game)
     public void EndRound(Resources resources) =>
         new EndRoundAction(game, resources).Execute();
 
-    public void RotateRight(Card card) =>
-        new RotateRightAction(game, card).Execute();
+    public void Flip(Card card) =>
+        new FlipAction(game, card).Execute();
 
-    public void RotateDown(Card card) =>
-        new RotateDownAction(game, card).Execute();
+    public void Rotate(Card card) =>
+        new RotateAction(game, card).Execute();
 
-    public void RorateReset(Card card) =>
-        new RorateResetAction(game, card).Execute();
+    public void rientationReset(Card card) =>
+        new OrientationResetAction(game, card).Execute();
 
     public void Undo() =>
         new UndoAction(game).Execute();
@@ -56,14 +56,14 @@ public class Actions(Game game)
     public IAction[] GetCardActions(Card card) => GetAvailableActions(card.State switch
     {
         State.Box => [],
-        State.Discovered => [new RorateResetAction(game, card), new RotateRightAction(game, card), new RotateDownAction(game, card), new PermanentAction(game, card), new TakeAction(game, card), new DiscardAction(game, card), new TrashAction(game, card)],
+        State.Discovered => [new OrientationResetAction(game, card), new FlipAction(game, card), new RotateAction(game, card), new PermanentAction(game, card), new TakeAction(game, card), new DiscardAction(game, card), new TrashAction(game, card)],
         State.Deck => [],
         State.DeckTop => [new DrawAction(game, 1), new DrawAction(game, 2), new DrawAction(game, 4)],
-        State.Hand => [new PlayAction(game, card), new RotateRightAndDiscard(game, card), new RotateDownAndDiscardAction(game, card), new DiscardAction(game, card), new TrashAction(game, card)],
-        State.InPlay => [new PermanentAction(game, card), new RotateRightAndDiscard(game, card), new RotateDownAndDiscardAction(game, card), new DiscardAction(game, card), new TrashAction(game, card)],
+        State.Hand => [new PlayAction(game, card), new FlipAndDiscard(game, card), new RotateAndDiscardAction(game, card), new DiscardAction(game, card), new TrashAction(game, card)],
+        State.InPlay => [new PermanentAction(game, card), new FlipAndDiscard(game, card), new RotateAndDiscardAction(game, card), new DiscardAction(game, card), new TrashAction(game, card)],
         State.Discarded => [new TakeAction(game, card)],
         State.Removed => [new TakeAction(game, card)],
-        State.Permanent => [new RorateResetAction(game, card), new RotateRightAction(game, card), new RotateDownAction(game, card), new TrashAction(game, card)],
+        State.Permanent => [new OrientationResetAction(game, card), new FlipAction(game, card), new RotateAction(game, card), new TrashAction(game, card)],
         _ => []
     });
 

@@ -1,5 +1,5 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
-internal class RotateDownAction(Game game, Card card) : ReversibleActionBase(game)
+internal class RotateAction(Game game, Card card) : ReversibleActionBase(game)
 {
     public override State TargetState => card.State;
     public override bool Allowed => card.State == State.Discovered;
@@ -7,7 +7,7 @@ internal class RotateDownAction(Game game, Card card) : ReversibleActionBase(gam
     public override string Text => "⇓";
     protected override bool ExecuteInternal()
     {
-        card.RotateDown();
+        card.Rotate();
 
         Description = $"Rotated down: {card.Id}.";
 
@@ -16,7 +16,7 @@ internal class RotateDownAction(Game game, Card card) : ReversibleActionBase(gam
 
     protected override bool UndoInternal()
     {
-        card.RotateDown();
+        card.Rotate();
         return true;
     }
 }

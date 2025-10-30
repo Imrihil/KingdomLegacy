@@ -1,5 +1,5 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
-internal class RotateRightAndDiscard(Game game, Card card) : IAction
+internal class FlipAndDiscard(Game game, Card card) : IAction
 {
     public State TargetState => State.Discarded;
     public bool Allowed => card.State == State.Hand || card.State == State.InPlay;
@@ -8,7 +8,7 @@ internal class RotateRightAndDiscard(Game game, Card card) : IAction
     public string? Description => null;
     public void Execute()
     {
-        game.Actions.RotateRight(card);
+        game.Actions.Flip(card);
         game.Actions.Discard(card);
     }
 }

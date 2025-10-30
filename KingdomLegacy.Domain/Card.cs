@@ -11,14 +11,14 @@ public record Card : IComparable<Card>
     [JsonIgnore]
     public string Path => $"{Expansion}/{Expansion}_{Id}_{(Orientation > 0 ? "A" : "B")}.jpg";
 
-    public void RotationReset() =>
+    public void Reset() =>
         Orientation = Orientation.L1;
 
-    public void RotateRight() =>
-        Orientation = Orientation.RotateRight();
+    public void Flip() =>
+        Orientation = Orientation.Flip();
 
-    public void RotateDown() =>
-        Orientation = Orientation.RotateDown();
+    public void Rotate() =>
+        Orientation = Orientation.Rotate();
 
     public int CompareTo(Card? other) => Id.CompareTo(other?.Id);
 }

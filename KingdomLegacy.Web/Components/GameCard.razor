@@ -1,7 +1,9 @@
 ﻿<div class="me-1 mb-1 position-relative to-hover">
     @if (CardContext != null)
     {
-        <Image Src="@("/cards/" + CardContext.Path)" Alt="@CardContext.Id.ToString()" Class="@CardClass" />
+        <div class="@(CardContext.Orientation == Domain.Orientation.L2 || CardContext.Orientation == Domain.Orientation.L3 ? " rotate-180" : "")">
+            <Image Src="@("/cards/" + CardContext.Path)" Alt="@CardContext.Id.ToString()" Class="game-card" />
+        </div>
     }
     else
     {
@@ -15,6 +17,9 @@
     {
         <div class="to-show">
             <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle">
+                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Dark" Position="Position.Relative" @onclick="AddSticker">
+                    +
+                </Button>
                 @foreach (var action in Actions ?? CardActions)
                 {
                     <ActionButton Class="m-1 p-1 rounded-circle btn-card" Position="Position.Relative" Action="@action" />
@@ -23,6 +28,21 @@
         </div>
     }
 </div>
+
+@if (CardContext != null)
+{
+    <Modal @ref="modal" Title="Choose sticker">
+        <BodyTemplate>
+            <Button Color="ButtonColor.Info">Coin</Button>
+            <div class="@(CardContext.Orientation == Domain.Orientation.L2 || CardContext.Orientation == Domain.Orientation.L3 ? " rotate-180" : "")" @onclick="OnClick">
+                <Image Src="@("/cards/" + CardContext.Path)" Alt="@CardContext.Id.ToString()" Class="game-card" />
+            </div>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Success" @onclick="OnHideModalClick">Save</Button>
+        </FooterTemplate>
+    </Modal>
+}
 
 @code {
     [Parameter]
@@ -42,5 +62,30 @@
 
     private IAction[] CardActions => CardContext == null ? [] : GameContext?.Actions.GetCardActions(CardContext) ?? [];
 
-    public string CardClass => $"game-card{(CardContext?.Orientation == Domain.Orientation.L2 || CardContext?.Orientation == Domain.Orientation.L3 ? " rotate-180" : "")}";
+    private const int cardWidth = 373;
+    private const int cardHeight = 520;
+
+    private double offsetX;
+    private double offsetY;
+    private void OnClick(MouseEventArgs args)
+    {
+        if (CardContext == null)
+            return;
+
+        bool rotated = CardContext.Orientation == Domain.Orientation.L1 || CardContext.Orientation == Domain.Orientation.L3;
+        offsetX = rotated ? args.OffsetX : cardWidth - args.OffsetX;
+        offsetY = rotated ? args.OffsetY : cardHeight - args.OffsetY;
+    }
+
+    private Modal modal = default!;
+
+    private async Task OnHideModalClick()
+    {
+        offsetX = 0;
+        offsetY = 0;
+        await modal.HideAsync();
+    }
+
+    private async Task AddSticker(MouseEventArgs args) =>
+        await modal.ShowAsync();
 }
