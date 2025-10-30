@@ -44,13 +44,17 @@ public class Game : Observable<Game>
     public IReadOnlyCollection<Card> Trashed => _trash.ToArray();
     internal Stack<Card> _trash = [];
 
+    public IReadOnlyCollection<Card> Permanent => _permanent.AsReadOnly();
+    internal List<Card> _permanent = [];
+
     internal IEnumerable<Card> All => _box
         .Concat(Deck)
         .Concat(Discovered)
         .Concat(Hand)
         .Concat(InPlay)
         .Concat(Discarded)
-        .Concat(Trashed.Reverse());
+        .Concat(Trashed.Reverse())
+        .Concat(Permanent);
 
     public readonly Actions Actions;
 
@@ -144,6 +148,9 @@ public class Game : Observable<Game>
             case State.Removed:
                 _trash.Push(card);
                 break;
+            case State.Permanent:
+                _permanent.Add(card);
+                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -190,12 +197,11 @@ public class Game : Observable<Game>
         _inPlay = [];
         _discarded = [];
         _trash = [];
-
-        Actions.Discover(1);
+        _permanent = [];
 
         IsInitialized = true;
 
-        Notify(this);
+        Actions.Discover(1);
     }
 
     private void ReshuffleDeck()
@@ -225,6 +231,7 @@ public class Game : Observable<Game>
             State.Discovered => _discovered,
             State.Hand => _hand,
             State.InPlay => _inPlay,
+            State.Permanent => _permanent,
             _ => null
         };
 
@@ -251,6 +258,7 @@ public class Game : Observable<Game>
             State.Discovered => _discovered,
             State.Hand => _hand,
             State.InPlay => _inPlay,
+            State.Permanent => _permanent,
             _ => null
         };
 

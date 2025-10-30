@@ -2,14 +2,22 @@
 internal class TrashAction(Game game, Card card) : ReversibleActionBase(game)
 {
     public override State TargetState => State.Removed;
-    public override bool Allowed => card.State == State.Discovered || card.State == State.Hand || card.State == State.InPlay;
+    public override bool Allowed => card.State == State.Discovered || card.State == State.Hand || card.State == State.InPlay || card.State == State.Permanent;
     public override bool Disabled => false;
     public override string Text => "x";
 
     private List<Card>? _sourceList;
     protected override bool ExecuteInternal()
     {
-        if (!game._discovered.Remove(card) && !game._hand.Remove(card) && !game._inPlay.Remove(card))
+        if (game._discovered.Remove(card))
+            _sourceList = game._discovered;
+        else if (game._hand.Remove(card))
+            _sourceList = game._hand;
+        else if (game._inPlay.Remove(card))
+            _sourceList = game._inPlay;
+        else if (game._permanent.Remove(card))
+            _sourceList = game._permanent;
+        else
             return false;
 
         card.State = State.Removed;
@@ -34,7 +42,8 @@ internal class TrashAction(Game game, Card card) : ReversibleActionBase(game)
         card.State =
             _sourceList == game._discovered ? State.Discovered
             : _sourceList == game._hand ? State.Hand
-            : State.InPlay;
+            : _sourceList == game._inPlay ? State.InPlay
+            : State.Permanent;
         _sourceList.Add(card);
 
         return true;

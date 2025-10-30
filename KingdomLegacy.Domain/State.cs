@@ -8,5 +8,6 @@ public enum State
     Hand,
     InPlay,
     Discarded,
-    Removed
+    Removed,
+    Permanent
 }
