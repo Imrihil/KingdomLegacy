@@ -15,7 +15,7 @@ internal class DiscoverByIdAction(Game game, int id) : ReversibleActionBase(game
         _card.State = State.Discovered;
         game._discovered.Add(_card);
 
-        Description = $"Discovered {_card}.";
+        Description = $"Discovered {_card.Id}.";
 
         return true;
     }

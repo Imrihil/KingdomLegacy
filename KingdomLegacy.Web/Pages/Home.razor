@@ -6,7 +6,7 @@
 @if (GameContext.IsInitialized)
 {
     <div class="d-flex flex-row flex-wrap">
-        <div class="me-1 mb-1 d-flex flex-column rounded">
+        <div class="me-1 mb-1 d-flex flex-column rounded" style="width: 130px;">
             <h3 class="mb-1 p-2 rounded text-bg-dark">Box (@(GameContext.BoxCount))</h3>
             @foreach (var action in GameContext.Actions.GetBoxActions())
             {
@@ -28,7 +28,7 @@
         <Cards Name="Trash" GameContext="@GameContext" Values="@GameContext.Trashed" BackgroundColor="text-bg-danger" IsCollapsed="true" Disabled="@(GameContext.DiscoveredCount > 0)" />
     </div>
     <ul class="list-group">
-        @foreach (var action in GameContext.Actions.History.Reverse().Where(action => action.Description != null))
+        @foreach (var action in GameContext.Actions.History.Reverse().Where(action => action.Description != null).Take(25))
         {
             <li class="list-group-item">@action.Description</li>
         }
