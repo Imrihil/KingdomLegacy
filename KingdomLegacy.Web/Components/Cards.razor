@@ -72,7 +72,7 @@
         _dragged = IsDraggable ? card : null;
 
     private void OnDragOver(KingdomLegacy.Domain.Card card) =>
-        GameContext?.Swap(card, _dragged);
+        GameContext?.Insert(card, _dragged);
 
     private void OnDragEnd(DragEventArgs args) =>
         _dragged = null;

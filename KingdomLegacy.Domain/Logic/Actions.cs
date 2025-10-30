@@ -47,8 +47,8 @@ public class Actions(Game game)
     public void RorateReset(Card card) =>
         new RorateResetAction(game, card).Execute();
 
-    // TODO: Undo
-    // public void Undo()
+    public void Undo() =>
+        new UndoAction(game).Execute();
 
     // TODO: Redo
     // public void Redo()
@@ -75,7 +75,7 @@ public class Actions(Game game)
     public IAction[] GetDeckActions() => GetAvailableActions([new ReshuffleAction(game)]);
 
     public IAction[] GetMainActions(Resources resources) => GetAvailableActions(
-        [new EndDiscoverAction(game), new EndTurnAction(game, resources), new EndRoundAction(game, resources)]);
+        [new UndoAction(game), new EndDiscoverAction(game), new EndTurnAction(game, resources), new EndRoundAction(game, resources)]);
 
     private IAction[] GetAvailableActions(IEnumerable<IAction> actions) =>
         actions

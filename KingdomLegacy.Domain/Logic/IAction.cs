@@ -7,6 +7,9 @@ public interface IAction
     string Text { get; }
     string? Description { get; }
     void Execute();
-    // TODO: Undo
-    //void Undo();
+}
+
+public interface IReversibleAction : IAction
+{
+    void Undo();
 }

@@ -20,7 +20,12 @@ public class Game : Observable<Game>
     public IReadOnlyCollection<Card> Discovered => _discovered.AsReadOnly();
 
     public Card? DeckTop => _deck.Count > 0 ? _deck.Peek() : null;
-    public IReadOnlyCollection<Card> Deck => _deck.Count > 0 ? new Card[] { _deck.Peek() }.Concat(_deck.Skip(1).OrderBy(card => card.Id)).ToList().AsReadOnly() : [];
+    public IReadOnlyCollection<Card> Deck => _deck.Count > 0 
+        ? new Card[] { _deck.Peek() }
+            .Concat(_deck.Skip(1).OrderBy(card => card.Id))
+            .ToList()
+            .AsReadOnly()
+        : [];
     internal Queue<Card> _deck = new();
 
     public IReadOnlyCollection<Card> Hand => _hand.AsReadOnly();
@@ -30,7 +35,8 @@ public class Game : Observable<Game>
     internal List<Card> _inPlay = [];
 
     public Card? DiscardedLast => _discarded.Count > 0 ? _discarded[^1] : null;
-    public IReadOnlyCollection<Card> Discarded => ((IEnumerable<Card>)_discarded).Reverse().ToList().AsReadOnly();
+    public IReadOnlyCollection<Card> Discarded =>
+        ((IEnumerable<Card>)_discarded).Reverse().ToList().AsReadOnly();
     internal List<Card> _discarded = [];
 
     public Card? TrashedLast => _trash.Count > 0 ? _trash.Peek() : null;
