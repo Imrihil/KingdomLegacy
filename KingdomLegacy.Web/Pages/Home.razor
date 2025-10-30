@@ -34,13 +34,22 @@
         }
     </ul>
 }
-else
+else if (_name == null)
 {
     <lead>What do you want to do?</lead>
 
     <div class="d-flex flex-column mb-3">
-        <InputFile class="m-2 btn btn-primary" title="Load game" OnChange="LoadGame" />
+        <InputFile class="m-2 btn btn-primary" title="Load game" OnChange="LoadGame" accept=".save" />
         <Button Class="m-2" Type="ButtonType.Link" Color="ButtonColor.Primary" @onclick=NewGame>New game</Button>
+    </div>
+}
+else
+{
+    <lead>Name your kingdom</lead>
+
+    <div class="d-flex flex-column mb-3">
+        <TextInput Class="m-2" @bind-Value="@_name" />
+        <Button Class="m-2" Type="ButtonType.Link" Color="ButtonColor.Primary" @onclick="StartGame">Start</Button>
     </div>
 }
 
@@ -48,6 +57,8 @@ else
     private int _boxCardId;
     private bool _showDeck;
     private bool _showTrashed;
+
+    private string? _name;
 
     protected override void OnInitialized()
     {
@@ -65,5 +76,8 @@ else
     }
 
     private void NewGame(MouseEventArgs args) =>
-        GameContext.Initialize(Expansions.FeudalKingdom);
+        _name = "";
+
+    private void StartGame(MouseEventArgs args) =>
+        GameContext.Initialize(_name, Expansions.FeudalKingdom);
 }

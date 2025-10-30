@@ -6,9 +6,7 @@
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
         <div class="w-100 d-flex flex-row">
-            <Button Color="ButtonColor.Link" Class="text-decoration-none" Link="@("/")">
-                <h2 class="m-0 p-0">Kingdom Legacy</h2>
-            </Button>
+            <h2 class="me-2 my-auto">@(string.IsNullOrEmpty(GameContext.KingdomName) ? "Kingdom Legacy" : GameContext.KingdomName)</h2>
             @if (GameContext.IsInitialized)
             {
                 <GameResources />
@@ -43,6 +41,6 @@
         using var stream = new MemoryStream(Encoding.Default.GetBytes(text));
         using var streamRef = new DotNetStreamReference(stream);
 
-        await JS.InvokeVoidAsync("downloadFileFromStream", "KingdomLegacy.save", streamRef);
+        await JS.InvokeVoidAsync("downloadFileFromStream", $"{GameContext.KingdomName}.save", streamRef);
     }
 }

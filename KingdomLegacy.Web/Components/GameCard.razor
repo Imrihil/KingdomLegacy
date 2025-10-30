@@ -13,11 +13,13 @@
     }
     @if (!Disabled)
     {
-        <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle to-show">
-            @foreach (var action in Actions ?? CardActions)
-            {
-                <ActionButton Class="m-1 p-1 rounded-circle btn-card" Position="Position.Relative" Action="@action" />
-            }
+        <div class="to-show">
+            <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle">
+                @foreach (var action in Actions ?? CardActions)
+                {
+                    <ActionButton Class="m-1 p-1 rounded-circle btn-card" Position="Position.Relative" Action="@action" />
+                }
+            </div>
         </div>
     }
 </div>

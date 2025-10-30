@@ -4,6 +4,7 @@ using System.Text;
 namespace KingdomLegacy.Domain;
 public class Game : Observable<Game>
 {
+    public string KingdomName { get; set; } = "";
     public int BoxCount => _box.Count;
     public int DiscoveredCount => _discovered.Count;
     public int DeckCount => _deck.Count;
@@ -20,7 +21,7 @@ public class Game : Observable<Game>
     public IReadOnlyCollection<Card> Discovered => _discovered.AsReadOnly();
 
     public Card? DeckTop => _deck.Count > 0 ? _deck.Peek() : null;
-    public IReadOnlyCollection<Card> Deck => _deck.Count > 0 
+    public IReadOnlyCollection<Card> Deck => _deck.Count > 0
         ? new Card[] { _deck.Peek() }
             .Concat(_deck.Skip(1).OrderBy(card => card.Id))
             .ToList()
@@ -63,18 +64,24 @@ public class Game : Observable<Game>
 
     public void Load(IEnumerable<string> lines)
     {
-        var firstLine = true;
+        var readPoints = true;
         string? expansion = null;
         foreach (var line in lines)
         {
-            if (firstLine)
+            if (string.IsNullOrEmpty(KingdomName))
             {
-                if (!string.IsNullOrEmpty(line) && int.TryParse(line, out var points))
+                KingdomName = line.Trim();
+                continue;
+            }
+
+            if (readPoints)
+            {
+                if (int.TryParse(line, out var points))
                 {
                     Points = points;
-                    continue;
+                    readPoints = false;
                 }
-                firstLine = false;
+                continue;
             }
 
             if (string.IsNullOrWhiteSpace(line))
@@ -144,7 +151,8 @@ public class Game : Observable<Game>
 
     public string Save()
     {
-        var sb = new StringBuilder(Points.ToString()).AppendLine();
+        var sb = new StringBuilder(KingdomName).AppendLine();
+        sb.AppendLine(Points.ToString());
         sb.Append(string.Join($"{Environment.NewLine}{Environment.NewLine}",
             All.GroupBy(card => card.Expansion)
             .Select(SaveExpansion)));
@@ -162,8 +170,19 @@ public class Game : Observable<Game>
         return sb.ToString();
     }
 
-    public void Initialize(Expansion expansion)
+    public void Initialize(string? name, Expansion expansion)
     {
+        if (name == null)
+            return;
+
+        name = name.ReplaceLineEndings();
+        foreach (var invalidChar in Path.GetInvalidFileNameChars())
+            name = name.Replace(invalidChar.ToString(), "");
+
+        if (string.IsNullOrWhiteSpace(name))
+            return;
+
+        KingdomName = name;
         _box = expansion.Cards.ToList();
         _discovered = [];
         _deck = new();
