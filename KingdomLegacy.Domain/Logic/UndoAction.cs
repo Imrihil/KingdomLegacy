@@ -21,5 +21,6 @@ internal class UndoAction(Game game) : IAction
         _revertedAction = ReversibleAction;
         _revertedAction.Undo();
         game.Actions._history.Remove(_revertedAction);
+        game.Notify();
     }
 }
