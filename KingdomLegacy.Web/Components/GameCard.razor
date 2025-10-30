@@ -29,7 +29,7 @@
     [Parameter]
     public string? BackgroundColor { get; set; }
 
-    private IAction[] Actions => CardContext == null ? [] : GameContext?.Actions.GetAvailableActions(CardContext) ?? [];
+    private IAction[] Actions => CardContext == null ? [] : GameContext?.Actions.GetCardActions(CardContext) ?? [];
 
     public string CardClass => $"game-card{(CardContext?.Orientation == Domain.Orientation.L2 || CardContext?.Orientation == Domain.Orientation.L3 ? " rotate-180" : "")}";
 }

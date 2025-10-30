@@ -13,6 +13,8 @@ internal class DiscardAction(Game game, Card card) : RecordedActionBase(game)
         card.State = State.Discarded;
         game._discarded.Add(card);
 
+        Description = $"Discarded {card.Id}.";
+
         return true;
     }
 }

@@ -5,6 +5,7 @@ public interface IAction
     bool Allowed { get; }
     bool Disabled { get; }
     string Text { get; }
+    string? Description { get; }
     void Execute();
     // TODO: Undo
     //void Undo();

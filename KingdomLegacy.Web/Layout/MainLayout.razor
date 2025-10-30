@@ -2,7 +2,6 @@
 
 @inject IJSRuntime JS
 @inject Game GameContext
-@inject AppConfig Config
 
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
@@ -16,7 +15,6 @@
                 <Button Class="m-2" Color="ButtonColor.Primary" @onclick="Save">
                     Save
                 </Button>
-                <Switch Class="my-auto mx-2" @bind-Value="Config.DiscardRotated" Label="Discard rotated" />
             }
             <ThemeSwitcher Class="ps-3 ps-lg-2 my-auto" />
         </div>

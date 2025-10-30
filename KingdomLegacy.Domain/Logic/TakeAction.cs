@@ -11,11 +11,16 @@ internal class TakeAction(Game game, Card card) : RecordedActionBase(game)
 
     protected override bool ExecuteInternal()
     {
-        if (!game._discovered.Remove(card) && !game._inPlay.Remove(card) && !game._discarded.Remove(card) && (!game._trash.TryPop(out var poppedCard) || poppedCard != card))
+        if (!game._discovered.Remove(card)
+            && !game._inPlay.Remove(card)
+            && !game._discarded.Remove(card)
+            && !game._trash.TryPop(out var _))
             return false;
 
         card.State = State.Hand;
         game._hand.Add(card);
+
+        Description = $"Took into hand: {card.Id}.";
 
         return true;
     }

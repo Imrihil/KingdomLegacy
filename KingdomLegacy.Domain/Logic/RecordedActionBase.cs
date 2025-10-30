@@ -5,6 +5,7 @@ internal abstract class RecordedActionBase(Game game) : IAction
     public abstract bool Allowed { get; }
     public abstract bool Disabled { get; }
     public abstract string Text { get; }
+    public string? Description { get; protected set; }
     public void Execute()
     {
         if (!ExecuteInternal())

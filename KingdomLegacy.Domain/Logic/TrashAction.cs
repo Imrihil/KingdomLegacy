@@ -13,6 +13,8 @@ internal class TrashAction(Game game, Card card) : RecordedActionBase(game)
         card.State = State.Removed;
         game._trash.Push(card);
 
+        Description = $"Trashed {card.Id}.";
+
         return true;
     }
 }

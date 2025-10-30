@@ -44,23 +44,9 @@
         <Button Class="mb-1 p-0 arrow-down" Color="ButtonColor.Danger" @onclick="() => Resources.Points--">-</Button>
     </div>
 
-    @if (GameContext.DiscoveredCount > 0)
+    @foreach (var action in GameContext.Actions.GetMainActions(Resources))
     {
-        <Button Class="m-2" Color="ButtonColor.Success" @onclick="EndDiscover">
-            End discover
-        </Button>
-    }
-    else if (GameContext.DeckCount > 0)
-    {
-        <Button Class="m-2" Color="ButtonColor.Warning" @onclick="EndTurn">
-            End turn
-        </Button>
-    }
-    else
-    {
-        <Button Class="m-2" Color="ButtonColor.Light" @onclick="EndRound">
-            End round
-        </Button>
+        <ActionButton Class="m-2" Action="@action" />
     }
 </div>
 
@@ -69,22 +55,5 @@
     {
         GameContext.Subscribe(_ => StateHasChanged());
         base.OnInitialized();
-    }
-
-    private void EndDiscover(MouseEventArgs args)
-    {
-        GameContext.EndDiscover();
-    }
-
-    private void EndTurn(MouseEventArgs args)
-    {
-        GameContext.EndTurn();
-        Resources.Reset();
-    }
-
-    private void EndRound(MouseEventArgs args)
-    {
-        GameContext.EndRound();
-        Resources.Reset();
     }
 }

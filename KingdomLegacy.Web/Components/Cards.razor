@@ -1,4 +1,4 @@
-﻿@if (Values != null)
+﻿@if (Values != null && Values.Count > 0)
 {
     <div class="me-1 mb-1 d-flex flex-column rounded" @ondragend=OnDragEnd>
         <div class="mb-1 p-2 w-100 d-flex flex-row justify-content-between rounded @(BackgroundColor)">
@@ -23,14 +23,14 @@
                 @foreach (var card in Values)
                 {
                     <div @ondragleave="() => OnDragLeave(card)" @ondragover="() => OnDragOver(card)">
-                        <GameCard GameContext="@GameContext" CardContext="@card" BackgroundColor="@BackgroundColor" />
+                        <GameCard GameContext="@GameContext" CardContext="@card" BackgroundColor="@(Faded? BackgroundColor : "")" />
                     </div>
                 }
             </div>
         }
         else if (First != null)
         {
-            <GameCard GameContext="@GameContext" CardContext="@First" BackgroundColor="@BackgroundColor" />
+            <GameCard GameContext="@GameContext" CardContext="@First" BackgroundColor="@(Faded? BackgroundColor : "")" />
         }
     </div>
 }
@@ -51,9 +51,8 @@
 
     [Parameter]
     public bool IsCollapsed { get; set; }
-
-    [Parameter]
-    public bool IsDraggable { get; set; }
+    private bool IsDraggable => !IsCollapsed;
+    private bool Faded => IsCollapsed;
 
     private bool _showDetails;
 

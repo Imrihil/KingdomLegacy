@@ -13,6 +13,8 @@ internal class PlayAction(Game game, Card card) : RecordedActionBase(game)
         card.State = State.InPlay;
         game._inPlay.Add(card);
 
+        Description = $"Played {card.Id}.";
+
         return true;
     }
 }

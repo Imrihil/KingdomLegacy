@@ -2,7 +2,6 @@
 @using System.Text
 
 @inject Game GameContext
-@inject AppConfig Config
 
 <PageTitle>Kingdom Legacy</PageTitle>
 
@@ -11,190 +10,31 @@
     <div class="d-flex flex-row flex-wrap">
         <div class="me-1 mb-1 d-flex flex-column rounded">
             <h3 class="mb-1 p-2 rounded text-bg-dark">Box (@(GameContext.BoxCount))</h3>
-            @if (GameContext.BoxCount >= 1)
+            @foreach (var action in GameContext.Actions.GetBoxActions())
             {
-                <ActionButton Class="m-1 p-1" Action="@GameContext.Actions.Discover(1)" />
-                @if (GameContext.BoxCount >= 2)
-                {
-                    <Button Class="m-1 p-1" Type="ButtonType.Button" Color="ButtonColor.Light" @onclick="() => GameContext?.TakeFromBox(2)">
-                        +2
-                    </Button>
-                }
-                @if (GameContext.BoxCount >= 5)
-                {
-                    <Button Class="m-1 p-1" Type="ButtonType.Button" Color="ButtonColor.Light" @onclick="() => GameContext?.TakeFromBox(5)">
-                        +5
-                    </Button>
-                }
-                @if (GameContext.BoxCount >= 10)
-                {
-                    <Button Class="m-1 p-1" Type="ButtonType.Button" Color="ButtonColor.Light" @onclick="() => GameContext?.TakeFromBox(10)">
-                        +10
-                    </Button>
-                }
-                <div class="d-flex d-row">
-                    <NumberInput Style="width: 70px;" TValue="int" @bind-Value="@_boxCardId" />
-                    <Button Class="m-1 p-1 w-100" Type="ButtonType.Button" Color="ButtonColor.Light" Disabled="@(!GameContext.BoxContainsId(_boxCardId))" @onclick="() => GameContext?.TakeFromBoxById(_boxCardId)">
-                        Add
-                    </Button>
-                </div>
+                <ActionButton Class="m-1 p-1" Action="@action" />
             }
-        </div>
-        @if (GameContext.DiscoveredCount > 0)
-        {
-            <div class="me-1 mb-1 d-flex flex-column rounded">
-                <h3 class="mb-1 p-2 rounded text-bg-light">Discover (@(GameContext.DiscoveredCount))</h3>
-                <div class="d-flex flex-row flex-wrap rounded">
-                    @foreach (var card in GameContext.Discovered)
-                    {
-                        <div class="me-1 mb-1 position-relative to-hover" @ondragleave="() => OnDragLeave(card)" @ondragover="() => OnDragOver(card)">
-                            <GameCard CardContext="@card" />
-                            <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle to-show">
-                                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Light" Position="Position.Relative" Disabled="@(card.Orientation == KingdomLegacy.Domain.Orientation.L1)" @onclick="() => card.RotationReset()">
-                                    ↺
-                                </Button>
-                                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Light" Position="Position.Relative" @onclick="() => card.RotateRight()">
-                                    ⇒
-                                </Button>
-                                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Light" Position="Position.Relative" @onclick="() => card.RotateDown()">
-                                    ⇓
-                                </Button>
-                                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.AddToHand(card)">
-                                    ✓
-                                </Button>
-                                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Warning" Position="Position.Relative" @onclick="() => GameContext?.Discard(card)">
-                                    ✓
-                                </Button>
-                                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Danger" Position="Position.Relative" @onclick="() => GameContext?.Trash(card)">
-                                    x
-                                </Button>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        }
-        <div class="me-1 mb-1 d-flex flex-column rounded">
-            <h3 class="mb-1 p-2 rounded text-bg-primary">Deck (@(GameContext.DeckCount))</h3>
-            <div class="me-1 mb-1 position-relative to-hover">
-                <GameCard CardContext="@GameContext.DeckTop" />
-                <div class="w-100 h-100 position-absolute top-0 start-0 game-card" style="background-color: rgba(13, 110, 253, 0.5);"></div>
-                @if (GameContext.DiscoveredCount == 0)
+            <div class="d-flex d-row">
+                <NumberInput Style="width: 70px;" TValue="int" @bind-Value="@_boxCardId" />
+                @foreach (var action in GameContext.Actions.GetBoxSpecialActions(_boxCardId))
                 {
-                    <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle to-show">
-                        @if (GameContext.DeckCount == 0)
-                        {
-                            <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Primary" Position="Position.Relative" @onclick="() => GameContext?.Reshuffle()">
-                                ♺
-                            </Button>
-                        }
-                        else
-                        {
-                            @if (GameContext.DeckCount >= 1)
-                            {
-                                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Draw()">
-                                    +1
-                                </Button>
-                            }
-                            @if (GameContext.DeckCount >= 2)
-                            {
-                                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Draw(2)">
-                                    +2
-                                </Button>
-                            }
-                            @if (GameContext.DeckCount >= 4)
-                            {
-                                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.Draw(4)">
-                                    +4
-                                </Button>
-                            }
-                        }
-                    </div>
+                    <ActionButton Class="m-1 p-1 w-100" Action="@action" />
                 }
             </div>
         </div>
-        @if (GameContext.InPlayCount > 0)
-        {
-            <div class="me-1 mb-1 d-flex flex-column rounded">
-                <h3 class="mb-1 p-2 rounded text-bg-secondary">In play (@(GameContext.InPlayCount))</h3>
-                <div class="d-flex flex-row flex-wrap rounded">
-                    @foreach (var card in GameContext.InPlay)
-                    {
-                        <div class="me-1 mb-1 position-relative to-hover" @ondragleave="() => OnDragLeave(card)" @ondragover="() => OnDragOver(card)">
-                            <GameCard CardContext="@card" />
-                            @if (GameContext.DiscoveredCount == 0)
-                            {
-                                <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle to-show">
-                                    <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Secondary" Position="Position.Relative" @onclick="() => RotateRight(card)">
-                                        ⇒
-                                    </Button>
-                                    <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Secondary" Position="Position.Relative" @onclick="() => RotateDown(card)">
-                                        ⇓
-                                    </Button>
-                                    <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Warning" Position="Position.Relative" @onclick="() => GameContext?.Discard(card)">
-                                        ✓
-                                    </Button>
-                                    <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Danger" Position="Position.Relative" @onclick="() => GameContext?.Trash(card)">
-                                        x
-                                    </Button>
-                                </div>
-                            }
-                        </div>
-                    }
-                </div>
-            </div>
-        }
-        <div class="me-1 mb-1 d-flex flex-column rounded">
-            <h3 class="mb-1 p-2 rounded text-bg-success">Hand (@(GameContext.HandCount))</h3>
-            <div class="d-flex flex-row flex-wrap rounded">
-                @foreach (var card in GameContext.Hand)
-                {
-                    <div class="me-1 mb-1 position-relative to-hover">
-                        <GameCard CardContext="@card" />
-                        @if (GameContext.DiscoveredCount == 0)
-                        {
-                            <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle to-show">
-                                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Secondary" Position="Position.Relative" @onclick="() => GameContext?.Play(card)">
-                                    ∞
-                                </Button>
-                                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Success" Position="Position.Relative" @onclick="() => RotateRight(card)">
-                                    ⇒
-                                </Button>
-                                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="Config.DiscardRotated? ButtonColor.Warning: ButtonColor.Success" Position="Position.Relative" @onclick="() => RotateDown(card)">
-                                    ⇓
-                                </Button>
-                                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Warning" Position="Position.Relative" @onclick="() => GameContext?.Discard(card)">
-                                    ✓
-                                </Button>
-                                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Danger" Position="Position.Relative" @onclick="() => GameContext?.Trash(card)">
-                                    x
-                                </Button>
-                            </div>
-                        }
-                    </div>
-                }
-            </div>
-        </div>
-        <Discarded Values="@GameContext.Discarded" Disabled="@(GameContext.DiscoveredCount > 0)" />
-        <div class="me-1 mb-1 d-flex flex-column rounded">
-            <h3 class="mb-1 p-2 rounded text-bg-danger">Trash (@(GameContext.TrashCount))</h3>
-            <div class="me-1 mb-1 position-relative to-hover">
-                <GameCard CardContext="@GameContext.TrashedLast" />
-                <div class="w-100 h-100 position-absolute top-0 start-0 game-card" style="background-color: rgba(220, 53, 69, 0.5);"></div>
-                @if (GameContext.DiscoveredCount == 0)
-                {
-                    <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle to-show">
-                        @if (GameContext.TrashCount > 0)
-                        {
-                            <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Success" Position="Position.Relative" @onclick="() => GameContext?.UndoTrash()">
-                                ↺
-                            </Button>
-                        }
-                    </div>
-                }
-            </div>
-        </div>
+        <Cards Name="Discover" GameContext="@GameContext" Values="@GameContext.Discovered" BackgroundColor="text-bg-light" />
+        <Cards Name="Deck" GameContext="@GameContext" Values="@GameContext.Deck" BackgroundColor="text-bg-primary" IsCollapsed="true" />
+        <Cards Name="In play" GameContext="@GameContext" Values="@GameContext.InPlay" BackgroundColor="text-bg-secondary" />
+        <Cards Name="Hand" GameContext="@GameContext" Values="@GameContext.Hand" BackgroundColor="text-bg-success" />
+        <Cards Name="Discard" GameContext="@GameContext" Values="@GameContext.Discarded" BackgroundColor="text-bg-warning" IsCollapsed="true" />
+        <Cards Name="Trash" GameContext="@GameContext" Values="@GameContext.Trashed" BackgroundColor="text-bg-danger" IsCollapsed="true" />
     </div>
+    <ul class="list-group">
+        @foreach (var action in GameContext.Actions.History.Reverse().Where(action => action.Description != null))
+        {
+            <li class="list-group-item">@action.Description</li>
+        }
+    </ul>
 }
 else
 {
@@ -214,7 +54,6 @@ else
     protected override void OnInitialized()
     {
         GameContext.Subscribe(_ => StateHasChanged());
-        Config.Subscribe(_ => StateHasChanged());
         base.OnInitialized();
     }
 
@@ -229,18 +68,4 @@ else
 
     private void NewGame(MouseEventArgs args) =>
         GameContext.Initialize(Expansions.FeudalKingdom);
-
-    private void RotateRight(KingdomLegacy.Domain.Card card)
-    {
-        card.RotateRight();
-        if (Config.DiscardRotated)
-            GameContext.Discard(card);
-    }
-
-    private void RotateDown(KingdomLegacy.Domain.Card card)
-    {
-        card.RotateDown();
-        if (Config.DiscardRotated)
-            GameContext.Discard(card);
-    }
 }

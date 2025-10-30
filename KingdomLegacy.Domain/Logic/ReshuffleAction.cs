@@ -5,14 +5,18 @@ internal class ReshuffleAction(Game game) : RecordedActionBase(game)
     public override bool Allowed => game.Deck.Count == 0;
     public override bool Disabled => false;
     public override string Text => "♺";
+    private Card[] _cards = [];
     protected override bool ExecuteInternal()
     {
-        game._deck = new Queue<Card>(game._deck
+        _cards = game._deck
             .Concat(game._discovered)
             .Concat(game._hand)
             .Concat(game._inPlay)
             .Concat(game._discarded)
-            .OrderBy(_ => Random.Shared.Next()));
+            .OrderBy(card => card.Id)
+            .ToArray();
+
+        game._deck = new Queue<Card>(_cards.OrderBy(_ => Random.Shared.Next()));
 
         foreach (var card in game._deck)
             card.State = State.Deck;
@@ -24,6 +28,8 @@ internal class ReshuffleAction(Game game) : RecordedActionBase(game)
         game._hand.Clear();
         game._inPlay.Clear();
         game._discarded.Clear();
+
+        Description = $"Reshuffeled {string.Join(", ", _cards.Select(card => card.Id))}.";
 
         return true;
     }

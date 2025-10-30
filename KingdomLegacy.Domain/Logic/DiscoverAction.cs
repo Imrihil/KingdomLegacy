@@ -3,9 +3,9 @@ internal class DiscoverAction(Game game, int count) : RecordedActionBase(game)
 {
     public override State TargetState => State.Discovered;
     public override bool Allowed => true;
-    public override bool Disabled => game.BoxCount >= count;
+    public override bool Disabled => game.BoxCount < count;
     public override string Text => $"+{count}";
-
+    private List<Card> _cards = [];
     protected override bool ExecuteInternal()
     {
         while (count-- > 0 && game._box.Count > 0)
@@ -16,7 +16,12 @@ internal class DiscoverAction(Game game, int count) : RecordedActionBase(game)
 
             card.State = State.Discovered;
             game._discovered.Add(card);
+
+            _cards.Add(card);
         }
+
+        _cards.Sort();
+        Description = $"Discovered {string.Join(", ", _cards.Select(card => card.Id))}.";
 
         return true;
     }

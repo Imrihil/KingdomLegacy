@@ -9,6 +9,8 @@ internal class RorateResetAction(Game game, Card card) : RecordedActionBase(game
     {
         card.RotationReset();
 
+        Description = $"Reset rotation of {card.Id}.";
+
         return true;
     }
 }
