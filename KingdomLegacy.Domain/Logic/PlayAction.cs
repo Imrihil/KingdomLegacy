@@ -23,8 +23,8 @@ internal class PlayAction(Game game, Card card) : ReversibleActionBase(game)
         if (!game._inPlay.Remove(card))
             return false;
 
-        card.State = State.InPlay;
-        game._inPlay.Add(card);
+        card.State = State.Hand;
+        game._hand.Add(card);
 
         return true;
     }
