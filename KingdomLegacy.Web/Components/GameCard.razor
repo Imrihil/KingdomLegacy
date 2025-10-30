@@ -1,8 +1,18 @@
 ﻿<div class="me-1 mb-1 position-relative to-hover">
     @if (CardContext != null)
     {
-        <div class="@(CardContext.Orientation == Domain.Orientation.L2 || CardContext.Orientation == Domain.Orientation.L3 ? " rotate-180" : "")">
+        <div class="@(CardContext.Orientation.IsRotated() ? "rotate-180" : "")">
             <Image Src="@("/cards/" + CardContext.Path)" Alt="@CardContext.Id.ToString()" Class="game-card" />
+            @foreach (var (sticker, type) in Stickers)
+            {
+                @if (type != null)
+                {
+                    <Image Src="@($"/icons/{type.Name}.png")"
+                           Alt="@type.Name"
+                           Class="@(sticker.IsRotated ? "position-absolute sticker rotate-180" : "position-absolute sticker")"
+                           Style="@($"width: {type.Width}px; height: {type.Height}px; top: {Math.Abs(sticker.Y)}px; left: {Math.Abs(sticker.X)}px;")" />
+                }
+            }
         </div>
     }
     else
@@ -17,7 +27,7 @@
     {
         <div class="to-show">
             <div class="w-75 m-0 p-0 d-flex flex-row flex-wrap justify-content-center position-absolute top-50 start-50 translate-middle">
-                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Dark" Position="Position.Relative" @onclick="AddSticker">
+                <Button Class="m-1 p-1 rounded-circle btn-card" Type="ButtonType.Button" Color="ButtonColor.Dark" Position="Position.Relative" @onclick="ModifyStickers">
                     +
                 </Button>
                 @foreach (var action in Actions ?? CardActions)
@@ -31,15 +41,43 @@
 
 @if (CardContext != null)
 {
-    <Modal @ref="modal" Title="Choose sticker">
+    <Modal @ref="_modal" Title="Choose sticker" @onmouseleave="OnMouseLeave">
         <BodyTemplate>
-            <Button Color="ButtonColor.Info">Coin</Button>
-            <div class="@(CardContext.Orientation == Domain.Orientation.L2 || CardContext.Orientation == Domain.Orientation.L3 ? " rotate-180" : "")" @onclick="OnClick">
-                <Image Src="@("/cards/" + CardContext.Path)" Alt="@CardContext.Id.ToString()" Class="game-card" />
+            <div class="d-flex flex-row flex-wrap justify-content-center">
+                <Button Color="ButtonColor.Danger" Active="@(_stickerType == null)" @onclick="() => SetType(null)">
+                    Remove
+                </Button>
+                @foreach (var type in StickerTypeExtensions.AllDetails)
+                {
+                    <Button Color="ButtonColor.Success" Active="@(_stickerType == type)" @onclick="() => SetType(type)">
+                        <Image Src="@($"/icons/{type.Name}.png")"
+                               Alt="@type.Name"
+                               Class="sticker"
+                               Style="@($"width: {type.Width}px; height: {type.Height}px;")" />
+                    </Button>
+                }
             </div>
         </BodyTemplate>
         <FooterTemplate>
-            <Button Color="ButtonColor.Success" @onclick="OnHideModalClick">Save</Button>
+            <div class="@($"mx-auto position-relative{(CardContext.Orientation.IsRotated() ? " rotate-180" : "")}")" @onmousemove="SetSticker" @onclick="OnClick">
+                <Image Src="@("/cards/" + CardContext.Path)" Alt="@CardContext.Id.ToString()" Class="game-card" />
+                @foreach (var (sticker, type) in Stickers)
+                {
+                    @if (type != null)
+                    {
+                        <Image Src="@($"/icons/{type.Name}.png")"
+                               Alt="@type.Name"
+                               Class="@(sticker.IsRotated ? "position-absolute sticker rotate-180" : "position-absolute sticker")"
+                               Style="@($"width: {type.Width}px; height: {type.Height}px; top: {Math.Abs(sticker.Y)}px; left: {Math.Abs(sticker.X)}px;")"
+                               @onclick="() => Remove(sticker)" />
+                    }
+                }
+                @if (_stickerType != null)
+                {
+                    <div class="w-100 h-100 position-absolute top-0 start-0 game-card opacity-100" />
+                }
+            </div>
+
         </FooterTemplate>
     </Modal>
 }
@@ -61,28 +99,60 @@
     public IAction[]? Actions { get; set; }
 
     private IAction[] CardActions => CardContext == null ? [] : GameContext?.Actions.GetCardActions(CardContext) ?? [];
+    private IEnumerable<(Sticker, StickerTypeDetails?)> Stickers => CardContext?.Stickers
+        .Where(sticker => sticker.IsFlipped == CardContext.Orientation.IsFlipped())
+        .Zip(CardContext.Stickers.Select(s => s.Type.GetDetails())) ?? [];
 
-    private double offsetX;
-    private double offsetY;
-    private void OnClick(MouseEventArgs args)
+    private Modal _modal = default!;
+    private StickerTypeDetails? _stickerType;
+    private Sticker? _sticker;
+
+    private async Task ModifyStickers(MouseEventArgs args) =>
+        await _modal.ShowAsync();
+
+    private void SetType(StickerTypeDetails? type)
     {
-        if (CardContext == null)
+        _stickerType = type;
+
+        if (CardContext == null || _sticker == null)
             return;
 
-        bool rotated = CardContext.Orientation == Domain.Orientation.L1 || CardContext.Orientation == Domain.Orientation.L3;
-        offsetX = rotated ? args.OffsetX : Domain.Card.Width - args.OffsetX;
-        offsetY = rotated ? args.OffsetY : Domain.Card.Height - args.OffsetY;
+        CardContext.RemoveSticker(_sticker);
+        _sticker = null;
     }
 
-    private Modal modal = default!;
-
-    private async Task OnHideModalClick()
+    private void SetSticker(MouseEventArgs args)
     {
-        offsetX = 0;
-        offsetY = 0;
-        await modal.HideAsync();
+        if (CardContext == null || _stickerType == null)
+            return;
+
+        if (_sticker == null)
+            _sticker = CardContext.AddSticker(_stickerType.Type, (int)args.OffsetX, (int)args.OffsetY);
+        else
+            _sticker.Set(CardContext, (int)args.OffsetX, (int)args.OffsetY);
     }
 
-    private async Task AddSticker(MouseEventArgs args) =>
-        await modal.ShowAsync();
+    private void OnMouseLeave(MouseEventArgs args)
+    {
+        if (CardContext == null || _sticker == null)
+            return;
+
+        CardContext.RemoveSticker(_sticker);
+        _sticker = null;
+    }
+
+    private void Remove(Sticker sticker)
+    {
+        if (CardContext == null || sticker == null || _sticker != null)
+            return;
+
+        CardContext.RemoveSticker(sticker);
+    }
+
+    private async Task OnClick(MouseEventArgs args)
+    {
+        _stickerType = null;
+        _sticker = null;
+        await _modal.HideAsync();
+    }
 }

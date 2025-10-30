@@ -13,11 +13,11 @@ public enum StickerType
     Points5 = 10,
     Points = 16,
     Knight = 11,
-    StartsInPlay = 17,
-    PlaceBottomDeck = 18,
+    //StartsInPlay = 17,
+    //PlaceBottomDeck = 18,
 }
 
-public record StickerTypeDetails(StickerType StickerType, int Width, int Height, string Name)
+public record StickerTypeDetails(StickerType Type, int Width, int Height, string Name)
 {
     public static readonly StickerTypeDetails Cross = new(StickerType.Cross, 52, 52, "x");
     public static readonly StickerTypeDetails Coin = new(StickerType.Coin, 52, 52, "coin");
@@ -37,6 +37,28 @@ public record StickerTypeDetails(StickerType StickerType, int Width, int Height,
 
 public static class StickerTypeExtensions
 {
+    public static readonly StickerType[] AllTypes = [
+        StickerType.Cross,
+        StickerType.Coin,
+        StickerType.Wood,
+        StickerType.Stone,
+        StickerType.Steel,
+        StickerType.Sword,
+        StickerType.Good,
+        StickerType.StaysInPlay,
+        StickerType.Points2,
+        StickerType.Points5,
+        StickerType.Points,
+        StickerType.Knight,
+        //StickerType.StartsInPlay,
+        //StickerType.PlaceBottomDeck
+        ];
+
+    public static readonly StickerTypeDetails[] AllDetails = AllTypes
+        .Select(type => type.GetDetails())
+        .OfType<StickerTypeDetails>()
+        .ToArray();
+
     public static StickerTypeDetails? GetDetails(this StickerType type) => type switch
     {
         StickerType.Cross => StickerTypeDetails.Cross,

@@ -102,21 +102,32 @@ public class Game : Observable<Game>
         Notify(this);
     }
 
-    private static Card GetCard(string expansion, string line)
+    private static Card GetCard(string expansion, string text)
     {
-        var parts = line.Split('\t');
+        var parts = text.Split('\t');
+        if (parts.Length < 3)
+            throw new FormatException("Invalid card data format.");
+
+        return new Card
+        {
+            Id = int.Parse(parts[0]),
+            Expansion = expansion,
+            Orientation = (Orientation)int.Parse(parts[1]),
+            State = (State)int.Parse(parts[2]),
+            Stickers = parts[3..].Select(GetSticker).ToList()
+        };
+    }
+
+    private static Sticker GetSticker(string text)
+    {
+        var parts = text.Split(';');
         if (parts.Length != 3)
             throw new FormatException("Invalid card data format.");
 
-        var id = int.Parse(parts[0]);
-        var orientation = (Orientation)int.Parse(parts[1]);
-        var state = (State)int.Parse(parts[2]);
-        return new Card
+        return new Sticker((StickerType)int.Parse(parts[0]))
         {
-            Id = id,
-            Expansion = expansion,
-            Orientation = orientation,
-            State = state
+            X = int.Parse(parts[1]),
+            Y = int.Parse(parts[2])
         };
     }
 
@@ -172,7 +183,13 @@ public class Game : Observable<Game>
     {
         var sb = new StringBuilder(expansion.Key).AppendLine();
         foreach (var card in expansion)
-            sb.AppendLine($"{card.Id}\t{(int)card.Orientation}\t{(int)card.State}");
+        {
+            sb.Append($"{card.Id}\t{(int)card.Orientation}\t{(int)card.State}");
+            foreach (var sticker in card.Stickers)
+                sb.Append($"\t{(int)sticker.Type};{sticker.X};{sticker.Y}");
+
+            sb.AppendLine();
+        }
 
         return sb.ToString();
     }

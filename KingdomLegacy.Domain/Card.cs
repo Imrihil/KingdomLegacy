@@ -26,13 +26,15 @@ public record Card : IComparable<Card>
 
     public int CompareTo(Card? other) => Id.CompareTo(other?.Id);
 
-    public Sticker AddSticker(StickerType type, int x, int y)
+    public Sticker AddSticker(StickerType type, int offsetX, int offsetY)
     {
-        var sticker = new Sticker(type,
-            Orientation.IsRotated() ? Width - x : x,
-            Orientation.IsRotated() ? Height - y : y);
+        var sticker = new Sticker(type);
+        sticker.Set(this, offsetX, offsetY);
         Stickers.Add(sticker);
 
         return sticker;
     }
+
+    public void RemoveSticker(Sticker sticker) =>
+        Stickers.Remove(sticker);
 }
