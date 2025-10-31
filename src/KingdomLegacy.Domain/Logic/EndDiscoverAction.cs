@@ -8,7 +8,13 @@ internal class EndDiscoverAction(Game game) : IAction
     public string Description => "Discovering finished.";
     public void Execute()
     {
-        game.Actions.Reshuffle();
-        game.Actions.Draw(4);
+        if(game._deck.Count > 0 || game._hand.Count > 0 || game._inPlay.Count > 0) {
+            foreach(var card in game._discovered) {
+                game.Actions.Discard(card);
+            }
+        } else {
+            game.Actions.Reshuffle();
+            game.Actions.Draw(4);
+        }
     }
 }
