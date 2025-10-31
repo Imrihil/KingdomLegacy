@@ -1,6 +1,5 @@
 ﻿using KingdomLegacy.Domain.Logic;
 using System.Text;
-using System.Xml.Linq;
 
 namespace KingdomLegacy.Domain;
 public class Game : Observable<Game>
@@ -30,10 +29,12 @@ public class Game : Observable<Game>
         : [];
     internal Queue<Card> _deck = new();
 
-    public IReadOnlyCollection<Card> Hand => _hand.AsReadOnly();
+    public IReadOnlyCollection<Card> Hand =>
+        ((IEnumerable<Card>)_hand).Reverse().ToList().AsReadOnly();
     internal List<Card> _hand = [];
 
-    public IReadOnlyCollection<Card> InPlay => _inPlay.AsReadOnly();
+    public IReadOnlyCollection<Card> InPlay =>
+        ((IEnumerable<Card>)_inPlay).Reverse().ToList().AsReadOnly();
     internal List<Card> _inPlay = [];
 
     public Card? DiscardedLast => _discarded.Count > 0 ? _discarded[^1] : null;
@@ -51,8 +52,8 @@ public class Game : Observable<Game>
     internal IEnumerable<Card> All => _box
         .Concat(Deck)
         .Concat(Discovered)
-        .Concat(Hand)
-        .Concat(InPlay)
+        .Concat(Hand.Reverse())
+        .Concat(InPlay.Reverse())
         .Concat(Discarded.Reverse())
         .Concat(Trashed.Reverse())
         .Concat(Permanent);
