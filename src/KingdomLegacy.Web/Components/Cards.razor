@@ -3,7 +3,7 @@
     <div class="me-1 mb-1 d-flex flex-column rounded" @ondragend=OnDragEnd>
         <div class="mb-1 p-2 w-100 d-flex flex-row justify-content-between rounded @(BackgroundColor)">
             <h3 class="m-0 p-0">@(Name) (@(Values.Count))</h3>
-            @if (IsCollapsed && Values.Count > 1)
+            @if (Values.Count > 1)
             {
                 <Button Class="py-0" Color="ButtonColor.Light" @onclick="() => _showDetails = !_showDetails">
                     @if (_showDetails)
