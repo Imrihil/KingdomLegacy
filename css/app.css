@@ -119,32 +119,32 @@ code {
 }
 
 .coins {
-    background-image: url('/icons/coin.png');
+    background-image: url('../icons/coin.png');
     color: #000;
 }
 
 .wood {
-    background-image: url('/icons/wood.png');
+    background-image: url('../icons/wood.png');
 }
 
 .stones {
-    background-image: url('/icons/stone.png');
+    background-image: url('../icons/stone.png');
 }
 
 .steel {
-    background-image: url('/icons/steel.png');
+    background-image: url('../icons/steel.png');
 }
 
 .goods {
-    background-image: url('/icons/good.png');
+    background-image: url('../icons/good.png');
 }
 
 .swords {
-    background-image: url('/icons/sword.png');
+    background-image: url('../icons/sword.png');
 }
 
 .points {
-    background-image: url('/icons/points.png');
+    background-image: url('../icons/points.png');
     color: #000;
 }
 
