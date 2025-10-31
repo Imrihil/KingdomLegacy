@@ -19,10 +19,10 @@
                         <ActionButton Class="my-1 p-1" Action="@action" />
                     }
                     <div class="d-flex d-row">
-                        <NumberInput Class="me-1" Style="width: 70px;" TValue="int" @bind-Value="@_boxCardId" />
+                        <NumberInput Class="me-1 w-50" TValue="int" @bind-Value="@_boxCardId" />
                         @foreach (var action in GameContext.Actions.GetBoxSpecialActions(_boxCardId))
                         {
-                            <ActionButton Class="my-1 p-1 w-100" Action="@action" />
+                            <ActionButton Class="my-1 p-1 w-50" Action="@action" />
                         }
                     </div>
                 </div>
