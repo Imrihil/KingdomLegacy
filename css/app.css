@@ -112,15 +112,15 @@ code {
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    min-width: 23px;
-    margin: 1px;
+    width: 50px;
+    max-width: 50px;
     text-align: center;
     font-weight: bold;
 }
 
 .coins {
     background-image: url('../icons/coin.png');
-    color: #000;
+    color: #000 !important;
 }
 
 .wood {
@@ -145,7 +145,7 @@ code {
 
 .points {
     background-image: url('../icons/points.png');
-    color: #000;
+    color: #000 !important;
 }
 
 .btn-card {
