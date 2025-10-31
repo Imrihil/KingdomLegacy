@@ -1,5 +1,6 @@
 ﻿using KingdomLegacy.Domain.Logic;
 using System.Text;
+using System.Xml.Linq;
 
 namespace KingdomLegacy.Domain;
 public class Game : Observable<Game>
@@ -178,6 +179,22 @@ public class Game : Observable<Game>
         return sb.ToString();
     }
 
+    public void Clear()
+    {
+        KingdomName = "";
+        _box = [];
+        _discovered = [];
+        _deck = new();
+        _hand = [];
+        _inPlay = [];
+        _discarded = [];
+        _trash = [];
+        _permanent = [];
+
+        IsInitialized = false;
+
+        Notify();
+    }
 
     private string SaveExpansion(IGrouping<string, Card> expansion)
     {

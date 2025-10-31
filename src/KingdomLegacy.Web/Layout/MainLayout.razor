@@ -13,6 +13,9 @@
                 <Button Class="m-2" Color="ButtonColor.Primary" @onclick="Save">
                     Save
                 </Button>
+                <Button Class="m-2" Color="ButtonColor.Danger" @onclick="SaveAndExit">
+                    Save and exit
+                </Button>
             }
             <ThemeSwitcher Class="ps-3 ps-lg-2 my-auto" />
         </div>
@@ -42,5 +45,12 @@
         using var streamRef = new DotNetStreamReference(stream);
 
         await JS.InvokeVoidAsync("downloadFileFromStream", $"{GameContext.KingdomName}.save", streamRef);
+    }
+
+    private async Task SaveAndExit()
+    {
+        await Save();
+
+        GameContext.Clear();
     }
 }
