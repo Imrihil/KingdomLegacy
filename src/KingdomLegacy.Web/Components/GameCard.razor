@@ -2,12 +2,12 @@
     @if (CardContext != null)
     {
         <div class="@(CardContext.Orientation.IsRotated() ? "rotate-180" : "")">
-            <Image Src="@("/cards/" + CardContext.Path)" Alt="@CardContext.Id.ToString()" Class="game-card" />
+            <Image Src="@("cards/" + CardContext.Path)" Alt="@CardContext.Id.ToString()" Class="game-card" />
             @foreach (var (sticker, type) in Stickers)
             {
                 @if (type != null)
                 {
-                    <Image Src="@($"/icons/{type.Name}.png")"
+                    <Image Src="@($"icons/{type.Name}.png")"
                            Alt="@type.Name"
                            Class="@($"position-absolute sticker{(sticker.IsRotated ? " rotate-180" : "")}")"
                            Style="@($"left: {Math.Abs(sticker.X)}px; top: {Math.Abs(sticker.Y)}px; width: {type.Width}px; height: {type.Height}px;")" />
@@ -50,7 +50,7 @@
                 @foreach (var type in StickerTypeExtensions.AllDetails)
                 {
                     <Button Color="ButtonColor.Success" Active="@(_stickerType == type)" @onclick="() => SetType(type)">
-                        <Image Src="@($"/icons/{type.Name}.png")"
+                        <Image Src="@($"icons/{type.Name}.png")"
                                Alt="@type.Name"
                                Class="sticker"
                                Style="@($"width: {type.Width}px; height: {type.Height}px;")" />
@@ -60,12 +60,12 @@
         </BodyTemplate>
         <FooterTemplate>
             <div class="@($"mx-auto position-relative{(CardContext.Orientation.IsRotated() ? " rotate-180" : "")}")" @onmousemove="SetSticker" @onclick="OnClick">
-                <Image Src="@("/cards/" + CardContext.Path)" Alt="@CardContext.Id.ToString()" Class="game-card" />
+                <Image Src="@("cards/" + CardContext.Path)" Alt="@CardContext.Id.ToString()" Class="game-card" />
                 @foreach (var (sticker, type) in Stickers)
                 {
                     @if (type != null)
                     {
-                        <Image Src="@($"/icons/{type.Name}.png")"
+                        <Image Src="@($"icons/{type.Name}.png")"
                                Alt="@type.Name"
                                Class="@($"position-absolute sticker{(sticker.IsRotated ? " rotate-180" : "")}")"
                                Style="@($"left: {Math.Abs(sticker.X)}px; top: {Math.Abs(sticker.Y)}px; width: {type.Width}px; height: {type.Height}px;")"
