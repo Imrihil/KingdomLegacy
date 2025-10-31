@@ -11,7 +11,7 @@
                         {
                             <h3 class="m-0 p-0">@(Name) (@(Values.Count))</h3>
                         }
-                        @if (Values.Count > 1 && (!_showDetails || Values.Last() == card))
+                        @if (Values.Count > 1 && (!_showDetails || Values.First() == card) || Values.Last() == card)
                         {
                             <Button Class="ms-auto py-0" Color="ButtonColor.Light" @onclick="() => _showDetails = !_showDetails">
                                 @if (_showDetails)
