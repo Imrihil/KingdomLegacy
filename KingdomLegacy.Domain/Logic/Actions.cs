@@ -61,7 +61,7 @@ public class Actions(Game game)
         State.DeckTop => [new DrawAction(game, 1), new DrawAction(game, 2), new DrawAction(game, 4)],
         State.Hand => [new PlayAction(game, card), new FlipAndDiscard(game, card), new RotateAndDiscardAction(game, card), new DiscardAction(game, card), new TrashAction(game, card)],
         State.InPlay => [new PermanentAction(game, card), new FlipAndDiscard(game, card), new RotateAndDiscardAction(game, card), new DiscardAction(game, card), new TrashAction(game, card)],
-        State.Discarded => [new TakeAction(game, card)],
+        State.Discarded => [new TakeAction(game, card), new TrashAction(game, card)],
         State.Removed => [new TakeAction(game, card)],
         State.Permanent => [new OrientationResetAction(game, card), new FlipAction(game, card), new RotateAction(game, card), new TrashAction(game, card)],
         _ => []

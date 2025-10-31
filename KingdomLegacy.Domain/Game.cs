@@ -52,7 +52,7 @@ public class Game : Observable<Game>
         .Concat(Discovered)
         .Concat(Hand)
         .Concat(InPlay)
-        .Concat(Discarded)
+        .Concat(Discarded.Reverse())
         .Concat(Trashed.Reverse())
         .Concat(Permanent);
 
