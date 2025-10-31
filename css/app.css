@@ -91,7 +91,8 @@ code {
 .game-card {
     width: 373px;
     height: 520px;
-    border-radius: 5px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
 }
 
 .arrow-up, .arrow-down {
@@ -161,4 +162,23 @@ code {
     background-size: cover;
     background-position: center;
     margin: 1px;
+}
+
+.rounded-ts {
+    border-top-left-radius: 6px;
+}
+
+
+.rounded-te {
+    border-top-right-radius: 6px;
+}
+
+
+.rounded-bs {
+    border-bottom-left-radius: 6px;
+}
+
+
+.rounded-be {
+    border-bottom-right-radius: 6px;
 }
