@@ -2,46 +2,14 @@
 @inject Resources Resources
 
 <div class="d-flex flex-row">
-    <div class="mx-1 d-flex flex-column">
-        <Button Class="mt-1 p-0 arrow-up" Color="ButtonColor.Success" @onclick="() => Resources.Coins++">+</Button>
-        <div class="coins">@Resources.Coins</div>
-        <Button Class="mb-1 p-0 arrow-down" Color="ButtonColor.Danger" @onclick="() => Resources.Coins--">-</Button>
-    </div>
-
-    <div class="mx-1 d-flex flex-column">
-        <Button Class="mt-1 p-0 arrow-up" Color="ButtonColor.Success" @onclick="() => Resources.Wood++">+</Button>
-        <div class="wood">@Resources.Wood</div>
-        <Button Class="mb-1 p-0 arrow-down" Color="ButtonColor.Danger" @onclick="() => Resources.Wood--">-</Button>
-    </div>
-
-    <div class="mx-1 d-flex flex-column">
-        <Button Class="mt-1 p-0 arrow-up" Color="ButtonColor.Success" @onclick="() => Resources.Stones++">+</Button>
-        <div class="stones">@Resources.Stones</div>
-        <Button Class="mb-1 p-0 arrow-down" Color="ButtonColor.Danger" @onclick="() => Resources.Stones--">-</Button>
-    </div>
-
-    <div class="mx-1 d-flex flex-column">
-        <Button Class="mt-1 p-0 arrow-up" Color="ButtonColor.Success" @onclick="() => Resources.Steel++">+</Button>
-        <div class="steel">@Resources.Steel</div>
-        <Button Class="mb-1 p-0 arrow-down" Color="ButtonColor.Danger" @onclick="() => Resources.Steel--">-</Button>
-    </div>
-
-    <div class="mx-1 d-flex flex-column">
-        <Button Class="mt-1 p-0 arrow-up" Color="ButtonColor.Success" @onclick="() => Resources.Goods++">+</Button>
-        <div class="goods">@Resources.Goods</div>
-        <Button Class="mb-1 p-0 arrow-down" Color="ButtonColor.Danger" @onclick="() => Resources.Goods--">-</Button>
-    </div>
-
-    <div class="mx-1 d-flex flex-column">
-        <Button Class="mt-1 p-0 arrow-up" Color="ButtonColor.Success" @onclick="() => Resources.Swords++">+</Button>
-        <div class="swords">@Resources.Swords</div>
-        <Button Class="mb-1 p-0 arrow-down" Color="ButtonColor.Danger" @onclick="() => Resources.Swords--">-</Button>
-    </div>
-
-    <div class="mx-1 d-flex flex-column">
-        <Button Class="mt-1 p-0 arrow-up" Color="ButtonColor.Success" @onclick="() => Resources.Points++">+</Button>
-        <div class="points">@Resources.Points</div>
-        <Button Class="mb-1 p-0 arrow-down" Color="ButtonColor.Danger" @onclick="() => Resources.Points--">-</Button>
+    <div class="mx-2 d-flex lex-row">
+        <NumberInput Class="my-2 p-0 coins" TValue="int" @bind-Value="@Resources.Coins" />
+        <NumberInput Class="my-2 p-0 wood" TValue="int" @bind-Value="@Resources.Wood" />
+        <NumberInput Class="my-2 p-0 stones" TValue="int" @bind-Value="@Resources.Stones" />
+        <NumberInput Class="my-2 p-0 steel" TValue="int" @bind-Value="@Resources.Steel" />
+        <NumberInput Class="my-2 p-0 goods" TValue="int" @bind-Value="@Resources.Goods" />
+        <NumberInput Class="my-2 p-0 swords" TValue="int" @bind-Value="@Resources.Swords" />
+        <NumberInput Class="my-2 p-0 points" TValue="int" @bind-Value="@Resources.Points" />
     </div>
 
     @foreach (var action in GameContext.Actions.GetMainActions(Resources))
