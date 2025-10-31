@@ -71,12 +71,12 @@ else if (EmptyActions != null)
 
     private bool _showDetails;
 
-    override protected void OnParametersSet()
+    override protected void OnInitialized()
     {
         if (!IsCollapsed)
             _showDetails = true;
 
-        base.OnParametersSet();
+        base.OnInitialized();
     }
 
     private Domain.Card? _dragged;
