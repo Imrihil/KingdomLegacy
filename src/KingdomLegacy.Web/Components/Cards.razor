@@ -1,38 +1,61 @@
 ﻿@if (Values != null && Values.Count > 0)
 {
-    <div class="me-1 mb-1 d-flex flex-column rounded" @ondragend=OnDragEnd>
-        <div class="mb-1 p-2 w-100 d-flex flex-row justify-content-between rounded @(BackgroundColor)">
-            <h3 class="m-0 p-0">@(Name) (@(Values.Count))</h3>
-            @if (Values.Count > 1)
-            {
-                <Button Class="py-0" Color="ButtonColor.Light" @onclick="() => _showDetails = !_showDetails">
-                    @if (_showDetails)
-                    {
-                        <span>Hide</span>
-                    }
-                    else
-                    {
-                        <span>Show</span>
-                    }
-                </Button>
-            }
-        </div>
-        @if (_showDetails)
+    @if (_showDetails)
+    {
+        @foreach (var card in Values)
         {
-            <div class="d-flex flex-row flex-wrap rounded">
-                @foreach (var card in Values)
-                {
-                    <div @ondragleave="() => OnDragLeave(card)" @ondragover="() => OnDragOver(card)">
-                        <GameCard GameContext="@GameContext" CardContext="@card" BackgroundColor="@(Faded? BackgroundColor : "")" Disabled="@Disabled" />
+            <div class="d-flex flex-column">
+                <div class="@(Values.Last() == card ? "pe-1" : "")">
+                    <div class="p-2 w-100 d-flex flex-row justify-content-between @(Values.First() == card ? "rounded-ts" : "") @(Values.Last() == card ? "rounded-te" : "") @(BackgroundColor)" style="height: 50px;">
+                        @if (Values.First() == card)
+                        {
+                            <h3 class="m-0 p-0">@(Name) (@(Values.Count))</h3>
+                        }
+                        @if (Values.Count > 1 && (!_showDetails || Values.Last() == card))
+                        {
+                            <Button Class="ms-auto py-0" Color="ButtonColor.Light" @onclick="() => _showDetails = !_showDetails">
+                                @if (_showDetails)
+                                {
+                                    <span>Hide</span>
+                                }
+                                else
+                                {
+                                    <span>Show</span>
+                                }
+                            </Button>
+                        }
                     </div>
-                }
+                </div>
+                <div @ondragleave="() => OnDragLeave(card)" @ondragover="() => OnDragOver(card)">
+                    <GameCard GameContext="@GameContext" CardContext="@card" BackgroundColor="@(Faded? BackgroundColor : "")" Disabled="@Disabled" />
+                </div>
             </div>
         }
-        else if (First != null)
-        {
+    }
+    else if (First != null)
+    {
+        <div class="d-flex flex-column">
+            <div class="pe-1">
+                <div class="p-2 w-100 d-flex flex-row justify-content-between rounded-ts rounded-te @(BackgroundColor)" style="height: 50px;">
+                    <h3 class="m-0 p-0">@(Name) (@(Values.Count))</h3>
+                    @if (Values.Count > 1)
+                    {
+                        <Button Class="py-0" Color="ButtonColor.Light" @onclick="() => _showDetails = !_showDetails">
+                            @if (_showDetails)
+                            {
+                                <span>Hide</span>
+                            }
+                            else
+                            {
+                                <span>Show</span>
+                            }
+                        </Button>
+                    }
+                </div>
+            </div>
             <GameCard GameContext="@GameContext" CardContext="@First" BackgroundColor="@(Faded? BackgroundColor : "")" Disabled="@Disabled" />
-        }
-    </div>
+        </div>
+    }
 }
 else if (EmptyActions != null)
 {
