@@ -103,21 +103,12 @@ else if (EmptyActions != null)
     }
 
     private Domain.Card? _dragged;
-    private void Drag(Domain.Card card)
-    {
+    private void Drag(Domain.Card card) =>
         _dragged = IsDraggable ? card : null;
-        Console.WriteLine($"Dragged {card.Id}");
-    }
 
-    private void Drop(Domain.Card card)
-    {
-        Console.WriteLine($"Dropped {_dragged?.Id} on {card.Id}");
+    private void Drop(Domain.Card card) =>
         GameContext?.Insert(card, _dragged);
-    }
 
-    private void OnDragEnd(DragEventArgs args)
-    {
-        Console.WriteLine($"Drag end {_dragged}");
+    private void OnDragEnd(DragEventArgs args) =>
         _dragged = null;
-    }
 }
