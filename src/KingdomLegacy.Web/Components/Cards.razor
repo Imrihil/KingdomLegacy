@@ -26,7 +26,7 @@
                         }
                     </div>
                 </div>
-                <div @ondragleave="() => OnDragLeave(card)" @ondragover="() => OnDragOver(card)">
+                <div @ondragstart="() => Drag(card)" @ondragenter="() => Drop(card)">
                     <GameCard GameContext="@GameContext" CardContext="@card" BackgroundColor="@(Faded? BackgroundColor : "")" Disabled="@Disabled" />
                 </div>
             </div>
@@ -103,12 +103,21 @@ else if (EmptyActions != null)
     }
 
     private Domain.Card? _dragged;
-    private void OnDragLeave(Domain.Card card) =>
+    private void Drag(Domain.Card card)
+    {
         _dragged = IsDraggable ? card : null;
+        Console.WriteLine($"Dragged {card.Id}");
+    }
 
-    private void OnDragOver(Domain.Card card) =>
+    private void Drop(Domain.Card card)
+    {
+        Console.WriteLine($"Dropped {_dragged?.Id} on {card.Id}");
         GameContext?.Insert(card, _dragged);
+    }
 
-    private void OnDragEnd(DragEventArgs args) =>
+    private void OnDragEnd(DragEventArgs args)
+    {
+        Console.WriteLine($"Drag end {_dragged}");
         _dragged = null;
+    }
 }
