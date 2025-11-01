@@ -1,6 +1,6 @@
 ﻿@if (Action != null)
 {
-    <Button Class="@Class" Type="ButtonType.Button" Color="@Action.TargetState.GetButtonColor()" Position="Position.Relative" Disabled="@Action.Disabled" @onclick="() => Action.Execute()">
+    <Button Class="@Class" Type="@Type" Color="@Action.TargetState.GetButtonColor()" Position="Position.Relative" Disabled="@Action.Disabled" @onclick="() => Action.Execute()">
         @Action.Text
     </Button>
 }
@@ -14,4 +14,7 @@
 
     [Parameter]
     public IAction? Action { get; set; }
+
+    [Parameter]
+    public ButtonType Type { get; set; } = ButtonType.Button;
 }

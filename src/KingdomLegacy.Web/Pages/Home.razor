@@ -46,7 +46,7 @@
 else
 {
     <div class="mx-auto px-8" style="width: 1296px;">
-        @if (_name == null)
+        @if (_newKingdomForm == null)
         {
             <lead>What do you want to do?</lead>
 
@@ -59,10 +59,10 @@ else
         {
             <lead>Name your kingdom</lead>
 
-            <div class="d-flex flex-column mb-3">
-                <TextInput Class="m-2" @bind-Value="@_name" />
-                <Button Class="m-2" Type="ButtonType.Link" Color="ButtonColor.Primary" @onclick="StartGame">Start</Button>
-            </div>
+            <EditForm class="d-flex flex-column mb-3" Model="@_newKingdomForm" OnValidSubmit="StartGame">
+                <TextInput Class="m-2 w-auto" @bind-Value="@_newKingdomForm.Name" Placeholder="Kingdom name" @ref="_input" />
+                <Button Class="m-2" Type="ButtonType.Submit" Color="ButtonColor.Primary">Start</Button>
+            </EditForm>
         }
         <Readme />
     </div>
@@ -73,12 +73,23 @@ else
     private bool _showDeck;
     private bool _showTrashed;
 
-    private string? _name;
+    private NewKingdomForm? _newKingdomForm;
+    public class NewKingdomForm
+    {
+        public string? Name { get; set; }
+    }
+
+    private TextInput? _input;
 
     protected override void OnInitialized()
     {
         GameContext.Subscribe(_ => StateHasChanged());
         base.OnInitialized();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!GameContext.IsInitialized && _newKingdomForm != null && _input?.Element != null)
+            await _input.Element.FocusAsync();
     }
 
     private async Task LoadGame(InputFileChangeEventArgs args)
@@ -91,8 +102,8 @@ else
     }
 
     private void NewGame(MouseEventArgs args) =>
-        _name = "";
+        _newKingdomForm = new NewKingdomForm();
 
-    private void StartGame(MouseEventArgs args) =>
-        GameContext.Initialize(_name, Expansions.FeudalKingdom);
+    private void StartGame(EditContext args) =>
+        GameContext.Initialize(_newKingdomForm?.Name, Expansions.FeudalKingdom);
 }

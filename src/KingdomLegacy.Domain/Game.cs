@@ -33,8 +33,7 @@ public class Game : Observable<Game>
         ((IEnumerable<Card>)_hand).Reverse().ToList().AsReadOnly();
     internal List<Card> _hand = [];
 
-    public IReadOnlyCollection<Card> InPlay =>
-        ((IEnumerable<Card>)_inPlay).Reverse().ToList().AsReadOnly();
+    public IReadOnlyCollection<Card> InPlay => _inPlay.AsReadOnly();
     internal List<Card> _inPlay = [];
 
     public Card? DiscardedLast => _discarded.Count > 0 ? _discarded[^1] : null;
@@ -53,7 +52,7 @@ public class Game : Observable<Game>
         .Concat(Deck)
         .Concat(Discovered)
         .Concat(Hand.Reverse())
-        .Concat(InPlay.Reverse())
+        .Concat(InPlay)
         .Concat(Discarded.Reverse())
         .Concat(Trashed.Reverse())
         .Concat(Permanent);
