@@ -20,8 +20,60 @@ internal abstract class RecordedActionBase(Game game) : IAction
     protected abstract bool ExecuteInternal();
 }
 
+internal abstract class ReversibleCardActionBase(Game game, Card? card) : RecordedActionBase(game), IReversibleAction
+{
+    protected State SourceState { get; set; }
+    protected int SourceIndex { get; set; }
+    protected Card Card { get; } = card;
+
+    public new void Execute()
+    {
+        if (card == null)
+            return;
+
+        SourceState = card.State;
+        SourceIndex = game.List(SourceState).IndexOf(card);
+
+        if (!ExecuteInternal())
+            return;
+
+        game.Actions._history.Add(this);
+        game.Notify();
+    }
+
+    public void Undo()
+    {
+        if (!UndoInternal())
+            return;
+
+        game.Actions._history.Remove(this);
+        game.Notify();
+    }
+
+    protected bool UndoInternal()
+    {
+        if (game.List(TargetState).Remove(card))
+        {
+            game.List(SourceState).Insert(SourceIndex, card);
+            card.State = SourceState;
+            return true;
+        }
+
+        return false;
+    }
+}
+
 internal abstract class ReversibleActionBase(Game game) : RecordedActionBase(game), IReversibleAction
 {
+    public new void Execute()
+    {
+        if (!ExecuteInternal())
+            return;
+
+        game.Actions._history.Add(this);
+        game.Notify();
+    }
+
     public void Undo()
     {
         if (!UndoInternal())

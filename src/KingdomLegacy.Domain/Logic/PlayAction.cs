@@ -1,5 +1,5 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
-internal class PlayAction(Game game, Card card) : ReversibleActionBase(game)
+internal class PlayAction(Game game, Card card) : ReversibleCardActionBase(game, card)
 {
     public override State[] SourceStates => [State.Hand];
     public override State TargetState => State.InPlay;
@@ -8,25 +8,8 @@ internal class PlayAction(Game game, Card card) : ReversibleActionBase(game)
     public override string Text => "∞";
     protected override bool ExecuteInternal()
     {
-        if (!game._hand.Remove(card))
-            return false;
-
-        card.State = State.InPlay;
-        game._inPlay.Add(card);
-
         Description = $"Played {card.Id}.";
 
-        return true;
-    }
-
-    protected override bool UndoInternal()
-    {
-        if (!game._inPlay.Remove(card))
-            return false;
-
-        card.State = State.Hand;
-        game._hand.Add(card);
-
-        return true;
+        return game.ChangeState(card, TargetState);
     }
 }

@@ -311,4 +311,32 @@ public class Game : Observable<Game>
     }
 
     internal void Notify() => Notify(this);
+    internal List<Card> List(State state) => state switch
+    {
+        State.Box => _box,
+        State.Discovered => _discovered,
+        State.Deck => _deck,
+        State.DeckTop => _deck,
+        State.Hand => _hand,
+        State.InPlay => _inPlay,
+        State.Discarded => _discarded,
+        State.Removed => _trash,
+        State.Permanent => _permanent,
+        State.Blocked => throw new NotImplementedException(),
+        _ => throw new NotImplementedException(),
+    };
+
+    internal bool ChangeState(Card card, State state)
+    {
+        if (!List(card.State).Remove(card))
+            return false;
+
+        card.State = state;
+        if (state == State.Removed)
+            List(state).Insert(0, card);
+        else
+            List(state).Add(card);
+
+        return true;
+    }
 }
