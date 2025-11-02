@@ -1,6 +1,7 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 internal class ReshuffleAction(Game game) : RecordedActionBase(game)
 {
+    public override State[] SourceStates => [];
     public override State TargetState => State.Deck;
     public override bool Allowed => game.Deck.Count == 0;
     public override bool Disabled => false;

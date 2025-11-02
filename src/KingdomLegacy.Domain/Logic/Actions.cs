@@ -1,4 +1,6 @@
-﻿namespace KingdomLegacy.Domain.Logic;
+﻿using System.Reflection;
+
+namespace KingdomLegacy.Domain.Logic;
 public class Actions(Game game)
 {
     internal List<IAction> _history = [];
@@ -26,8 +28,8 @@ public class Actions(Game game)
     public void Trash(Card card) =>
         new TrashAction(game, card).Execute();
 
-    public void Draw(int count) =>
-        new DrawAction(game, count).Execute();
+    public void Draw4() =>
+        new Draw4Action(game).Execute();
 
     public void EndDiscover() =>
         new EndDiscoverAction(game).Execute();
@@ -53,19 +55,26 @@ public class Actions(Game game)
     // TODO: Redo
     // public void Redo()
 
-    public IAction[] GetCardActions(Card card) => GetAvailableActions(card.State switch
+    private static readonly Type[] _allActionTypes = Assembly.GetAssembly(typeof(IAction))?.GetTypes().Where(type => type.IsAssignableTo(typeof(IAction)) && !type.IsAbstract).ToArray() ?? [];
+    private static readonly IAction[] _allActions = _allActionTypes.Select(GetExampleAction).OfType<IAction>().ToArray();
+    private static IAction? GetExampleAction(Type type)
     {
-        State.Box => [],
-        State.Discovered => [new OrientationResetAction(game, card), new FlipAction(game, card), new RotateAction(game, card), new PermanentAction(game, card), new TakeAction(game, card), new DiscardAction(game, card), new TrashAction(game, card)],
-        State.Deck => [],
-        State.DeckTop => [new DrawAction(game, 1), new DrawAction(game, 2), new DrawAction(game, 4)],
-        State.Hand => [new PlayAction(game, card), new OrientationResetAction(game, card), new FlipAndDiscard(game, card), new RotateAndDiscardAction(game, card), new DiscardAction(game, card), new TrashAction(game, card)],
-        State.InPlay => [new PermanentAction(game, card), new OrientationResetAction(game, card), new FlipAndDiscard(game, card), new RotateAndDiscardAction(game, card), new DiscardAction(game, card), new TrashAction(game, card)],
-        State.Discarded => [new TakeAction(game, card), new TrashAction(game, card)],
-        State.Removed => [new TakeAction(game, card)],
-        State.Permanent => [new OrientationResetAction(game, card), new FlipAction(game, card), new RotateAction(game, card), new TrashAction(game, card)],
-        _ => []
-    });
+        try
+        {
+            return GetAction(type);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static IAction? GetAction(Type type, Game? game = null, Card? card = null) => Activator.CreateInstance(type, game ?? new Game(), card ?? new Card()) as IAction;
+    private static readonly Dictionary<State, Type[]> _stateActionTypes = States.All.ToDictionary(
+        state => state,
+        state => _allActions.Where(action => action.SourceStates.Contains(state)).Select(action => action.GetType()).ToArray());
+
+    public IAction[] GetCardActions(Card card) => GetAvailableActions(_stateActionTypes[card.State].Select(type => GetAction(type, game, card)).OfType<IAction>());
 
     public IAction[] GetBoxActions() => GetAvailableActions(
         [new DiscoverAction(game, 1), new DiscoverAction(game, 2), new DiscoverAction(game, 5), new DiscoverAction(game, 10)]);
@@ -78,8 +87,7 @@ public class Actions(Game game)
     public IAction[] GetMainActions(Resources resources) => GetAvailableActions(
         [new UndoAction(game), new EndDiscoverAction(game), new EndTurnAction(game, resources), new EndRoundAction(game, resources)]);
 
-    private IAction[] GetAvailableActions(IEnumerable<IAction> actions) =>
-        actions
+    private IAction[] GetAvailableActions(IEnumerable<IAction> actions) => actions
         .Where(action => action.Allowed)
         .ToArray();
 }

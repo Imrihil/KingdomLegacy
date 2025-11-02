@@ -1,6 +1,7 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 public interface IAction
 {
+    State[] SourceStates { get; }
     State TargetState { get; }
     bool Allowed { get; }
     bool Disabled { get; }

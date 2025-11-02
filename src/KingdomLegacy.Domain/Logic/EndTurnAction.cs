@@ -1,6 +1,7 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 internal class EndTurnAction(Game game, Resources resources) : IAction
 {
+    public State[] SourceStates => [];
     public State TargetState => State.Hand;
     public bool Allowed => game._discovered.Count == 0 && game._deck.Count > 0;
     public bool Disabled => false;
@@ -11,7 +12,7 @@ internal class EndTurnAction(Game game, Resources resources) : IAction
         foreach (var card in game._hand.ToArray())
             game.Actions.Discard(card);
 
-        game.Actions.Draw(4);
+        game.Actions.Draw4();
 
         resources.Reset();
     }

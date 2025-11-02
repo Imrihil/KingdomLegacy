@@ -9,5 +9,11 @@ public enum State
     InPlay,
     Discarded,
     Removed,
-    Permanent
+    Permanent,
+    Blocked
+}
+
+public static class States
+{
+    public static readonly State[] All = Enum.GetValues<State>().ToArray();
 }

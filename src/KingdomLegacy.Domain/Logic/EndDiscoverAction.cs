@@ -1,6 +1,7 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 internal class EndDiscoverAction(Game game) : IAction
 {
+    public State[] SourceStates => [];
     public State TargetState => State.Hand;
     public bool Allowed => game._discovered.Count > 0;
     public bool Disabled => false;
@@ -9,12 +10,12 @@ internal class EndDiscoverAction(Game game) : IAction
     public void Execute()
     {
         if(game._deck.Count > 0 || game._hand.Count > 0 || game._inPlay.Count > 0) {
-            foreach(var card in game._discovered) {
+            foreach(var card in game._discovered.ToArray()) {
                 game.Actions.Discard(card);
             }
         } else {
             game.Actions.Reshuffle();
-            game.Actions.Draw(4);
+            game.Actions.Draw4();
         }
     }
 }

@@ -1,8 +1,9 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 internal class TrashAction(Game game, Card card) : ReversibleActionBase(game)
 {
+    public override State[] SourceStates => [State.Discovered, State.Hand, State.InPlay, State.Discarded, State.Permanent];
     public override State TargetState => State.Removed;
-    public override bool Allowed => card.State == State.Discovered || card.State == State.Hand || card.State == State.InPlay || card.State == State.Discarded || card.State == State.Permanent;
+    public override bool Allowed => true;
     public override bool Disabled => false;
     public override string Text => "x";
 

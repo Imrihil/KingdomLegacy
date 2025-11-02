@@ -1,6 +1,7 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 internal class UndoAction(Game game) : IAction
 {
+    public State[] SourceStates => [];
     public State TargetState => default;
     public bool Allowed => true;
     public bool Disabled => ReversibleAction == null;

@@ -1,11 +1,9 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 internal class TakeAction(Game game, Card card) : ReversibleActionBase(game)
 {
+    public override State[] SourceStates => [State.Discovered, State.InPlay, State.Discarded, State.Removed];
     public override State TargetState => State.Hand;
-    public override bool Allowed => card.State == State.Discovered
-        || card.State == State.InPlay
-        || card.State == State.Discarded
-        || card.State == State.Removed && game._trash.TryPeek(out var topCard) && topCard == card;
+    public override bool Allowed => card.State != State.Removed || game._trash.TryPeek(out var topCard) && topCard == card;
     public override bool Disabled => false;
     public override string Text => card.State == State.Discarded || card.State == State.Removed ? "↺" : "✓";
 

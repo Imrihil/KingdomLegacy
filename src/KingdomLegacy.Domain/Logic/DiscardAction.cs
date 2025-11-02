@@ -1,8 +1,9 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 internal class DiscardAction(Game game, Card card) : ReversibleActionBase(game)
 {
+    public override State[] SourceStates => [State.Discovered, State.Hand, State.InPlay];
     public override State TargetState => State.Discarded;
-    public override bool Allowed => card.State == State.Discovered || card.State == State.Hand || card.State == State.InPlay;
+    public override bool Allowed => true;
     public override bool Disabled => false;
     public override string Text => "✓";
 
