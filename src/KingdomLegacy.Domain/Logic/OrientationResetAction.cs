@@ -1,7 +1,7 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 internal class OrientationResetAction(Game game, Card card) : ReversibleActionBase(game)
 {
-    public override State[] SourceStates => [State.Discovered, State.Hand, State.InPlay, State.Permanent];
+    public override State[] SourceStates => States.All;
     public override State TargetState => card.State;
     public override int Order => 0;
     public override bool Allowed => true;

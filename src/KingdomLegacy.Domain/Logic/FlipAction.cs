@@ -1,7 +1,7 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 internal class FlipAction(Game game, Card card) : ReversibleActionBase(game)
 {
-    public override State[] SourceStates => [State.Discovered, State.Permanent];
+    public override State[] SourceStates => States.All;
     public override State TargetState => card.State;
     public override int Order => 1;
     public override bool Allowed => true;
