@@ -3,6 +3,7 @@ public interface IAction
 {
     State[] SourceStates { get; }
     State TargetState { get; }
+    int Order { get; }
     bool Allowed { get; }
     bool Disabled { get; }
     string Text { get; }

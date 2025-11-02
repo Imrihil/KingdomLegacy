@@ -1,5 +1,5 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
-internal class DiscoverAction(Game game, int count) : ReversibleActionBase(game)
+internal class DiscoverAction(Game game, int count = 1) : ReversibleActionBase(game)
 {
     public override State[] SourceStates => [State.Box];
     public override State TargetState => State.Discovered;

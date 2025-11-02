@@ -10,35 +10,14 @@ public class Actions(Game game)
     public void Discover(int count) =>
         new DiscoverAction(game, count).Execute();
 
-    public void DiscoverById(int id) =>
-        new DiscoverByIdAction(game, id).Execute();
-
     public void Reshuffle() =>
         new ReshuffleAction(game).Execute();
-
-    public void Take(Card card) =>
-        new TakeAction(game, card).Execute();
-
-    public void Play(Card card) =>
-        new PlayAction(game, card).Execute();
 
     public void Discard(Card card) =>
         new DiscardAction(game, card).Execute();
 
-    public void Trash(Card card) =>
-        new TrashAction(game, card).Execute();
-
     public void Draw4() =>
         new Draw4Action(game).Execute();
-
-    public void EndDiscover() =>
-        new EndDiscoverAction(game).Execute();
-
-    public void EndTurn(Resources resources) =>
-        new EndTurnAction(game, resources).Execute();
-
-    public void EndRound(Resources resources) =>
-        new EndRoundAction(game, resources).Execute();
 
     public void Flip(Card card) =>
         new FlipAction(game, card).Execute();
@@ -46,35 +25,59 @@ public class Actions(Game game)
     public void Rotate(Card card) =>
         new RotateAction(game, card).Execute();
 
-    public void rientationReset(Card card) =>
-        new OrientationResetAction(game, card).Execute();
-
-    public void Undo() =>
-        new UndoAction(game).Execute();
-
     // TODO: Redo
     // public void Redo()
 
-    private static readonly Type[] _allActionTypes = Assembly.GetAssembly(typeof(IAction))?.GetTypes().Where(type => type.IsAssignableTo(typeof(IAction)) && !type.IsAbstract).ToArray() ?? [];
-    private static readonly IAction[] _allActions = _allActionTypes.Select(GetExampleAction).OfType<IAction>().ToArray();
-    private static IAction? GetExampleAction(Type type)
+    private static readonly Dictionary<State, Type[]> _stateActionTypes = States.All.ToDictionary(
+        state => state,
+        StateActionTypes);
+
+    private static readonly Type[] _allActionTypes = Assembly.GetAssembly(typeof(IAction))?
+        .GetTypes().Where(type => type.IsAssignableTo(typeof(IAction)) && !type.IsAbstract).ToArray() ?? [];
+
+    private static Type[] StateActionTypes(State state) => _allActionTypes
+        .Select(type => GetExampleAction(type, state))
+        .OfType<IAction>()
+        .Where(action => action.SourceStates.Contains(state))
+        .OrderBy(action => action.TargetState.Order())
+        .ThenBy(action => action.Order)
+        .Select(action => action.GetType())
+        .ToArray();
+
+    private static IAction? GetExampleAction(Type type, State state)
     {
         try
         {
-            return GetAction(type);
+            return GetAction(type, new Game(), new Card() { State = state });
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine(ex.ToString());
             return null;
         }
     }
 
-    private static IAction? GetAction(Type type, Game? game = null, Card? card = null) => Activator.CreateInstance(type, game ?? new Game(), card ?? new Card()) as IAction;
-    private static readonly Dictionary<State, Type[]> _stateActionTypes = States.All.ToDictionary(
-        state => state,
-        state => _allActions.Where(action => action.SourceStates.Contains(state)).Select(action => action.GetType()).ToArray());
+    private static IAction? GetAction(Type type, Game game, Card card)
+    {
+        var constructorParameters = type.GetConstructors().FirstOrDefault()?.GetParameters() ?? [];
+        var args = new List<object>();
+        if (constructorParameters.Any(param => param.ParameterType == typeof(Game)))
+            args.Add(game);
 
-    public IAction[] GetCardActions(Card card) => GetAvailableActions(_stateActionTypes[card.State].Select(type => GetAction(type, game, card)).OfType<IAction>());
+        if (constructorParameters.Any(param => param.ParameterType == typeof(Card)))
+            args.Add(card);
+
+        if (constructorParameters.Any(param => param.ParameterType == typeof(int)))
+            args.Add(1);
+
+        if (constructorParameters.Any(param => param.ParameterType == typeof(Resources)))
+            args.Add(new Resources(game));
+
+        return Activator.CreateInstance(type, args.ToArray()) as IAction;
+    }
+
+    public IAction[] GetCardActions(Card card) =>
+        GetAvailableActions(_stateActionTypes[card.State].Select(type => GetAction(type, game, card)).OfType<IAction>());
 
     public IAction[] GetBoxActions() => GetAvailableActions(
         [new DiscoverAction(game, 1), new DiscoverAction(game, 2), new DiscoverAction(game, 5), new DiscoverAction(game, 10)]);

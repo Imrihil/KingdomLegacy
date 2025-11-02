@@ -3,6 +3,7 @@ internal abstract class RecordedActionBase(Game game) : IAction
 {
     public abstract State[] SourceStates { get; }
     public abstract State TargetState { get; }
+    public virtual int Order => 0;
     public abstract bool Allowed { get; }
     public abstract bool Disabled { get; }
     public abstract string Text { get; }

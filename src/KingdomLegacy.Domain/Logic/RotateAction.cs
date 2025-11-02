@@ -3,6 +3,7 @@ internal class RotateAction(Game game, Card card) : ReversibleActionBase(game)
 {
     public override State[] SourceStates => [State.Discovered, State.Permanent];
     public override State TargetState => card.State;
+    public override int Order => 2;
     public override bool Allowed => true;
     public override bool Disabled => false;
     public override string Text => "⇓";

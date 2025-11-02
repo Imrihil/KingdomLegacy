@@ -3,6 +3,7 @@ internal class UndoAction(Game game) : IAction
 {
     public State[] SourceStates => [];
     public State TargetState => default;
+    public int Order => 0;
     public bool Allowed => true;
     public bool Disabled => ReversibleAction == null;
     public string Text => "↶";
