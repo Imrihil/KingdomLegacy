@@ -15,11 +15,12 @@ internal abstract class DrawAction(Game game, int count) : RecordedActionBase(ga
         var i = count;
         while (i-- > 0 && game._deck.Count > 0)
         {
-            var card = game._deck.Dequeue();
+            var card = game._deck[0];
+            game._deck.Remove(card);
             card.State = State.Hand;
             game._hand.Add(card);
-            if (game._deck.TryPeek(out var nextCard))
-                nextCard.State = State.DeckTop;
+            if (game._deck.Count > 0)
+                game._deck[0].State = State.DeckTop;
 
             _cards.Add(card);
         }

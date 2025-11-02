@@ -3,12 +3,11 @@ internal class TakeAction(Game game, Card card) : ReversibleActionBase(game)
 {
     public override State[] SourceStates => [State.Discovered, State.InPlay, State.Discarded, State.Removed];
     public override State TargetState => State.Hand;
-    public override bool Allowed => card.State != State.Removed || game._trash.TryPeek(out var topCard) && topCard == card;
+    public override bool Allowed => card.State != State.Removed || game._trash.Count > 0 && game._trash[0] == card;
     public override bool Disabled => false;
     public override string Text => card.State == State.Discarded || card.State == State.Removed ? "↺" : "✓";
 
     private List<Card>? _sourceList;
-    private Stack<Card>? _sourceStack;
 
     protected override bool ExecuteInternal()
     {
@@ -18,15 +17,8 @@ internal class TakeAction(Game game, Card card) : ReversibleActionBase(game)
             _sourceList = game._inPlay;
         else if (game._discarded.Remove(card))
             _sourceList = game._discarded;
-        else if (game._trash.TryPop(out var poppedCard))
-        {
-            if (poppedCard != card)
-            {
-                game._trash.Push(poppedCard);
-                return false;
-            }
-            _sourceStack = game._trash;
-        }
+        else if (game._trash.Remove(card))
+            _sourceList = game._trash;
         else
             return false;
 
@@ -40,7 +32,7 @@ internal class TakeAction(Game game, Card card) : ReversibleActionBase(game)
 
     protected override bool UndoInternal()
     {
-        if (_sourceList == null && _sourceStack == null || !game._hand.Remove(card))
+        if (_sourceList == null || !game._hand.Remove(card))
             return false;
 
         card.State =
@@ -49,8 +41,10 @@ internal class TakeAction(Game game, Card card) : ReversibleActionBase(game)
             : _sourceList == game._inPlay ? State.InPlay
             : State.Removed;
 
-        _sourceList?.Add(card);
-        _sourceStack?.Push(card);
+        if (_sourceList == game._trash)
+            _sourceList.Insert(0, card);
+        else
+            _sourceList?.Add(card);
 
         return true;
     }

@@ -17,13 +17,13 @@ internal class ReshuffleAction(Game game) : RecordedActionBase(game)
             .OrderBy(card => card.Id)
             .ToArray();
 
-        game._deck = new Queue<Card>(_cards.OrderBy(_ => Random.Shared.Next()));
+        game._deck = _cards.OrderBy(_ => Random.Shared.Next()).ToList();
 
         foreach (var card in game._deck)
             card.State = State.Deck;
 
-        if (game._deck.TryPeek(out var nextCard))
-            nextCard.State = State.DeckTop;
+        if (game._deck.Count > 0)
+            game._deck[0].State = State.DeckTop;
 
         game._discovered.Clear();
         game._hand.Clear();

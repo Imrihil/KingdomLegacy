@@ -20,14 +20,14 @@ public class Game : Observable<Game>
     internal List<Card> _discovered = [];
     public IReadOnlyCollection<Card> Discovered => _discovered.AsReadOnly();
 
-    public Card? DeckTop => _deck.Count > 0 ? _deck.Peek() : null;
+    public Card? DeckTop => _deck.Count > 0 ? _deck[0] : null;
     public IReadOnlyCollection<Card> Deck => _deck.Count > 0
-        ? new Card[] { _deck.Peek() }
+        ? new Card[] { _deck[0] }
             .Concat(_deck.Skip(1).OrderBy(card => card.Id))
             .ToList()
             .AsReadOnly()
         : [];
-    internal Queue<Card> _deck = new();
+    internal List<Card> _deck = new();
 
     public IReadOnlyCollection<Card> Hand =>
         ((IEnumerable<Card>)_hand).Reverse().ToList().AsReadOnly();
@@ -41,9 +41,9 @@ public class Game : Observable<Game>
         ((IEnumerable<Card>)_discarded).Reverse().ToList().AsReadOnly();
     internal List<Card> _discarded = [];
 
-    public Card? TrashedLast => _trash.Count > 0 ? _trash.Peek() : null;
+    public Card? TrashedLast => _trash.Count > 0 ? _trash[0] : null;
     public IReadOnlyCollection<Card> Trashed => _trash.ToArray();
-    internal Stack<Card> _trash = [];
+    internal List<Card> _trash = [];
 
     public IReadOnlyCollection<Card> Permanent => _permanent.AsReadOnly();
     internal List<Card> _permanent = [];
@@ -143,10 +143,10 @@ public class Game : Observable<Game>
                 _discovered.Add(card);
                 break;
             case State.Deck:
-                _deck.Enqueue(card);
+                _deck.Add(card);
                 break;
             case State.DeckTop:
-                _deck.Enqueue(card);
+                _deck.Add(card);
                 break;
             case State.Hand:
                 _hand.Add(card);
@@ -158,7 +158,7 @@ public class Game : Observable<Game>
                 _discarded.Add(card);
                 break;
             case State.Removed:
-                _trash.Push(card);
+                _trash.Insert(0, card);
                 break;
             case State.Permanent:
                 _permanent.Add(card);
@@ -241,13 +241,13 @@ public class Game : Observable<Game>
     private void ReshuffleDeck()
     {
         var top = _deck.FirstOrDefault(card => card.State == State.DeckTop);
-        var newDeck = new Queue<Card>();
-
+        var newDeck = new List<Card>();
         if (top != null)
-            newDeck.Enqueue(top);
+            newDeck.Add(top);
 
-        foreach (var card in _deck.Where(card => card.State != State.DeckTop).OrderBy(_ => Random.Shared.Next()))
-            newDeck.Enqueue(card);
+        newDeck.AddRange(_deck
+            .Where(card => card.State != State.DeckTop)
+            .OrderBy(_ => Random.Shared.Next()));
 
         _deck = newDeck;
     }

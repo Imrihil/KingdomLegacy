@@ -24,7 +24,7 @@ internal class TrashAction(Game game, Card card) : ReversibleActionBase(game)
             return false;
 
         card.State = State.Removed;
-        game._trash.Push(card);
+        game._trash.Insert(0, card);
 
         Description = $"Trashed {card.Id}.";
 
@@ -33,14 +33,10 @@ internal class TrashAction(Game game, Card card) : ReversibleActionBase(game)
 
     protected override bool UndoInternal()
     {
-        if (_sourceList == null || !game._trash.TryPop(out var poppedCard))
+        if (_sourceList == null || game._trash.Count == 0 || game._trash[0] != card)
             return false;
 
-        if (poppedCard != card)
-        {
-            game._trash.Push(poppedCard);
-            return false;
-        }
+        game._trash.Remove(card);
 
         card.State =
             _sourceList == game._discovered ? State.Discovered
