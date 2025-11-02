@@ -28,12 +28,12 @@ public class Actions(Game game)
     // TODO: Redo
     // public void Redo()
 
+    private static readonly Type[] _allActionTypes = Assembly.GetAssembly(typeof(IAction))?
+        .GetTypes().Where(type => type.IsAssignableTo(typeof(IAction)) && !type.IsAbstract).ToArray() ?? [];
+
     private static readonly Dictionary<State, Type[]> _stateActionTypes = States.All.ToDictionary(
         state => state,
         StateActionTypes);
-
-    private static readonly Type[] _allActionTypes = Assembly.GetAssembly(typeof(IAction))?
-        .GetTypes().Where(type => type.IsAssignableTo(typeof(IAction)) && !type.IsAbstract).ToArray() ?? [];
 
     private static Type[] StateActionTypes(State state) => _allActionTypes
         .Select(type => GetExampleAction(type, state))
