@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
+@inject ILocalStorageService Storage
 @inject IJSRuntime JS
 @inject Game GameContext
 
@@ -46,7 +47,7 @@
 
         await JS.InvokeVoidAsync("downloadFileFromStream", $"{GameContext.KingdomName}.save", streamRef);
 
-        await JS.InvokeAsync<string>("blazorExtensions.WriteCookie", "save", text, 180);
+        await Storage.SetItemAsync("save", text);
     }
 
     private async Task SaveAndExit()

@@ -1,3 +1,4 @@
+using Blazored.LocalStorage;
 using KingdomLegacy.Domain;
 using KingdomLegacy.Web;
 using Microsoft.AspNetCore.Components.Web;
@@ -11,6 +12,8 @@ builder.Services
     .AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
     .AddScoped<Game>()
     .AddScoped<Resources>()
-    .AddBlazorBootstrap();
+    .AddBlazorBootstrap()
+    .AddBlazoredLocalStorage()
+    .AddBlazoredLocalStorage(config => config.JsonSerializerOptions.WriteIndented = true);
 
 await builder.Build().RunAsync();

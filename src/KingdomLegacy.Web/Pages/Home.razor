@@ -1,5 +1,5 @@
 ﻿@page "/"
-@inject IJSRuntime JS
+@inject ILocalStorageService Storage
 @inject Game GameContext
 
 <PageTitle>Kingdom Legacy</PageTitle>
@@ -107,11 +107,18 @@ else
     private void NewGame(MouseEventArgs args) =>
         _newKingdomForm = new NewKingdomForm();
 
-    private void StartGame(EditContext args) =>
+    private void StartGame(EditContext args)
+    {
         GameContext.Initialize(_newKingdomForm?.Name, Expansions.FeudalKingdom);
+        _newKingdomForm = null;
+    }
 
     private async Task ContinueGame(MouseEventArgs args)
     {
-        await JS.InvokeAsync<string>("blazorExtensions.ReadCookie", "save");
+        var data = await Storage.GetItemAsStringAsync("save");
+        if (data != null)
+            GameContext.Load(data);
+
+        _newKingdomForm = null;
     }
 }

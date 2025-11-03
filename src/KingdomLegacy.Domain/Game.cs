@@ -17,7 +17,7 @@ public class Game : Observable<Game>
     private List<Card> _box = new();
     public int BoxCount => _box.Count;
     internal Card? BoxNext => _box.Count > 0 ? _box[0] : null;
-    internal Card? BoxById(int id) => 
+    internal Card? BoxById(int id) =>
         _box.FirstOrDefault(card => card.Id == id);
 
     private List<Card> _discovered = [];
@@ -119,7 +119,7 @@ public class Game : Observable<Game>
     }
 
     public void Load(string data) =>
-        Load(data.Split(Environment.NewLine));
+        Load(data.Trim('"').Replace("\\n", "\n").Split(Environment.NewLine));
 
     public void Load(IEnumerable<string> lines)
     {
@@ -159,7 +159,7 @@ public class Game : Observable<Game>
 
     private static Card GetCard(string expansion, string text)
     {
-        var parts = text.Split('\t');
+        var parts = text.Replace("\\t", "\t").Split('\t');
         if (parts.Length < 3)
             throw new FormatException("Invalid card data format.");
 
