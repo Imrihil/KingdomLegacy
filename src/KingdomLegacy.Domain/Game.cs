@@ -4,20 +4,27 @@ using System.Text;
 namespace KingdomLegacy.Domain;
 public class Game : Observable<Game>
 {
+    public readonly Actions Actions;
+    public Game()
+    {
+        Actions = new(this);
+    }
+
     public string KingdomName { get; set; } = "";
-    public int BoxCount => _box.Count;
-    public int DiscoveredCount => _discovered.Count;
-    public int DeckCount => _deck.Count;
-    public int DiscardedCount => _discarded.Count;
-    public int TrashCount => _trash.Count;
     public bool IsInitialized { get; internal set; }
     public int Points { get; set; }
 
-    internal List<Card> _box = new();
+    private List<Card> _box = new();
+    public int BoxCount => _box.Count;
+    internal Card? BoxNext => _box.Count > 0 ? _box[0] : null;
+    internal Card? BoxById(int id) => 
+        _box.FirstOrDefault(card => card.Id == id);
 
-    internal List<Card> _discovered = [];
+    private List<Card> _discovered = [];
     public IReadOnlyCollection<Card> Discovered => _discovered.AsReadOnly();
 
+    private List<Card> _deck = new();
+    public int DeckCount => _deck.Count;
     public Card? DeckTop => _deck.Count > 0 ? _deck[0] : null;
     public IReadOnlyCollection<Card> Deck => _deck.Count > 0
         ? new Card[] { _deck[0] }
@@ -25,27 +32,49 @@ public class Game : Observable<Game>
             .ToList()
             .AsReadOnly()
         : [];
-    internal List<Card> _deck = new();
+    internal void DeckReshuffle()
+    {
+        _deck = _deck.OrderBy(_ => Random.Shared.Next()).ToList();
 
+        foreach (var card in _deck)
+            card.State = State.Deck;
+
+        if (DeckTop is Card topCard)
+            topCard.State = State.DeckTop;
+    }
+    private void DeckReshuffleExceptTop()
+    {
+        var top = _deck.FirstOrDefault(card => card.State == State.DeckTop);
+        var newDeck = new List<Card>();
+        if (top != null)
+            newDeck.Add(top);
+
+        newDeck.AddRange(_deck
+            .Where(card => card.State != State.DeckTop)
+            .OrderBy(_ => Random.Shared.Next()));
+
+        _deck = newDeck;
+    }
+
+    private List<Card> _hand = [];
     public IReadOnlyCollection<Card> Hand => _hand.AsReadOnly();
-    internal List<Card> _hand = [];
 
+    private List<Card> _inPlay = [];
     public IReadOnlyCollection<Card> InPlay => _inPlay.AsReadOnly();
-    internal List<Card> _inPlay = [];
 
+    private List<Card> _blocked = [];
     public IReadOnlyCollection<Card> Blocked => _blocked.AsReadOnly();
-    internal List<Card> _blocked = [];
 
+    private List<Card> _discarded = [];
     public Card? DiscardedLast => _discarded.Count > 0 ? _discarded[^1] : null;
     public IReadOnlyCollection<Card> Discarded => _discarded.AsReadOnly();
-    internal List<Card> _discarded = [];
 
+    private List<Card> _trash = [];
     public Card? TrashedLast => _trash.Count > 0 ? _trash[0] : null;
     public IReadOnlyCollection<Card> Trashed => _trash.ToArray();
-    internal List<Card> _trash = [];
 
+    private List<Card> _permanent = [];
     public IReadOnlyCollection<Card> Permanent => _permanent.AsReadOnly();
-    internal List<Card> _permanent = [];
 
     internal IEnumerable<Card> All => _box
         .Concat(Deck)
@@ -57,11 +86,36 @@ public class Game : Observable<Game>
         .Concat(_discarded)
         .Concat(_trash);
 
-    public readonly Actions Actions;
-
-    public Game()
+    internal List<Card> List(State state) => state switch
     {
-        Actions = new(this);
+        State.Box => _box,
+        State.Discovered => _discovered,
+        State.Deck => _deck,
+        State.DeckTop => _deck,
+        State.Hand => _hand,
+        State.InPlay => _inPlay,
+        State.Discarded => _discarded,
+        State.Removed => _trash,
+        State.Permanent => _permanent,
+        State.Blocked => _blocked,
+        _ => throw new NotImplementedException(),
+    };
+
+    internal bool ChangeState(Card card, State state)
+    {
+        if (!List(card.State).Remove(card))
+            return false;
+
+        card.State = state;
+        if (States.AllReverted.Contains(state))
+            List(state).Insert(0, card);
+        else
+            List(state).Add(card);
+
+        if (DeckTop is Card topCard && topCard.State != State.DeckTop)
+            topCard.State = State.DeckTop;
+
+        return true;
     }
 
     public void Load(string data) =>
@@ -97,10 +151,10 @@ public class Game : Observable<Game>
                 AddToCollection(GetCard(expansion, line));
         }
 
-        ReshuffleDeck();
+        DeckReshuffleExceptTop();
         IsInitialized = true;
 
-        Notify(this);
+        Notify();
     }
 
     private static Card GetCard(string expansion, string text)
@@ -182,24 +236,6 @@ public class Game : Observable<Game>
         return sb.ToString();
     }
 
-    public void Clear()
-    {
-        KingdomName = "";
-        _box = [];
-        _discovered = [];
-        _deck = new();
-        _permanent = [];
-        _inPlay = [];
-        _hand = [];
-        _blocked = [];
-        _discarded = [];
-        _trash = [];
-
-        IsInitialized = false;
-
-        Notify();
-    }
-
     private string SaveExpansion(IGrouping<string, Card> expansion)
     {
         var sb = new StringBuilder(expansion.Key).AppendLine();
@@ -227,8 +263,19 @@ public class Game : Observable<Game>
         if (string.IsNullOrWhiteSpace(name))
             return;
 
+        Clear();
         KingdomName = name;
         _box = expansion.Cards.ToList();
+
+        IsInitialized = true;
+
+        Actions.Discover(1);
+    }
+
+    public void Clear()
+    {
+        KingdomName = "";
+        _box = [];
         _discovered = [];
         _deck = new();
         _permanent = [];
@@ -238,23 +285,9 @@ public class Game : Observable<Game>
         _discarded = [];
         _trash = [];
 
-        IsInitialized = true;
+        IsInitialized = false;
 
-        Actions.Discover(1);
-    }
-
-    private void ReshuffleDeck()
-    {
-        var top = _deck.FirstOrDefault(card => card.State == State.DeckTop);
-        var newDeck = new List<Card>();
-        if (top != null)
-            newDeck.Add(top);
-
-        newDeck.AddRange(_deck
-            .Where(card => card.State != State.DeckTop)
-            .OrderBy(_ => Random.Shared.Next()));
-
-        _deck = newDeck;
+        Notify();
     }
 
     public void Insert(Card card1, Card? card2)
@@ -270,56 +303,8 @@ public class Game : Observable<Game>
         if (list.Remove(card2))
             list.Insert(index1, card2);
 
-        Notify(this);
-    }
-
-    public void Swap(Card card1, Card? card2)
-    {
-        if (card1 == card2)
-            return;
-
-        if (card1.State != card2?.State)
-            return;
-
-        var list = List(card1.State);
-        var index1 = list.IndexOf(card1);
-        var index2 = list.IndexOf(card2);
-        if (index1 >= 0 && index2 >= 0)
-        {
-            list[index1] = card2;
-            list[index2] = card1;
-        }
-
-        Notify(this);
+        Notify();
     }
 
     internal void Notify() => Notify(this);
-    internal List<Card> List(State state) => state switch
-    {
-        State.Box => _box,
-        State.Discovered => _discovered,
-        State.Deck => _deck,
-        State.DeckTop => _deck,
-        State.Hand => _hand,
-        State.InPlay => _inPlay,
-        State.Discarded => _discarded,
-        State.Removed => _trash,
-        State.Permanent => _permanent,
-        State.Blocked => _blocked,
-        _ => throw new NotImplementedException(),
-    };
-
-    internal bool ChangeState(Card card, State state)
-    {
-        if (!List(card.State).Remove(card))
-            return false;
-
-        card.State = state;
-        if (States.AllReverted.Contains(state))
-            List(state).Insert(0, card);
-        else
-            List(state).Add(card);
-
-        return true;
-    }
 }

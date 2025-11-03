@@ -13,19 +13,10 @@ internal abstract class DrawAction(Game game, int count) : RecordedActionBase(ga
     protected override bool ExecuteInternal()
     {
         var i = count;
-        while (i-- > 0 && game._deck.Count > 0)
-        {
-            var card = game._deck[0];
-            game._deck.Remove(card);
-            card.State = State.Hand;
-            game._hand.Add(card);
-            if (game._deck.Count > 0)
-                game._deck[0].State = State.DeckTop;
+        while (i-- > 0 && game.DeckTop is Card card)
+            if (game.ChangeState(card, TargetState))
+                _cards.Add(card);
 
-            _cards.Add(card);
-        }
-
-        _cards.Sort();
         Description = $"Drew {string.Join(", ", _cards.Select(card => card.Id))}.";
 
         return true;

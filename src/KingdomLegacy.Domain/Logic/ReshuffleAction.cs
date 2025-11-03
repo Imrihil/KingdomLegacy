@@ -9,26 +9,18 @@ internal class ReshuffleAction(Game game) : RecordedActionBase(game)
     private Card[] _cards = [];
     protected override bool ExecuteInternal()
     {
-        _cards = game._deck
-            .Concat(game._discovered)
-            .Concat(game._hand)
-            .Concat(game._inPlay)
-            .Concat(game._discarded)
+        _cards = game.Deck
+            .Concat(game.Discovered)
+            .Concat(game.Hand)
+            .Concat(game.InPlay)
+            .Concat(game.Discarded)
             .OrderBy(card => card.Id)
             .ToArray();
 
-        game._deck = _cards.OrderBy(_ => Random.Shared.Next()).ToList();
+        foreach (var card in _cards)
+            game.ChangeState(card, TargetState);
 
-        foreach (var card in game._deck)
-            card.State = State.Deck;
-
-        if (game._deck.Count > 0)
-            game._deck[0].State = State.DeckTop;
-
-        game._discovered.Clear();
-        game._hand.Clear();
-        game._inPlay.Clear();
-        game._discarded.Clear();
+        game.DeckReshuffle();
 
         Description = $"Reshuffeled {string.Join(", ", _cards.Select(card => card.Id))}.";
 

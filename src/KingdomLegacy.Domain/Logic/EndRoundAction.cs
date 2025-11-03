@@ -4,13 +4,13 @@ internal class EndRoundAction(Game game, Resources resources) : IAction
     public State[] SourceStates => [];
     public State TargetState => State.Hand;
     public int Order => 0;
-    public bool Allowed => game._discovered.Count == 0 && game._deck.Count == 0;
+    public bool Allowed => game.Discovered.Count == 0 && game.DeckCount == 0;
     public bool Disabled => false;
     public string Text => "End round";
     public string Description => "Round finished.";
     public void Execute()
     {
-        foreach (var card in game._hand.Concat(game._inPlay).ToArray())
+        foreach (var card in game.Hand.Concat(game.InPlay).ToArray())
             game.Actions.Discard(card);
 
         game.Actions.Discover(2);
