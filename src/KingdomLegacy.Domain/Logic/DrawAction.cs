@@ -2,6 +2,7 @@
 internal class Draw1Action(Game game) : DrawAction(game, 1);
 internal class Draw2Action(Game game) : DrawAction(game, 2);
 internal class Draw4Action(Game game) : DrawAction(game, 4);
+internal class Draw8Action(Game game) : DrawAction(game, 8);
 internal abstract class DrawAction(Game game, int count) : RecordedActionBase(game)
 {
     public override State[] SourceStates => [State.DeckTop];

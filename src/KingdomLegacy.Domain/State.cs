@@ -10,14 +10,16 @@ public enum State
     Discarded,
     Removed,
     Permanent,
-    Blocked
+    Blocked,
+    Purged
 }
 
 public static class States
 {
     public static readonly State[] All = Enum.GetValues<State>().ToArray();
+    public static readonly State[] AllNotRemoved = All.Where(state => state != State.Removed && state != State.Purged).ToArray();
 
-    public static readonly HashSet<State> AllReverted = [State.Box, State.Deck, State.DeckTop, State.Hand, State.Blocked, State.Discarded, State.Removed];
+    public static readonly HashSet<State> AllReverted = [State.Box, State.Deck, State.DeckTop, State.Hand, State.Blocked, State.Discarded, State.Removed, State.Purged];
 
     public static int Order(this State state) => state switch
     {
@@ -31,6 +33,7 @@ public static class States
         State.Blocked => 7,
         State.Discarded => 8,
         State.Removed => 9,
+        State.Purged => 10,
         _ => int.MaxValue,
     };
 }

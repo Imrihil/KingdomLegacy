@@ -76,6 +76,10 @@ public class Game : Observable<Game>
     private List<Card> _permanent = [];
     public IReadOnlyCollection<Card> Permanent => _permanent.AsReadOnly();
 
+    private List<Card> _purged = [];
+    public Card? PurgedLast => _purged.Count > 0 ? _purged[0] : null;
+    public IReadOnlyCollection<Card> Purged => _purged.ToArray();
+
     internal IEnumerable<Card> All => _box
         .Concat(Deck)
         .Concat(_discovered)
@@ -84,7 +88,8 @@ public class Game : Observable<Game>
         .Concat(_hand)
         .Concat(_blocked)
         .Concat(_discarded)
-        .Concat(_trash);
+        .Concat(_trash)
+        .Concat(_purged);
 
     internal List<Card> List(State state) => state switch
     {
@@ -98,6 +103,7 @@ public class Game : Observable<Game>
         State.Removed => _trash,
         State.Permanent => _permanent,
         State.Blocked => _blocked,
+        State.Purged => _purged,
         _ => throw new NotImplementedException(),
     };
 
@@ -187,44 +193,8 @@ public class Game : Observable<Game>
         };
     }
 
-    private void AddToCollection(Card card)
-    {
-        switch (card.State)
-        {
-            case State.Box:
-                _box.Add(card);
-                break;
-            case State.Discovered:
-                _discovered.Add(card);
-                break;
-            case State.Deck:
-                _deck.Add(card);
-                break;
-            case State.DeckTop:
-                _deck.Add(card);
-                break;
-            case State.Hand:
-                _hand.Add(card);
-                break;
-            case State.InPlay:
-                _inPlay.Add(card);
-                break;
-            case State.Discarded:
-                _discarded.Add(card);
-                break;
-            case State.Removed:
-                _trash.Add(card);
-                break;
-            case State.Permanent:
-                _permanent.Add(card);
-                break;
-            case State.Blocked:
-                _blocked.Add(card);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
+    private void AddToCollection(Card card) => 
+        List(card.State).Add(card);
 
     public string Save()
     {
@@ -287,6 +257,7 @@ public class Game : Observable<Game>
         _blocked = [];
         _discarded = [];
         _trash = [];
+        _purged = [];
 
         IsInitialized = false;
 

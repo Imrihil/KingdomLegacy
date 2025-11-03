@@ -16,6 +16,7 @@ public static class ColorExtensions
         State.Discarded => ButtonColor.Warning,
         State.Removed => ButtonColor.Danger,
         State.Permanent => ButtonColor.Light,
+        State.Purged => ButtonColor.Danger,
         _ => ButtonColor.None,
     };
 }

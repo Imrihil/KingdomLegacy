@@ -19,6 +19,7 @@ public class GameTests
         _game.Hand.Count.Should().Be(4);
         _game.Discarded.Count.Should().Be(0);
         _game.Trashed.Count.Should().Be(1);
+        _game.Purged.Count.Should().Be(0);
         _game.Points.Should().Be(1);
     }
 
