@@ -2,6 +2,7 @@
 
 @inject Game GameContext
 @inject SavedGameData SavedGame
+@inject ILocalStorageService Storage
 
 <PageTitle>Kingdom Legacy</PageTitle>
 
@@ -50,7 +51,41 @@
 else
 {
     <div class="mx-auto px-8" style="width: 1296px;">
-        @if(_isGameLoading)
+        @if (!_isCookiesAccepted)
+        {
+            <lead>
+                <h3>Hear ye, noble traveler!</h3>
+                <div class="mb-1">
+                    <p class="mb-0">By decree of the Kingdom, we humbly request thy consent to store enchanted crumbs (called cookies) upon thy device.</p>
+                    <p class="mb-0">They aid our scribes in crafting a smoother journey through these digital lands.</p>
+                </div>
+                <div class="mb-1">
+                    <p class="mb-0">Pray, click “Accept” to proceed with honor and comfort.</p>
+                </div>
+            </lead>
+
+            <div class="d-flex flex-column mb-3">
+                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" @onclick=AcceptCookies>Accept cookies</Button>
+            </div>
+        }
+        else if (!_isGameOwner)
+        {
+            <lead>
+                <h3>Hear ye, brave keeper of realms!</h3>
+                <div class="mb-1">
+                    <p class="mb-0">This humble site was forged for loyal holders of the paper Kingdom Legacy, to aid them in their noble quests and smooth the flow of play.</p>
+                </div>
+                <div class="mb-1">
+                    <p class="mb-0">By royal decree, only those who possess the game may proceed.</p>
+                    <p class="mb-0">Pray, confirm thy rightful ownership to continue thy adventure.</p>
+                </div>
+            </lead>
+
+            <div class="d-flex flex-column mb-3">
+                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" @onclick=ConfirmedGameOwner>Confirm</Button>
+            </div>
+        }
+        else if (_isGameLoading)
         {
             <lead>Upload the saved file, Your Grace.</lead>
 
@@ -59,19 +94,9 @@ else
                 <Button Class="m-2 text-start" Type="ButtonType.Button" Color="ButtonColor.Danger" @onclick="() => _isGameLoading = false">Cancel</Button>
             </div>
         }
-        else if (_newKingdomForm == null)
+        else if (_newKingdomForm != null)
         {
-            <lead>What do you want to do?</lead>
-
-            <div class="d-flex flex-column mb-3">
-                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" Disabled="@string.IsNullOrEmpty(SavedGame.Data)" @onclick=ContinueGame>Continue</Button>
-                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" @onclick="() => _isGameLoading = true">Load game</Button>
-                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Warning" @onclick=NewGame>New game</Button>
-            </div>
-        }
-        else
-        {
-            <lead>Name your kingdom</lead>
+            <lead>Name your kingdom, Your Grace.</lead>
 
             <div class="d-flex flex-column mb-3">
                 <EditForm class="d-flex flex-column" Model="@_newKingdomForm" OnValidSubmit="StartGame">
@@ -79,6 +104,16 @@ else
                     <Button Class="m-2 text-start" Type="ButtonType.Submit" Color="ButtonColor.Success">Start</Button>
                 </EditForm>
                 <Button Class="m-2 text-start" Type="ButtonType.Button" Color="ButtonColor.Danger" @onclick=Cancel>Cancel</Button>
+            </div>
+        }
+        else
+        {
+            <lead>What do you want to do?</lead>
+
+            <div class="d-flex flex-column mb-3">
+                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" Disabled="@string.IsNullOrEmpty(SavedGame.Data)" @onclick=ContinueGame>Continue</Button>
+                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" @onclick="() => _isGameLoading = true">Load game</Button>
+                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Warning" @onclick=NewGame>New game</Button>
             </div>
         }
         <Readme />
@@ -104,6 +139,9 @@ else
         var data = await SavedGame.Update();
         if (data != null)
             GameContext.Load(data);
+
+        _isCookiesAccepted = await Storage.GetItemAsync<bool>("cookies-consent");
+        _isGameOwner = await Storage.GetItemAsync<bool>("game-owner");
 
         await base.OnInitializedAsync();
     }
@@ -145,4 +183,18 @@ else
     }
 
     private bool _isGameLoading = false;
+    private bool _isCookiesAccepted = false;
+    private bool _isGameOwner = false;
+
+    private async Task AcceptCookies(MouseEventArgs args)
+    {
+        _isCookiesAccepted = true;
+        await Storage.SetItemAsync<bool>("cookies-consent", true);
+    }
+
+    private async Task ConfirmedGameOwner(MouseEventArgs args)
+    {
+        _isGameOwner = true;
+        await Storage.SetItemAsync<bool>("game-owner", true);
+    }
 }
