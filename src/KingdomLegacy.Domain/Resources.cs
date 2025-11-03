@@ -79,15 +79,14 @@ public class Resources(Game game) : Observable<Resources>
         }
     }
 
-    private int _points = game.Points;
     public int Points
     {
-        get => _points;
+        get => game.Points;
         set
         {
             if (value < 0)
                 return;
-            _points = value;
+
             game.Points = value;
             Notify(this);
         }
