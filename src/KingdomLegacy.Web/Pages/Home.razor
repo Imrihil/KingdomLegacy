@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject IJSRuntime JS
 @inject Game GameContext
 
 <PageTitle>Kingdom Legacy</PageTitle>
@@ -54,6 +55,7 @@ else
             <div class="d-flex flex-column mb-3">
                 <InputFile class="m-2 btn btn-primary" title="Load game" OnChange="LoadGame" accept=".save" />
                 <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Primary" @onclick=NewGame>New game</Button>
+                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Primary" @onclick=ContinueGame>Continue</Button>
             </div>
         }
         else
@@ -107,4 +109,9 @@ else
 
     private void StartGame(EditContext args) =>
         GameContext.Initialize(_newKingdomForm?.Name, Expansions.FeudalKingdom);
+
+    private async Task ContinueGame(MouseEventArgs args)
+    {
+        await JS.InvokeAsync<string>("blazorExtensions.ReadCookie", "save");
+    }
 }

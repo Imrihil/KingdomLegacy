@@ -45,6 +45,8 @@
         using var streamRef = new DotNetStreamReference(stream);
 
         await JS.InvokeVoidAsync("downloadFileFromStream", $"{GameContext.KingdomName}.save", streamRef);
+
+        await JS.InvokeAsync<string>("blazorExtensions.WriteCookie", "save", text, 180);
     }
 
     private async Task SaveAndExit()
