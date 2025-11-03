@@ -112,15 +112,19 @@ public class Game : Observable<Game>
         if (!List(card.State).Remove(card))
             return false;
 
+        var cards = List(state);
         card.State = state;
         var isReverted = States.AllReverted.Contains(state);
         if (isReverted && !placeOnBottom || !isReverted && placeOnBottom)
-            List(state).Insert(0, card);
+            cards.Insert(0, card);
         else
-            List(state).Add(card);
+            cards.Add(card);
 
         if (DeckTop is Card topCard && topCard.State != State.DeckTop)
             topCard.State = State.DeckTop;
+
+        if (state == State.Box)
+            cards.Sort();
 
         return true;
     }
@@ -193,7 +197,7 @@ public class Game : Observable<Game>
         };
     }
 
-    private void AddToCollection(Card card) => 
+    private void AddToCollection(Card card) =>
         List(card.State).Add(card);
 
     public string Save()

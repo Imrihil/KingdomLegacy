@@ -50,9 +50,9 @@ internal abstract class ReversibleCardActionBase(Game game, Card? card) : Record
         game.Notify();
     }
 
-    protected bool UndoInternal()
+    protected virtual bool UndoInternal()
     {
-        if (game.List(TargetState).Remove(card))
+        if (card != null && game.List(TargetState).Remove(card))
         {
             game.List(SourceState).Insert(SourceIndex, card);
             card.State = SourceState;
