@@ -251,17 +251,17 @@ public class Game : Observable<Game>
         return sb.ToString();
     }
 
-    public void Initialize(string? name, Expansion expansion)
+    public bool Initialize(string? name, Expansion expansion)
     {
         if (name == null)
-            return;
+            return false;
 
         name = name.ReplaceLineEndings();
         foreach (var invalidChar in Path.GetInvalidFileNameChars())
             name = name.Replace(invalidChar.ToString(), "");
 
         if (string.IsNullOrWhiteSpace(name))
-            return;
+            return false;
 
         Clear();
         KingdomName = name;
@@ -270,6 +270,8 @@ public class Game : Observable<Game>
         IsInitialized = true;
 
         Actions.Discover(1);
+
+        return true;
     }
 
     public void Clear()

@@ -3,6 +3,7 @@
 @inject ILocalStorageService Storage
 @inject IJSRuntime JS
 @inject Game GameContext
+@inject SavedGameData SavedGame
 
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
@@ -41,11 +42,13 @@
         base.OnInitialized();
     }
 
-    private async Task Save()
+    private async Task<string> Save()
     {
         var text = GameContext.Save();
 
         await Storage.SetItemAsync("save", text);
+
+        return text;
     }
 
     private async Task Download()
@@ -62,7 +65,9 @@
 
     private async Task Exit()
     {
-        await Save();
+        var text = await Save();
+
+        await SavedGame.Update(text);
 
         GameContext.Clear();
     }
