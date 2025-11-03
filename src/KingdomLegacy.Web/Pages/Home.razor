@@ -85,6 +85,16 @@ else
                 <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" @onclick=ConfirmedGameOwner>Confirm</Button>
             </div>
         }
+        else if (!_isGameLoading && _newKingdomForm == null)
+        {
+            <lead>What do you want to do?</lead>
+
+            <div class="d-flex flex-column mb-3">
+                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" Disabled="@string.IsNullOrEmpty(SavedGame.Data)" @onclick=ContinueGame>Continue</Button>
+                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" @onclick="() => _isGameLoading = true">Load game</Button>
+                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Warning" @onclick=NewGame>New game</Button>
+            </div>
+        }
         else if (_isGameLoading)
         {
             <lead>Upload the saved file, Your Grace.</lead>
@@ -104,16 +114,6 @@ else
                     <Button Class="m-2 text-start" Type="ButtonType.Submit" Color="ButtonColor.Success">Start</Button>
                 </EditForm>
                 <Button Class="m-2 text-start" Type="ButtonType.Button" Color="ButtonColor.Danger" @onclick=Cancel>Cancel</Button>
-            </div>
-        }
-        else
-        {
-            <lead>What do you want to do?</lead>
-
-            <div class="d-flex flex-column mb-3">
-                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" Disabled="@string.IsNullOrEmpty(SavedGame.Data)" @onclick=ContinueGame>Continue</Button>
-                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" @onclick="() => _isGameLoading = true">Load game</Button>
-                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Warning" @onclick=NewGame>New game</Button>
             </div>
         }
         <Readme />
@@ -167,7 +167,7 @@ else
     private void ContinueGame(MouseEventArgs args)
     {
         if (!string.IsNullOrEmpty(SavedGame.Data))
-            GameContext.Load(System.Web.HttpUtility.HtmlDecode(SavedGame.Data));
+            GameContext.Load(SavedGame.Data);
 
         _newKingdomForm = null;
     }

@@ -1,4 +1,6 @@
 ﻿using Blazored.LocalStorage;
+using System.Net;
+using System.Text.RegularExpressions;
 
 namespace KingdomLegacy.Web.Configuration;
 
@@ -15,7 +17,7 @@ internal class SavedGameData(ILocalStorageService storage)
         }
 
         savedData = await storage.GetItemAsStringAsync("save");
-        Data = savedData?.Trim('"').Replace("\\n", "\n").Replace("\\t", "\t");
+        Data = savedData != null ? Regex.Unescape(savedData.Trim('"')) : null;
 
         return Data;
     }
