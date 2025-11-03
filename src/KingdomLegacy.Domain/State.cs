@@ -17,7 +17,7 @@ public static class States
 {
     public static readonly State[] All = Enum.GetValues<State>().ToArray();
 
-    public static readonly HashSet<State> AllReverted = [State.Box, State.Hand, State.Blocked, State.Discarded, State.Removed];
+    public static readonly HashSet<State> AllReverted = [State.Box, State.Deck, State.DeckTop, State.Hand, State.Blocked, State.Discarded, State.Removed];
 
     public static int Order(this State state) => state switch
     {

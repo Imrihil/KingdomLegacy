@@ -91,7 +91,9 @@ else
     protected override async Task OnInitializedAsync()
     {
         GameContext.Subscribe(_ => StateHasChanged());
-        await SavedGame.Update();
+        var data = await SavedGame.Update();
+        if (data != null)
+            GameContext.Load(data);
 
         await base.OnInitializedAsync();
     }

@@ -101,13 +101,14 @@ public class Game : Observable<Game>
         _ => throw new NotImplementedException(),
     };
 
-    internal bool ChangeState(Card card, State state)
+    internal bool ChangeState(Card card, State state, bool placeOnBottom = false)
     {
         if (!List(card.State).Remove(card))
             return false;
 
         card.State = state;
-        if (States.AllReverted.Contains(state))
+        var isReverted = States.AllReverted.Contains(state);
+        if (isReverted && !placeOnBottom || !isReverted && placeOnBottom)
             List(state).Insert(0, card);
         else
             List(state).Add(card);
