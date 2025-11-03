@@ -50,13 +50,22 @@
 else
 {
     <div class="mx-auto px-8" style="width: 1296px;">
-        @if (_newKingdomForm == null)
+        @if(_isGameLoading)
+        {
+            <lead>Upload the saved file, Your Grace.</lead>
+
+            <div class="d-flex flex-column mb-3">
+                <InputFile class="m-2 btn btn-success" title="Load game" OnChange="LoadGame" accept=".save" />
+                <Button Class="m-2 text-start" Type="ButtonType.Button" Color="ButtonColor.Danger" @onclick="() => _isGameLoading = false">Cancel</Button>
+            </div>
+        }
+        else if (_newKingdomForm == null)
         {
             <lead>What do you want to do?</lead>
 
             <div class="d-flex flex-column mb-3">
                 <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" Disabled="@string.IsNullOrEmpty(SavedGame.Data)" @onclick=ContinueGame>Continue</Button>
-                <InputFile class="m-2 btn btn-success" title="Load game" OnChange="LoadGame" accept=".save" />
+                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" @onclick="() => _isGameLoading = true">Load game</Button>
                 <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Warning" @onclick=NewGame>New game</Button>
             </div>
         }
@@ -120,7 +129,7 @@ else
     private void ContinueGame(MouseEventArgs args)
     {
         if (!string.IsNullOrEmpty(SavedGame.Data))
-            GameContext.Load(SavedGame.Data);
+            GameContext.Load(System.Web.HttpUtility.HtmlDecode(SavedGame.Data));
 
         _newKingdomForm = null;
     }
@@ -132,5 +141,8 @@ else
         var bytes = stream.ToArray();
         var data = Encoding.Default.GetString(bytes);
         GameContext.Load(data);
+        _isGameLoading = false;
     }
+
+    private bool _isGameLoading = false;
 }
