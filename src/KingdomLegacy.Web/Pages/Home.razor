@@ -33,7 +33,7 @@
         <Cards Name="Permanent" GameContext="@GameContext" Values="@GameContext.Permanent" BackgroundColor="text-bg-light" />
         <Cards Name="In play" GameContext="@GameContext" Values="@GameContext.InPlay" BackgroundColor="text-bg-secondary" Disabled="@(GameContext.DiscoveredCount > 0)" />
         <Cards Name="Hand" GameContext="@GameContext" Values="@GameContext.Hand" BackgroundColor="text-bg-success" Disabled="@(GameContext.DiscoveredCount > 0)" />
-        <Cards Name="Blocked" GameContext="@GameContext" Values="@GameContext.Blocked" BackgroundColor="text-bg-dark" Disabled="@(GameContext.DiscoveredCount > 0)" />
+        <Cards Name="Blocked" GameContext="@GameContext" Values="@GameContext.Blocked" BackgroundColor="text-bg-dark" IsCollapsed="true" Disabled="@(GameContext.DiscoveredCount > 0)" />
         <Cards Name="Discard" GameContext="@GameContext" Values="@GameContext.Discarded" BackgroundColor="text-bg-warning" IsCollapsed="true" Disabled="@(GameContext.DiscoveredCount > 0)" />
         <Cards Name="Trash" GameContext="@GameContext" Values="@GameContext.Trashed" BackgroundColor="text-bg-danger" IsCollapsed="true" Disabled="@(GameContext.DiscoveredCount > 0)" />
     </div>
@@ -53,7 +53,7 @@ else
 
             <div class="d-flex flex-column mb-3">
                 <InputFile class="m-2 btn btn-primary" title="Load game" OnChange="LoadGame" accept=".save" />
-                <Button Class="m-2" Type="ButtonType.Link" Color="ButtonColor.Primary" @onclick=NewGame>New game</Button>
+                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Primary" @onclick=NewGame>New game</Button>
             </div>
         }
         else
@@ -62,7 +62,7 @@ else
 
             <EditForm class="d-flex flex-column mb-3" Model="@_newKingdomForm" OnValidSubmit="StartGame">
                 <TextInput Class="m-2 w-auto" @bind-Value="@_newKingdomForm.Name" Placeholder="Kingdom name" @ref="_input" />
-                <Button Class="m-2" Type="ButtonType.Submit" Color="ButtonColor.Primary">Start</Button>
+                <Button Class="m-2 text-start" Type="ButtonType.Submit" Color="ButtonColor.Primary">Start</Button>
             </EditForm>
         }
         <Readme />

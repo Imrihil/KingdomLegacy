@@ -41,43 +41,50 @@
 
 @if (CardContext != null)
 {
-    <Modal @ref="_modal" Title="Choose sticker" @onmouseleave="OnMouseLeave">
+    <Modal @ref="_modal" Title="Choose a sticker" @onclose="CloseModal" CloseOnEscape=false ShowCloseButton=false>
         <BodyTemplate>
-            <div class="d-flex flex-row flex-wrap justify-content-center">
-                <Button Color="ButtonColor.Danger" Active="@(_stickerType == null)" @onclick="() => SetType(null)">
+            <div class="mb-1 d-flex flex-row flex-wrap justify-content-center">
+                <Button Class="m-1" Color="ButtonColor.Danger" Active="@(_stickerType == null)" @onclick="() => SetType(null)">
                     Remove
                 </Button>
                 @foreach (var type in StickerTypeExtensions.AllDetails)
                 {
-                    <Button Color="ButtonColor.Success" Active="@(_stickerType == type)" @onclick="() => SetType(type)">
+                    <Button Class="m-1" Color="ButtonColor.Success" Position="Position.Relative" Active="@(_stickerType == type)" @onclick="() => SetType(type)">
                         <Image Src="@($"icons/{type.Name}.png")"
                                Alt="@type.Name"
                                Class="sticker"
                                Style="@($"width: {type.Width}px; height: {type.Height}px;")" />
+                        <Badge Color="BadgeColor.Light"
+                               Position="Position.Absolute"
+                               Placement="BadgePlacement.TopCenter"
+                               IndicatorType="BadgeIndicatorType.RoundedPill"
+                               VisuallyHiddenText="number">@((int)type.Type)</Badge>
                     </Button>
                 }
             </div>
+            <div class="d-flex flex-row flex-wrap justify-content-center">
+                <div class="@($"position-relative{(CardContext.Orientation.IsRotated() ? " rotate-180" : "")}")" @onmousemove="SetSticker" @onclick="LeaveSticker">
+                    <Image Src="@("cards/" + CardContext.Path)" Alt="@CardContext.Id.ToString()" Class="game-card" />
+                    @foreach (var (sticker, type) in Stickers)
+                    {
+                        @if (type != null)
+                        {
+                            <Image Src="@($"icons/{type.Name}.png")"
+                                   Alt="@type.Name"
+                                   Class="@($"position-absolute sticker{(sticker.IsRotated ? " rotate-180" : "")}")"
+                                   Style="@($"left: {Math.Abs(sticker.X)}px; top: {Math.Abs(sticker.Y)}px; width: {type.Width}px; height: {type.Height}px;")"
+                                   @onclick="() => Remove(sticker)" />
+                        }
+                    }
+                    @if (_stickerType != null)
+                    {
+                        <div class="w-100 h-100 position-absolute top-0 start-0 game-card opacity-100" />
+                    }
+                </div>
+            </div>
         </BodyTemplate>
         <FooterTemplate>
-            <div class="@($"mx-auto position-relative{(CardContext.Orientation.IsRotated() ? " rotate-180" : "")}")" @onmousemove="SetSticker" @onclick="OnClick">
-                <Image Src="@("cards/" + CardContext.Path)" Alt="@CardContext.Id.ToString()" Class="game-card" />
-                @foreach (var (sticker, type) in Stickers)
-                {
-                    @if (type != null)
-                    {
-                        <Image Src="@($"icons/{type.Name}.png")"
-                               Alt="@type.Name"
-                               Class="@($"position-absolute sticker{(sticker.IsRotated ? " rotate-180" : "")}")"
-                               Style="@($"left: {Math.Abs(sticker.X)}px; top: {Math.Abs(sticker.Y)}px; width: {type.Width}px; height: {type.Height}px;")"
-                               @onclick="() => Remove(sticker)" />
-                    }
-                }
-                @if (_stickerType != null)
-                {
-                    <div class="w-100 h-100 position-absolute top-0 start-0 game-card opacity-100" />
-                }
-            </div>
-
+            <Button Type="ButtonType.Button" Color="ButtonColor.Success" @onclick="CloseModal">Close</Button>
         </FooterTemplate>
     </Modal>
 }
@@ -131,22 +138,14 @@
         if (CardContext == null || _stickerType == null)
             return;
 
-        Console.WriteLine($"type: {_stickerType.Type}, sticker: {_sticker?.Type}, index: {(_sticker != null ? CardContext.Stickers.IndexOf(_sticker) : "")}");
-
         if (_sticker == null)
             _sticker = CardContext.AddSticker(_stickerType.Type, (int)args.OffsetX, (int)args.OffsetY);
         else
             _sticker.Set(CardContext, (int)args.OffsetX, (int)args.OffsetY);
     }
 
-    private void OnMouseLeave(MouseEventArgs args)
-    {
-        if (CardContext == null || _sticker == null)
-            return;
-
-        CardContext.RemoveSticker(_sticker);
+    private void LeaveSticker() =>
         _sticker = null;
-    }
 
     private void Remove(Sticker sticker)
     {
@@ -156,10 +155,15 @@
         CardContext.RemoveSticker(sticker);
     }
 
-    private async Task OnClick(MouseEventArgs args)
+    private async Task CloseModal()
     {
         _stickerType = null;
-        _sticker = null;
+        if (_sticker != null)
+        {
+            CardContext?.RemoveSticker(_sticker);
+            _sticker = null;
+        }
+
         await _modal.HideAsync();
     }
 }
