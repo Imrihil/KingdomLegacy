@@ -17,8 +17,8 @@ public class GameTests
         _game.DeckCount.Should().Be(8);
         _game.InPlay.Count.Should().Be(0);
         _game.Hand.Count.Should().Be(4);
-        _game.DiscardedCount.Should().Be(0);
-        _game.TrashCount.Should().Be(1);
+        _game.Discarded.Count.Should().Be(0);
+        _game.Trashed.Count.Should().Be(1);
         _game.Points.Should().Be(1);
     }
 
