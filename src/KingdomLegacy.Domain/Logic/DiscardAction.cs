@@ -3,7 +3,7 @@ internal class DiscardAction(Game game, Card card) : ReversibleCardActionBase(ga
 {
     public override State[] SourceStates => [State.Deck, State.DeckTop, State.Discovered, State.Hand, State.InPlay];
     public override State TargetState => State.Discarded;
-    public override int Order => 10;
+    public override int Order => 20;
     public override bool Allowed => true;
     public override bool Disabled => false;
     public override string Text => "✓";

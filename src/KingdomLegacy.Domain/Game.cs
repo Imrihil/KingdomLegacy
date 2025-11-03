@@ -8,8 +8,6 @@ public class Game : Observable<Game>
     public int BoxCount => _box.Count;
     public int DiscoveredCount => _discovered.Count;
     public int DeckCount => _deck.Count;
-    public int HandCount => _hand.Count;
-    public int InPlayCount => _inPlay.Count;
     public int DiscardedCount => _discarded.Count;
     public int TrashCount => _trash.Count;
     public bool IsInitialized { get; internal set; }
@@ -29,16 +27,17 @@ public class Game : Observable<Game>
         : [];
     internal List<Card> _deck = new();
 
-    public IReadOnlyCollection<Card> Hand =>
-        ((IEnumerable<Card>)_hand).Reverse().ToList().AsReadOnly();
+    public IReadOnlyCollection<Card> Hand => _hand.AsReadOnly();
     internal List<Card> _hand = [];
 
     public IReadOnlyCollection<Card> InPlay => _inPlay.AsReadOnly();
     internal List<Card> _inPlay = [];
 
+    public IReadOnlyCollection<Card> Blocked => _blocked.AsReadOnly();
+    internal List<Card> _blocked = [];
+
     public Card? DiscardedLast => _discarded.Count > 0 ? _discarded[^1] : null;
-    public IReadOnlyCollection<Card> Discarded =>
-        ((IEnumerable<Card>)_discarded).Reverse().ToList().AsReadOnly();
+    public IReadOnlyCollection<Card> Discarded => _discarded.AsReadOnly();
     internal List<Card> _discarded = [];
 
     public Card? TrashedLast => _trash.Count > 0 ? _trash[0] : null;
@@ -50,12 +49,13 @@ public class Game : Observable<Game>
 
     internal IEnumerable<Card> All => _box
         .Concat(Deck)
-        .Concat(Discovered)
-        .Concat(Hand.Reverse())
-        .Concat(InPlay)
-        .Concat(Discarded.Reverse())
-        .Concat(Trashed.Reverse())
-        .Concat(Permanent);
+        .Concat(_discovered)
+        .Concat(_permanent)
+        .Concat(_inPlay)
+        .Concat(_hand)
+        .Concat(_blocked)
+        .Concat(_discarded)
+        .Concat(_trash);
 
     public readonly Actions Actions;
 
@@ -158,10 +158,13 @@ public class Game : Observable<Game>
                 _discarded.Add(card);
                 break;
             case State.Removed:
-                _trash.Insert(0, card);
+                _trash.Add(card);
                 break;
             case State.Permanent:
                 _permanent.Add(card);
+                break;
+            case State.Blocked:
+                _blocked.Add(card);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -185,11 +188,12 @@ public class Game : Observable<Game>
         _box = [];
         _discovered = [];
         _deck = new();
-        _hand = [];
+        _permanent = [];
         _inPlay = [];
+        _hand = [];
+        _blocked = [];
         _discarded = [];
         _trash = [];
-        _permanent = [];
 
         IsInitialized = false;
 
@@ -227,11 +231,12 @@ public class Game : Observable<Game>
         _box = expansion.Cards.ToList();
         _discovered = [];
         _deck = new();
-        _hand = [];
+        _permanent = [];
         _inPlay = [];
+        _hand = [];
+        _blocked = [];
         _discarded = [];
         _trash = [];
-        _permanent = [];
 
         IsInitialized = true;
 
@@ -260,18 +265,7 @@ public class Game : Observable<Game>
         if (card1.State != card2?.State)
             return;
 
-        var list = card1.State switch
-        {
-            State.Discovered => _discovered,
-            State.Hand => _hand,
-            State.InPlay => _inPlay,
-            State.Permanent => _permanent,
-            _ => null
-        };
-
-        if (list == null)
-            return;
-
+        var list = List(card1.State);
         var index1 = list.IndexOf(card1);
         if (list.Remove(card2))
             list.Insert(index1, card2);
@@ -287,18 +281,7 @@ public class Game : Observable<Game>
         if (card1.State != card2?.State)
             return;
 
-        var list = card1.State switch
-        {
-            State.Discovered => _discovered,
-            State.Hand => _hand,
-            State.InPlay => _inPlay,
-            State.Permanent => _permanent,
-            _ => null
-        };
-
-        if (list == null)
-            return;
-
+        var list = List(card1.State);
         var index1 = list.IndexOf(card1);
         var index2 = list.IndexOf(card2);
         if (index1 >= 0 && index2 >= 0)
@@ -322,7 +305,7 @@ public class Game : Observable<Game>
         State.Discarded => _discarded,
         State.Removed => _trash,
         State.Permanent => _permanent,
-        State.Blocked => throw new NotImplementedException(),
+        State.Blocked => _blocked,
         _ => throw new NotImplementedException(),
     };
 
@@ -332,7 +315,7 @@ public class Game : Observable<Game>
             return false;
 
         card.State = state;
-        if (state == State.Removed)
+        if (States.AllReverted.Contains(state))
             List(state).Insert(0, card);
         else
             List(state).Add(card);
