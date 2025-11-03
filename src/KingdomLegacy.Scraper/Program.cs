@@ -11,7 +11,13 @@ const string BaseExpansion = "FeudalKingdom";
 
 var expansionCards = new Dictionary<string, int>
 {
-    { "FeudalKingdom", 140 }
+    { "FeudalKingdom", 140 },
+    { "RiddingTheWoods", 30 },
+    { "Merchants", 26 },
+    { "FeudalKingdomFoundations", 157 },
+    { "FK_Adventures", 29 },
+    { "DistantLands", 160 },
+    { "Ambitions", 30 }
 };
 
 var client = new HttpClient();
@@ -23,9 +29,9 @@ client.DefaultRequestHeaders.Add("User-Agent",
 client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
 client.DefaultRequestHeaders.Add("Accept-Language", "en-US,en;q=0.9");
 
-//var expansions = await GetExpansions();
-
-await DownloadExpansion(BaseExpansion);
+var expansions = await GetExpansions();
+foreach (var expansion in expansions)
+    await DownloadExpansion(expansion);
 
 async Task<IEnumerable<string>> GetExpansions()
 {
@@ -49,6 +55,8 @@ async Task<IEnumerable<string>> GetExpansions()
 
 async Task DownloadExpansion(string expansionPath)
 {
+    Console.WriteLine($"Downloading expansion {expansionPath}...");
+
     //var html = await client.GetStringAsync(BaseUrl + "/" + ExpansionsPath + "/" + expansionPath);
 
     //var document = new HtmlDocument();
@@ -60,7 +68,12 @@ async Task DownloadExpansion(string expansionPath)
     //foreach (var cardId in cardsIds)
     //    await DownloadCard(expansionPath, cardId);
 
-    var cards = expansionCards[expansionPath];
+    if(!expansionCards.TryGetValue(expansionPath, out var cards))
+    {
+        Console.WriteLine($"Unknown expansion {expansionPath}");
+        return;
+    }
+
     for (var cardId = 0; cardId < cards; cardId++)
         await DownloadCard(expansionPath, cardId.ToString());
 
