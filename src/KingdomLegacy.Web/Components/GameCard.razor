@@ -47,7 +47,7 @@
                 <Button Class="m-1" Color="ButtonColor.Danger" Active="@(_stickerType == null)" @onclick="() => SetType(null)">
                     Remove
                 </Button>
-                @foreach (var type in StickerTypeExtensions.AllDetails)
+                @foreach (var type in Domain.Stickers.AllDetails)
                 {
                     <Button Class="m-1" Color="ButtonColor.Success" Position="Position.Relative" Active="@(_stickerType == type)" @onclick="() => SetType(type)">
                         <Image Src="@($"icons/{type.Name}.png")"
