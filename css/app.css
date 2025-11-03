@@ -44,7 +44,8 @@
     display: block;
     width: 8rem;
     height: 8rem;
-    margin: 20vh auto 1rem auto;
+    margin: auto;
+    top: 10rem;
 }
 
     .loading-progress circle {
@@ -65,12 +66,20 @@
     position: absolute;
     text-align: center;
     font-weight: bold;
-    inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
+    margin: auto;
+    width: 100% !important;
+    min-width: 1600px;
+    height: 8rem;
+    top: 13rem;
 }
 
     .loading-progress-text:after {
         content: var(--blazor-load-percentage-text, "Loading");
     }
+
+.modal {
+    min-width: 1600px;
+}
 
 code {
     color: #c02d76;
