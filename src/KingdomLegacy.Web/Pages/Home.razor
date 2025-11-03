@@ -53,9 +53,9 @@ else
             <lead>What do you want to do?</lead>
 
             <div class="d-flex flex-column mb-3">
-                <InputFile class="m-2 btn btn-primary" title="Load game" OnChange="LoadGame" accept=".save" />
-                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Primary" @onclick=NewGame>New game</Button>
-                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Primary" @onclick=ContinueGame>Continue</Button>
+                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" Disabled="@string.IsNullOrEmpty(_savedData)" @onclick=ContinueGame>Continue</Button>
+                <InputFile class="m-2 btn btn-success" title="Load game" OnChange="LoadGame" accept=".save" />
+                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Warning" @onclick=NewGame>New game</Button>
             </div>
         }
         else
@@ -64,7 +64,7 @@ else
 
             <EditForm class="d-flex flex-column mb-3" Model="@_newKingdomForm" OnValidSubmit="StartGame">
                 <TextInput Class="m-2 w-auto" @bind-Value="@_newKingdomForm.Name" Placeholder="Kingdom name" @ref="_input" />
-                <Button Class="m-2 text-start" Type="ButtonType.Submit" Color="ButtonColor.Primary">Start</Button>
+                <Button Class="m-2 text-start" Type="ButtonType.Submit" Color="ButtonColor.Success">Start</Button>
             </EditForm>
         }
         <Readme />
@@ -83,10 +83,13 @@ else
     }
 
     private TextInput? _input;
+    private string? _savedData;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         GameContext.Subscribe(_ => StateHasChanged());
+        _savedData = await Storage.GetItemAsStringAsync("save");
+        _savedData = _savedData?.Trim('"').Replace("\\n", "\n").Replace("\\t", "\t");
         base.OnInitialized();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -113,11 +116,10 @@ else
         _newKingdomForm = null;
     }
 
-    private async Task ContinueGame(MouseEventArgs args)
+    private void ContinueGame(MouseEventArgs args)
     {
-        var data = await Storage.GetItemAsStringAsync("save");
-        if (data != null)
-            GameContext.Load(data);
+        if (_savedData != null)
+            GameContext.Load(_savedData);
 
         _newKingdomForm = null;
     }

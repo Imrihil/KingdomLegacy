@@ -119,7 +119,7 @@ public class Game : Observable<Game>
     }
 
     public void Load(string data) =>
-        Load(data.Trim('"').Replace("\\n", "\n").Split(Environment.NewLine));
+        Load(data.Split(Environment.NewLine));
 
     public void Load(IEnumerable<string> lines)
     {
@@ -159,7 +159,7 @@ public class Game : Observable<Game>
 
     private static Card GetCard(string expansion, string text)
     {
-        var parts = text.Replace("\\t", "\t").Split('\t');
+        var parts = text.Split('\t');
         if (parts.Length < 3)
             throw new FormatException("Invalid card data format.");
 

@@ -14,8 +14,11 @@
                 <Button Class="m-2" Color="ButtonColor.Primary" @onclick="Save">
                     Save
                 </Button>
-                <Button Class="m-2" Color="ButtonColor.Danger" @onclick="SaveAndExit">
-                    Save and exit
+                <Button Class="m-2" Color="ButtonColor.Warning" @onclick="Download">
+                    Download
+                </Button>
+                <Button Class="m-2" Color="ButtonColor.Danger" @onclick="Exit">
+                    Exit
                 </Button>
             }
             <ThemeSwitcher Class="ps-3 ps-lg-2 my-auto" />
@@ -42,6 +45,13 @@
     {
         var text = GameContext.Save();
 
+        await Storage.SetItemAsync("save", text);
+    }
+
+    private async Task Download()
+    {
+        var text = GameContext.Save();
+
         using var stream = new MemoryStream(Encoding.Default.GetBytes(text));
         using var streamRef = new DotNetStreamReference(stream);
 
@@ -50,7 +60,7 @@
         await Storage.SetItemAsync("save", text);
     }
 
-    private async Task SaveAndExit()
+    private async Task Exit()
     {
         await Save();
 
