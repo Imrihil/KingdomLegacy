@@ -10,7 +10,7 @@ internal class EndRoundAction(Game game, Resources resources) : IAction
     public string Description => "Round finished.";
     public void Execute()
     {
-        foreach (var card in game.Hand.Concat(game.InPlay).ToArray())
+        foreach (var card in game.Hand.Concat(game.InPlay).Concat(game.Blocked).ToArray())
             game.Actions.Discard(card);
 
         game.Actions.Discover(2);
