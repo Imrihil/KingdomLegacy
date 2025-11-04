@@ -116,7 +116,12 @@ else if (EmptyActions != null)
 
     protected override void OnParametersSet()
     {
-        _sortedValues = Values;
+        if (_isSorted == null)
+            _sortedValues = Values;
+        else if (_isSorted == true)
+            _sortedValues = Values?.Order().ToList().AsReadOnly();
+        else
+            _sortedValues = Values?.OrderDescending().ToList().AsReadOnly();
 
         base.OnParametersSet();
     }
