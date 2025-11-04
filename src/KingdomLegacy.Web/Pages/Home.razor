@@ -37,9 +37,9 @@
         <Cards Name="In play" GameContext="@GameContext" Values="@GameContext.InPlay" BackgroundColor="text-bg-secondary" Disabled="@(GameContext.Discovered.Count > 0)" />
         <Cards Name="Hand" GameContext="@GameContext" Values="@GameContext.Hand" BackgroundColor="text-bg-success" Disabled="@(GameContext.Discovered.Count > 0)" />
         <Cards Name="Blocked" GameContext="@GameContext" Values="@GameContext.Blocked" BackgroundColor="text-bg-dark" IsCollapsed="true" Disabled="@(GameContext.Discovered.Count > 0)" />
-        <Cards Name="Discard" GameContext="@GameContext" Values="@GameContext.Discarded" BackgroundColor="text-bg-warning" IsCollapsed="true" Disabled="@(GameContext.Discovered.Count > 0)" />
+        <Cards Name="Discard" GameContext="@GameContext" Values="@GameContext.Discarded" BackgroundColor="text-bg-warning" IsCollapsed="true" Disabled="@(GameContext.Discovered.Count > 0)" IsSummary=true />
         <Cards Name="Trash" GameContext="@GameContext" Values="@GameContext.Trashed" BackgroundColor="text-bg-danger" IsCollapsed="true" Disabled="@(GameContext.Discovered.Count > 0)" />
-        <Cards Name="★ Purged" GameContext="@GameContext" Values="@GameContext.Purged" BackgroundColor="text-bg-danger" IsCollapsed="true" Disabled="@(GameContext.Discovered.Count > 0)" />
+        <Cards Name="★ Purged" GameContext="@GameContext" Values="@GameContext.Purged" BackgroundColor="text-bg-danger" IsCollapsed="true" Disabled="@(GameContext.Discovered.Count > 0)" IsSummary=true />
     </div>
     <ul class="list-group">
         @foreach (var action in GameContext.Actions.History.Reverse().Where(action => action.Description != null).Take(25))

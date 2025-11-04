@@ -1,38 +1,46 @@
-﻿@if (Values != null && Values.Count > 0)
+﻿@if (_sortedValues != null && _sortedValues.Count > 0)
 {
     @if (_showDetails)
     {
-        @foreach (var card in Values)
+        @foreach (var card in _sortedValues)
         {
             <div class="d-flex flex-column">
-                <div class="@(Values.Last() == card ? "pe-1" : "")">
-                    <div class="p-2 w-100 d-flex flex-row justify-content-between @(Values.First() == card ? "rounded-ts" : "") @(Values.Last() == card ? "rounded-te" : "") @(BackgroundColor)" style="height: 50px;">
-                        @if (Values.First() == card)
+                <div class="@(_sortedValues.Last() == card ? "pe-1" : "")">
+                    <div class="p-2 w-100 d-flex flex-row justify-content-between @(_sortedValues.First() == card ? "rounded-ts" : "") @(_sortedValues.Last() == card ? "rounded-te" : "") @(BackgroundColor)" style="height: 50px;">
+                        @if (_sortedValues.First() == card)
                         {
-                            <h3 class="m-0 p-0">@(Name) (@(Values.Count))</h3>
+                            <h3 class="m-0 p-0">@(Name) (@(_sortedValues.Count))</h3>
                         }
-                        @if (Values.Count > 1 && (!_showDetails || Values.First() == card) || Values.Last() == card)
+                        @if (_sortedValues.Count > 1 && (!_showDetails || _sortedValues.First() == card) || _sortedValues.Last() == card)
                         {
-                            <Button Class="ms-auto py-0" Color="ButtonColor.Light" @onclick="() => _showDetails = !_showDetails">
-                                @if (_showDetails)
+                            <div class="ms-auto d-flex flex-row justify-content-end">
+                                @if (IsSummary)
                                 {
-                                    <span>Hide</span>
+                                    <Button Class="mx-1 py-0" Color="ButtonColor.Light" @onclick="Sort">
+                                        @(_isSorted == null ? "⇵" : _isSorted == true ? "↑" : "↓")
+                                    </Button>
                                 }
-                                else
-                                {
-                                    <span>Show</span>
-                                }
-                            </Button>
+                                <Button Class="py-0" Color="ButtonColor.Light" @onclick="() => _showDetails = !_showDetails">
+                                    @if (_showDetails)
+                                    {
+                                        <span>Hide</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Show</span>
+                                    }
+                                </Button>
+                            </div>
                         }
                     </div>
                 </div>
                 <div @ondragstart="() => Drag(card)" @ondragenter="() => Drop(card)">
-                    <GameCard GameContext="@GameContext" CardContext="@card" BackgroundColor="@(Faded? BackgroundColor : "")" Disabled="@Disabled" />
+                    <GameCard GameContext="@GameContext" CardContext="@card" BackgroundColor="@(Faded? BackgroundColor : "")" Disabled="@Disabled" WithBadge="@(_isSorted != null)" />
                 </div>
             </div>
         }
     }
-    else if (First != null)
+    else if (Values != null && First != null)
     {
         <div class="d-flex flex-column">
             <div class="pe-1">
@@ -77,6 +85,7 @@ else if (EmptyActions != null)
     [Parameter]
     public IReadOnlyCollection<Domain.Card>? Values { get; set; }
     private Domain.Card? First => Values?.FirstOrDefault();
+    private IReadOnlyCollection<Domain.Card>? _sortedValues;
 
     [Parameter]
     public string? BackgroundColor { get; set; }
@@ -92,6 +101,9 @@ else if (EmptyActions != null)
     [Parameter]
     public IAction[]? EmptyActions { get; set; }
 
+    [Parameter]
+    public bool IsSummary { get; set; }
+
     private bool _showDetails;
 
     override protected void OnInitialized()
@@ -100,6 +112,13 @@ else if (EmptyActions != null)
             _showDetails = true;
 
         base.OnInitialized();
+    }
+
+    protected override void OnParametersSet()
+    {
+        _sortedValues = Values;
+
+        base.OnParametersSet();
     }
 
     private Domain.Card? _dragged;
@@ -111,4 +130,24 @@ else if (EmptyActions != null)
 
     private void OnDragEnd(DragEventArgs args) =>
         _dragged = null;
+
+    private bool? _isSorted;
+    private void Sort(MouseEventArgs args)
+    {
+        if (_isSorted == null)
+        {
+            _sortedValues = Values?.Order().ToList().AsReadOnly();
+            _isSorted = true;
+        }
+        else if (_isSorted == true)
+        {
+            _sortedValues = Values?.OrderDescending().ToList().AsReadOnly();
+            _isSorted = false;
+        }
+        else
+        {
+            _sortedValues = Values;
+            _isSorted = null;
+        }
+    }
 }
