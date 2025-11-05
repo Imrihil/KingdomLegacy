@@ -1,0 +1,32 @@
+@if (GameContext != null)
+{
+    <div class="d-flex flex-column">
+        <div class="pe-1">
+            <div class="p-2 w-100 d-flex flex-row justify-content-between rounded-ts rounded-te text-bg-dark" style="height: 50px;">
+                <h3 class="mb-1 p-2 rounded text-bg-dark">Box (@(GameContext.BoxCount))</h3>
+            </div>
+        </div>
+        <div class="me-1 mb-1 position-relative">
+            <div class="game-card d-flex flex-column">
+                @foreach (var action in GameContext.Actions.GetBoxActions())
+                {
+                    <ActionButton Class="my-1 p-1" Action="@action" />
+                }
+                <div class="d-flex d-row">
+                    <NumberInput Class="me-1 w-50" TValue="int" @bind-Value="@_boxCardId" />
+                    @foreach (var action in GameContext.Actions.GetBoxSpecialActions(_boxCardId))
+                    {
+                        <ActionButton Class="my-1 p-1 w-50" Action="@action" />
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Domain.Game? GameContext { get; set; }
+
+    private int _boxCardId;
+}
