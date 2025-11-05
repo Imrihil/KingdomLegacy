@@ -1,6 +1,4 @@
-﻿@inject Lobby Lobby
-
-<lead>
+﻿<lead>
     <h3>Hear ye, noble traveler!</h3>
     <div class="mb-1">
         <p class="mb-0">By decree of the Kingdom, we humbly request thy consent to store enchanted crumbs (called cookies) upon thy device.</p>
@@ -16,7 +14,8 @@
 </div>
 
 @code {
-    private Button? _button;
+    [Parameter, EditorRequired]
+    public Lobby Lobby { get; set; }
 
     private async Task AcceptCookies() =>
         await Lobby.CookiesAccepted();

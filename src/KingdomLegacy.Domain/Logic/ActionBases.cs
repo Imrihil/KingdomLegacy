@@ -24,15 +24,15 @@ internal abstract class ReversibleCardActionBase(Game game, Card? card) : Record
 {
     protected State SourceState { get; set; }
     protected int SourceIndex { get; set; }
-    protected Card Card { get; } = card;
+    protected Card? Card { get; } = card;
 
     public new void Execute()
     {
-        if (card == null)
+        if (Card == null)
             return;
 
-        SourceState = card.State;
-        SourceIndex = game.List(SourceState).IndexOf(card);
+        SourceState = Card.State;
+        SourceIndex = game.List(SourceState).IndexOf(Card);
 
         if (!ExecuteInternal())
             return;

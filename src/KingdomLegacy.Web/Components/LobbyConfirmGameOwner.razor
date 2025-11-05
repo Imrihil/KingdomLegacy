@@ -1,6 +1,4 @@
-﻿@inject Lobby Lobby
-
-<lead>
+﻿<lead>
     <h3>Hear ye, brave keeper of realms!</h3>
     <div class="mb-1">
         <p class="mb-0">This humble site was forged for loyal holders of the paper Kingdom Legacy, to aid them in their noble quests and smooth the flow of play.</p>
@@ -16,6 +14,9 @@
 </div>
 
 @code {
+    [Parameter, EditorRequired]
+    public Lobby Lobby { get; set; }
+
     private async Task GameOwnerConfirmed() =>
         await Lobby.GameOwnerConfirmed();
 }

@@ -10,6 +10,9 @@ internal class DiscoverByIdAction(Game game, int id)
     public override string Text => "+";
     protected override bool ExecuteInternal()
     {
+        if (Card == null)
+            return false;
+
         Description = $"Discovered {Card.Id}.";
 
         return game.ChangeState(Card, State.Discovered);

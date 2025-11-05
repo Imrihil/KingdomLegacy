@@ -1,6 +1,4 @@
-﻿@inject Lobby Lobby
-
-<lead>Name your kingdom, Your Grace.</lead>
+﻿<lead>Name your kingdom, Your Grace.</lead>
 
 <div class="d-flex flex-column mb-3">
     <EditForm class="d-flex flex-column" Model="@_newKingdomForm" OnValidSubmit="StartGame">
@@ -11,6 +9,9 @@
 </div>
 
 @code {
+    [Parameter, EditorRequired]
+    public Lobby Lobby { get; set; }
+
     protected override Task OnInitializedAsync()
     {
         _newKingdomForm = new();

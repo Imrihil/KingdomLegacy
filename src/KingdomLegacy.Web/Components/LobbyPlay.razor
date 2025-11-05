@@ -1,6 +1,4 @@
-﻿@inject Lobby Lobby
-
-<div class="d-flex flex-row flex-wrap">
+﻿<div class="d-flex flex-row flex-wrap">
     <Box Game="@Game" />
     <Cards Name="Discover" Game="@Game" Values="@Game.Discovered" BackgroundColor="text-bg-info" />
     <Cards Name="Deck" Game="@Game" Values="@Game.Deck" BackgroundColor="text-bg-primary" IsCollapsed="true" Disabled="@(Game.Discovered.Count > 0)" EmptyActions="@Game.Actions.GetDeckActions()" />
@@ -20,5 +18,8 @@
 </ul>
 
 @code {
+    [Parameter, EditorRequired]
+    public Lobby Lobby { get; set; }
+
     private Game Game => Lobby.Game;
 }

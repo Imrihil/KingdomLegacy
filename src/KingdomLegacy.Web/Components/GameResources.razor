@@ -1,6 +1,4 @@
-﻿@implements IDisposable
-@inject Lobby Lobby
-@inject IStorage Storage
+﻿@inject IStorage Storage
 
 <div class="d-flex flex-row">
     <div class="mx-2 d-flex lex-row">
@@ -20,16 +18,8 @@
 </div>
 
 @code {
+    [Parameter, EditorRequired]
+    public Lobby Lobby { get; set; }
     private Game Game => Lobby.Game;
     private Resources Resources => Lobby.Resources;
-    private IDisposable? _subscription;
-
-    public void Dispose() =>
-        _subscription?.Dispose();
-
-    override protected void OnInitialized()
-    {
-        _subscription = Lobby.Subscribe(_ => StateHasChanged());
-        base.OnInitialized();
-    }
 }

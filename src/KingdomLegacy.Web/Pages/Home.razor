@@ -9,39 +9,36 @@
 
 @if (Lobby.Stage == LobbyStage.Play)
 {
-    <LobbyPlay />
+    <LobbyPlay Lobby="Lobby" />
 }
 else
 {
     <div class="mx-auto px-8" style="width: 1296px;">
         @if (Lobby.Stage == LobbyStage.AcceptCookies)
         {
-            <LobbyAcceptCookies />
+            <LobbyAcceptCookies Lobby="Lobby" />
         }
         else if (Lobby.Stage == LobbyStage.ConfirmGameOwner)
         {
-            <LobbyConfirmGameOwner />
+            <LobbyConfirmGameOwner Lobby="Lobby" />
         }
         else if (Lobby.Stage == LobbyStage.ChooseGame)
         {
-            <LobbyChooseGame />
+            <LobbyChooseGame Lobby="Lobby" />
         }
         else if (Lobby.Stage == LobbyStage.LoadGame)
         {
-            <LobbyLoadGame />
+            <LobbyLoadGame Lobby="Lobby" />
         }
         else if (Lobby.Stage == LobbyStage.NewGame)
         {
-            <LobbyNewGame />
+            <LobbyNewGame Lobby="Lobby" />
         }
         <Readme />
     </div>
 }
 
 @code {
-    private bool _showDeck;
-    private bool _showTrashed;
-
     private Game Game => Lobby.Game;
     private IDisposable? _subscription;
 

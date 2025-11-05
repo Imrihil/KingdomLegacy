@@ -1,6 +1,4 @@
-﻿@inject Lobby Lobby
-
-<lead>What do you want to do?</lead>
+﻿<lead>What do you want to do?</lead>
 
 <div class="d-flex flex-column mb-3">
     <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" Disabled="@(Lobby.Game.IsInitialized != true)" @onclick=ContinueGame>Continue</Button>
@@ -9,6 +7,9 @@
 </div>
 
 @code {
+    [Parameter, EditorRequired]
+    public Lobby Lobby { get; set; }
+
     private void ContinueGame() =>
         Lobby.ContinueGame();
 

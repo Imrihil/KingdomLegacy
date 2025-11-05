@@ -1,6 +1,4 @@
-﻿@inject Lobby Lobby
-
-<lead>Upload the saved file, Your Grace.</lead>
+﻿<lead>Upload the saved file, Your Grace.</lead>
 
 <div class="d-flex flex-column mb-3">
     <InputFile class="m-2 btn btn-success" title="Load game" OnChange="LoadGame" accept=".save" />
@@ -8,6 +6,9 @@
 </div>
 
 @code {
+    [Parameter, EditorRequired]
+    public Lobby Lobby { get; set; }
+
     private async Task LoadGame(InputFileChangeEventArgs args)
     {
         MemoryStream stream = new MemoryStream();
