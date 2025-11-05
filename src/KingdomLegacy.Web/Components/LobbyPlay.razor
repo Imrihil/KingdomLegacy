@@ -1,0 +1,24 @@
+﻿@inject Lobby Lobby
+
+<div class="d-flex flex-row flex-wrap">
+    <Box Game="@Game" />
+    <Cards Name="Discover" Game="@Game" Values="@Game.Discovered" BackgroundColor="text-bg-info" />
+    <Cards Name="Deck" Game="@Game" Values="@Game.Deck" BackgroundColor="text-bg-primary" IsCollapsed="true" Disabled="@(Game.Discovered.Count > 0)" EmptyActions="@Game.Actions.GetDeckActions()" />
+    <Cards Name="Permanent" Game="@Game" Values="@Game.Permanent" BackgroundColor="text-bg-light" />
+    <Cards Name="In play" Game="@Game" Values="@Game.InPlay" BackgroundColor="text-bg-secondary" Disabled="@(Game.Discovered.Count > 0)" />
+    <Cards Name="Hand" Game="@Game" Values="@Game.Hand" BackgroundColor="text-bg-success" Disabled="@(Game.Discovered.Count > 0)" />
+    <Cards Name="Blocked" Game="@Game" Values="@Game.Blocked" BackgroundColor="text-bg-dark" IsCollapsed="true" Disabled="@(Game.Discovered.Count > 0)" />
+    <Cards Name="Discard" Game="@Game" Values="@Game.Discarded" BackgroundColor="text-bg-warning" IsCollapsed="true" Disabled="@(Game.Discovered.Count > 0)" IsSummary=true />
+    <Cards Name="Trash" Game="@Game" Values="@Game.Trashed" BackgroundColor="text-bg-danger" IsCollapsed="true" Disabled="@(Game.Discovered.Count > 0)" />
+    <Cards Name="★ Purged" Game="@Game" Values="@Game.Purged" BackgroundColor="text-bg-danger" IsCollapsed="true" Disabled="@(Game.Discovered.Count > 0)" IsSummary=true />
+</div>
+<ul class="list-group">
+    @foreach (var action in Game.Actions.History.Reverse().Where(action => action.Description != null).Take(25))
+    {
+        <li class="list-group-item">@action.Description</li>
+    }
+</ul>
+
+@code {
+    private Game Game => Lobby.Game;
+}

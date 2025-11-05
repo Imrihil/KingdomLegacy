@@ -35,7 +35,7 @@
                     </div>
                 </div>
                 <div @ondragstart="() => Drag(card)" @ondragenter="() => Drop(card)">
-                    <GameCard GameContext="@GameContext" CardContext="@card" BackgroundColor="@(Faded? BackgroundColor : "")" Disabled="@Disabled" WithBadge="@(_isSorted != null)" />
+                    <GameCard Game="@Game" Card="@card" BackgroundColor="@(Faded? BackgroundColor : "")" Disabled="@Disabled" WithBadge="@(_isSorted != null)" />
                 </div>
             </div>
         }
@@ -61,7 +61,7 @@
                     }
                 </div>
             </div>
-            <GameCard GameContext="@GameContext" CardContext="@First" BackgroundColor="@(Faded? BackgroundColor : "")" Disabled="@Disabled" />
+            <GameCard Game="@Game" Card="@First" BackgroundColor="@(Faded? BackgroundColor : "")" Disabled="@Disabled" />
         </div>
     }
 }
@@ -71,7 +71,7 @@ else if (EmptyActions != null)
         <div class="mb-1 p-2 w-100 d-flex flex-row justify-content-between rounded @(BackgroundColor)">
             <h3 class="m-0 p-0">@Name</h3>
         </div>
-        <GameCard GameContext="@GameContext" BackgroundColor="@(Faded? BackgroundColor : "")" Disabled="@Disabled" Actions="@EmptyActions" />
+        <GameCard Game="@Game" BackgroundColor="@(Faded? BackgroundColor : "")" Disabled="@Disabled" Actions="@EmptyActions" />
     </div>
 }
 
@@ -80,7 +80,7 @@ else if (EmptyActions != null)
     public string? Name { get; set; }
 
     [Parameter]
-    public Domain.Game? GameContext { get; set; }
+    public Domain.Game? Game { get; set; }
 
     [Parameter]
     public IReadOnlyCollection<Domain.Card>? Values { get; set; }
@@ -131,7 +131,7 @@ else if (EmptyActions != null)
         _dragged = IsDraggable ? card : null;
 
     private void Drop(Domain.Card card) =>
-        GameContext?.Insert(card, _dragged);
+        Game?.Insert(card, _dragged);
 
     private void OnDragEnd(DragEventArgs args) =>
         _dragged = null;

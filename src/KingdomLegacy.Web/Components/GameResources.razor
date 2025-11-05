@@ -1,5 +1,5 @@
-﻿@inject Game GameContext
-@inject Resources Resources
+﻿@implements IDisposable
+@inject Lobby Lobby
 @inject IStorage Storage
 
 <div class="d-flex flex-row">
@@ -13,16 +13,23 @@
         <NumberInput Class="my-2 p-0 points" TValue="int" @bind-Value="@Resources.Points" />
     </div>
 
-    @foreach (var action in GameContext.Actions.GetMainActions(Resources, Storage))
+    @foreach (var action in Game.Actions.GetMainActions(Resources, Storage))
     {
         <ActionButton Class="m-2" Action="@action" />
     }
 </div>
 
 @code {
+    private Game Game => Lobby.Game;
+    private Resources Resources => Lobby.Resources;
+    private IDisposable? _subscription;
+
+    public void Dispose() =>
+        _subscription?.Dispose();
+
     override protected void OnInitialized()
     {
-        GameContext.Subscribe(_ => StateHasChanged());
+        _subscription = Lobby.Subscribe(_ => StateHasChanged());
         base.OnInitialized();
     }
 }

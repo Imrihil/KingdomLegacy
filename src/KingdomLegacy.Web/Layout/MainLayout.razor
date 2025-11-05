@@ -1,14 +1,15 @@
 ﻿@inherits LayoutComponentBase
+@implements IDisposable
 
 @inject IStorage Storage
 @inject IJSRuntime JS
-@inject Game GameContext
+@inject Lobby Lobby
 
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
         <div class="w-100 d-flex flex-row">
-            <h2 class="me-2 my-auto">@(string.IsNullOrEmpty(GameContext.KingdomName) ? "Kingdom Legacy" : GameContext.KingdomName)</h2>
-            @if (GameContext.IsInitialized)
+            <h2 class="me-2 my-auto">@(string.IsNullOrEmpty(Game.KingdomName) ? "Kingdom Legacy" : Game.KingdomName)</h2>
+            @if (Lobby.Stage == LobbyStage.Play)
             {
                 <GameResources />
                 <Button Class="m-2" Color="ButtonColor.Warning" @onclick="Download">
@@ -32,15 +33,21 @@
 </BlazorBootstrapLayout>
 
 @code {
+    private Game Game => Lobby.Game;
+    private IDisposable? _subscription;
+
+    public void Dispose() =>
+        _subscription?.Dispose();
+
     protected override void OnInitialized()
     {
-        GameContext.Subscribe(_ => StateHasChanged());
+        _subscription = Lobby.Subscribe(_ => StateHasChanged());
         base.OnInitialized();
     }
 
     private async Task Download()
     {
-        await Storage.SaveGame(GameContext);
+        await Storage.SaveGame(Game);
         var data = Storage.GameData;
         if (string.IsNullOrEmpty(data))
             return;
@@ -48,13 +55,13 @@
         using var stream = new MemoryStream(Encoding.Default.GetBytes(data));
         using var streamRef = new DotNetStreamReference(stream);
 
-        await JS.InvokeVoidAsync("downloadFileFromStream", $"{GameContext.KingdomName}.save", streamRef);
+        await JS.InvokeVoidAsync("downloadFileFromStream", $"{Game.KingdomName}.save", streamRef);
     }
 
     private async Task Exit()
     {
-        await Storage.SaveGame(GameContext);
+        await Storage.SaveGame(Game);
 
-        GameContext.Clear();
+        Lobby.ChooseGame();
     }
 }

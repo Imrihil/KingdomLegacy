@@ -1,8 +1,8 @@
 ﻿<div class="me-1 mb-1 position-relative to-hover">
-    @if (CardContext != null)
+    @if (Card != null)
     {
-        <div class="@(CardContext.Orientation.IsRotated() ? "rotate-180" : "")">
-            <Image Src="@("cards/" + CardContext.Path)" Alt="@CardContext.Id.ToString()" Class="game-card" />
+        <div class="@(Card.Orientation.IsRotated() ? "rotate-180" : "")">
+            <Image Src="@("cards/" + Card.Path)" Alt="@Card.Id.ToString()" Class="game-card" />
             @foreach (var (sticker, type) in Stickers)
             {
                 @if (type != null)
@@ -37,17 +37,17 @@
             </div>
         </div>
     }
-    @if (WithBadge)
+    @if (WithBadge && Card != null)
     {
         <Badge Color="BadgeColor.Light"
                Position="Position.Absolute"
                Placement="BadgePlacement.TopCenter"
                IndicatorType="BadgeIndicatorType.RoundedCircle"
-               VisuallyHiddenText="id">@CardContext.Id</Badge>
+               VisuallyHiddenText="id">@Card.Id</Badge>
     }
 </div>
 
-@if (CardContext != null)
+@if (Card != null)
 {
     <Modal @ref="_modal" Title="Choose a sticker" @onclose="CloseModal" CloseOnEscape=false ShowCloseButton=false>
         <BodyTemplate>
@@ -71,8 +71,8 @@
                 }
             </div>
             <div class="d-flex flex-row flex-wrap justify-content-center">
-                <div class="@($"position-relative{(CardContext.Orientation.IsRotated() ? " rotate-180" : "")}")" @onmousemove="SetSticker" @onclick="LeaveSticker">
-                    <Image Src="@("cards/" + CardContext.Path)" Alt="@CardContext.Id.ToString()" Class="game-card" />
+                <div class="@($"position-relative{(Card.Orientation.IsRotated() ? " rotate-180" : "")}")" @onmousemove="SetSticker" @onclick="LeaveSticker">
+                    <Image Src="@("cards/" + Card.Path)" Alt="@Card.Id.ToString()" Class="game-card" />
                     @foreach (var (sticker, type) in Stickers)
                     {
                         @if (type != null)
@@ -99,10 +99,10 @@
 
 @code {
     [Parameter]
-    public Domain.Game? GameContext { get; set; }
+    public Domain.Game? Game { get; set; }
 
     [Parameter]
-    public Domain.Card? CardContext { get; set; }
+    public Domain.Card? Card { get; set; }
 
     [Parameter]
     public string? BackgroundColor { get; set; }
@@ -116,12 +116,12 @@
     [Parameter]
     public IAction[]? Actions { get; set; }
 
-    private IAction[] CardActions => CardContext == null ? [] : GameContext?.Actions.GetCardActions(CardContext) ?? [];
+    private IAction[] CardActions => Card == null ? [] : Game?.Actions.GetCardActions(Card) ?? [];
     private IEnumerable<(Sticker, StickerTypeDetails?)> Stickers
     {
         get
         {
-            var stickers = CardContext?.Stickers.Where(sticker => sticker.IsFlipped == CardContext.Orientation.IsFlipped()).ToArray() ?? [];
+            var stickers = Card?.Stickers.Where(sticker => sticker.IsFlipped == Card.Orientation.IsFlipped()).ToArray() ?? [];
             return stickers.Zip(stickers.Select(s => s.Type.GetDetails()));
         }
     }
@@ -137,22 +137,22 @@
     {
         _stickerType = type;
 
-        if (CardContext == null || _sticker == null)
+        if (Card == null || _sticker == null)
             return;
 
-        CardContext.RemoveSticker(_sticker);
+        Card.RemoveSticker(_sticker);
         _sticker = null;
     }
 
     private void SetSticker(MouseEventArgs args)
     {
-        if (CardContext == null || _stickerType == null)
+        if (Card == null || _stickerType == null)
             return;
 
         if (_sticker == null)
-            _sticker = CardContext.AddSticker(_stickerType.Type, (int)args.OffsetX, (int)args.OffsetY);
+            _sticker = Card.AddSticker(_stickerType.Type, (int)args.OffsetX, (int)args.OffsetY);
         else
-            _sticker.Set(CardContext, (int)args.OffsetX, (int)args.OffsetY);
+            _sticker.Set(Card, (int)args.OffsetX, (int)args.OffsetY);
     }
 
     private void LeaveSticker() =>
@@ -160,10 +160,10 @@
 
     private void Remove(Sticker sticker)
     {
-        if (CardContext == null || sticker == null || _sticker != null)
+        if (Card == null || sticker == null || _sticker != null)
             return;
 
-        CardContext.RemoveSticker(sticker);
+        Card.RemoveSticker(sticker);
     }
 
     private async Task CloseModal()
@@ -171,7 +171,7 @@
         _stickerType = null;
         if (_sticker != null)
         {
-            CardContext?.RemoveSticker(_sticker);
+            Card?.RemoveSticker(_sticker);
             _sticker = null;
         }
 

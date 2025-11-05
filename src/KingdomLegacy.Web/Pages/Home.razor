@@ -1,98 +1,38 @@
 ﻿@page "/"
 
-@inject Game GameContext
+@implements IDisposable
+
+@inject Lobby Lobby
 @inject IStorage Storage
 
 <PageTitle>Kingdom Legacy</PageTitle>
 
-@if (GameContext.IsInitialized)
+@if (Lobby.Stage == LobbyStage.Play)
 {
-    <div class="d-flex flex-row flex-wrap">
-        <Box GameContext="@GameContext" />
-        <Cards Name="Discover" GameContext="@GameContext" Values="@GameContext.Discovered" BackgroundColor="text-bg-info" />
-        <Cards Name="Deck" GameContext="@GameContext" Values="@GameContext.Deck" BackgroundColor="text-bg-primary" IsCollapsed="true" Disabled="@(GameContext.Discovered.Count > 0)" EmptyActions="@GameContext.Actions.GetDeckActions()" />
-        <Cards Name="Permanent" GameContext="@GameContext" Values="@GameContext.Permanent" BackgroundColor="text-bg-light" />
-        <Cards Name="In play" GameContext="@GameContext" Values="@GameContext.InPlay" BackgroundColor="text-bg-secondary" Disabled="@(GameContext.Discovered.Count > 0)" />
-        <Cards Name="Hand" GameContext="@GameContext" Values="@GameContext.Hand" BackgroundColor="text-bg-success" Disabled="@(GameContext.Discovered.Count > 0)" />
-        <Cards Name="Blocked" GameContext="@GameContext" Values="@GameContext.Blocked" BackgroundColor="text-bg-dark" IsCollapsed="true" Disabled="@(GameContext.Discovered.Count > 0)" />
-        <Cards Name="Discard" GameContext="@GameContext" Values="@GameContext.Discarded" BackgroundColor="text-bg-warning" IsCollapsed="true" Disabled="@(GameContext.Discovered.Count > 0)" IsSummary=true />
-        <Cards Name="Trash" GameContext="@GameContext" Values="@GameContext.Trashed" BackgroundColor="text-bg-danger" IsCollapsed="true" Disabled="@(GameContext.Discovered.Count > 0)" />
-        <Cards Name="★ Purged" GameContext="@GameContext" Values="@GameContext.Purged" BackgroundColor="text-bg-danger" IsCollapsed="true" Disabled="@(GameContext.Discovered.Count > 0)" IsSummary=true />
-    </div>
-    <ul class="list-group">
-        @foreach (var action in GameContext.Actions.History.Reverse().Where(action => action.Description != null).Take(25))
-        {
-            <li class="list-group-item">@action.Description</li>
-        }
-    </ul>
+    <LobbyPlay />
 }
 else
 {
     <div class="mx-auto px-8" style="width: 1296px;">
-        @if (!_isCookiesAccepted)
+        @if (Lobby.Stage == LobbyStage.AcceptCookies)
         {
-            <lead>
-                <h3>Hear ye, noble traveler!</h3>
-                <div class="mb-1">
-                    <p class="mb-0">By decree of the Kingdom, we humbly request thy consent to store enchanted crumbs (called cookies) upon thy device.</p>
-                    <p class="mb-0">They aid our scribes in crafting a smoother journey through these digital lands.</p>
-                </div>
-                <div class="mb-1">
-                    <p class="mb-0">Pray, click “Accept” to proceed with honor and comfort.</p>
-                </div>
-            </lead>
-
-            <div class="d-flex flex-column mb-3">
-                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" @onclick=AcceptCookies>Accept cookies</Button>
-            </div>
+            <LobbyAcceptCookies />
         }
-        else if (!_isGameOwner)
+        else if (Lobby.Stage == LobbyStage.ConfirmGameOwner)
         {
-            <lead>
-                <h3>Hear ye, brave keeper of realms!</h3>
-                <div class="mb-1">
-                    <p class="mb-0">This humble site was forged for loyal holders of the paper Kingdom Legacy, to aid them in their noble quests and smooth the flow of play.</p>
-                </div>
-                <div class="mb-1">
-                    <p class="mb-0">By royal decree, only those who possess the game may proceed.</p>
-                    <p class="mb-0">Pray, confirm thy rightful ownership to continue thy adventure.</p>
-                </div>
-            </lead>
-
-            <div class="d-flex flex-column mb-3">
-                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" @onclick=ConfirmedGameOwner>Confirm</Button>
-            </div>
+            <LobbyConfirmGameOwner />
         }
-        else if (!_isGameLoading && _newKingdomForm == null)
+        else if (Lobby.Stage == LobbyStage.ChooseGame)
         {
-            <lead>What do you want to do?</lead>
-
-            <div class="d-flex flex-column mb-3">
-                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" Disabled="@string.IsNullOrEmpty(Storage.GameData)" @onclick=ContinueGame>Continue</Button>
-                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" @onclick="() => _isGameLoading = true">Load game</Button>
-                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Warning" @onclick=NewGame>New game</Button>
-            </div>
+            <LobbyChooseGame />
         }
-        else if (_isGameLoading)
+        else if (Lobby.Stage == LobbyStage.LoadGame)
         {
-            <lead>Upload the saved file, Your Grace.</lead>
-
-            <div class="d-flex flex-column mb-3">
-                <InputFile class="m-2 btn btn-success" title="Load game" OnChange="LoadGame" accept=".save" />
-                <Button Class="m-2 text-start" Type="ButtonType.Button" Color="ButtonColor.Danger" @onclick="() => _isGameLoading = false">Cancel</Button>
-            </div>
+            <LobbyLoadGame />
         }
-        else if (_newKingdomForm != null)
+        else if (Lobby.Stage == LobbyStage.NewGame)
         {
-            <lead>Name your kingdom, Your Grace.</lead>
-
-            <div class="d-flex flex-column mb-3">
-                <EditForm class="d-flex flex-column" Model="@_newKingdomForm" OnValidSubmit="StartGame">
-                    <TextInput Class="m-2 w-auto" @bind-Value="@_newKingdomForm.Name" Placeholder="Kingdom name" @ref="_input" />
-                    <Button Class="m-2 text-start" Type="ButtonType.Submit" Color="ButtonColor.Success">Start</Button>
-                </EditForm>
-                <Button Class="m-2 text-start" Type="ButtonType.Button" Color="ButtonColor.Danger" @onclick=Cancel>Cancel</Button>
-            </div>
+            <LobbyNewGame />
         }
         <Readme />
     </div>
@@ -102,74 +42,18 @@ else
     private bool _showDeck;
     private bool _showTrashed;
 
-    private NewKingdomForm? _newKingdomForm;
-    public class NewKingdomForm
-    {
-        public string? Name { get; set; }
-    }
+    private Game Game => Lobby.Game;
+    private IDisposable? _subscription;
 
-    private TextInput? _input;
+    public void Dispose() =>
+        _subscription?.Dispose();
 
     protected override async Task OnInitializedAsync()
     {
-        GameContext.Subscribe(_ => StateHasChanged());
+        _subscription = Lobby.Subscribe(_ => StateHasChanged());
 
-        await Storage.LoadGame(GameContext);
-        _isCookiesAccepted = await Storage.Load<bool>(LocalStorage.CookiesAcceptedKey);
-        _isGameOwner = await Storage.Load<bool>(LocalStorage.GameOwnerKey);
+        await Lobby.Initialize();
 
         await base.OnInitializedAsync();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!GameContext.IsInitialized && _newKingdomForm != null && _input?.Element != null)
-            await _input.Element.FocusAsync();
-    }
-
-    private void NewGame(MouseEventArgs args) =>
-        _newKingdomForm = new NewKingdomForm();
-
-    private void Cancel(MouseEventArgs args) =>
-        _newKingdomForm = null;
-
-    private void StartGame(EditContext args)
-    {
-        if (GameContext.Initialize(_newKingdomForm?.Name, Expansions.FeudalKingdom))
-            _newKingdomForm = null;
-    }
-
-    private void ContinueGame(MouseEventArgs args)
-    {
-        if (!string.IsNullOrEmpty(Storage.GameData))
-            GameContext.Load(Storage.GameData);
-
-        _newKingdomForm = null;
-    }
-
-    private async Task LoadGame(InputFileChangeEventArgs args)
-    {
-        MemoryStream stream = new MemoryStream();
-        await args.File.OpenReadStream().CopyToAsync(stream);
-        var bytes = stream.ToArray();
-        var data = Encoding.Default.GetString(bytes);
-        GameContext.Load(data);
-        _isGameLoading = false;
-    }
-
-    private bool _isGameLoading = false;
-    private bool _isCookiesAccepted = false;
-    private bool _isGameOwner = false;
-
-    private async Task AcceptCookies(MouseEventArgs args)
-    {
-        _isCookiesAccepted = true;
-        await Storage.Save(LocalStorage.CookiesAcceptedKey, true);
-    }
-
-    private async Task ConfirmedGameOwner(MouseEventArgs args)
-    {
-        _isGameOwner = true;
-        await Storage.Save(LocalStorage.GameOwnerKey, true);
     }
 }

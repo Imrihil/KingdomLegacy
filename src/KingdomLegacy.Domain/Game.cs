@@ -2,12 +2,15 @@
 using System.Text;
 
 namespace KingdomLegacy.Domain;
-public class Game : Observable<Game>
+public class Game
 {
-    public readonly Actions Actions;
-    public Game()
+    public Actions Actions { get; private set; }
+
+    private Action? _notify;
+    public Game(Action? notify = null)
     {
         Actions = new(this);
+        _notify = notify;
     }
 
     public string KingdomName { get; set; } = "";
@@ -129,10 +132,14 @@ public class Game : Observable<Game>
         return true;
     }
 
-    public void Load(string data) =>
-        Load(data.Split(Environment.NewLine));
+    public bool Load(string data)
+    {
+        IsInitialized = false;
+        Actions = new(this);
+        return Load(data.Split(Environment.NewLine));
+    }
 
-    public void Load(IEnumerable<string> lines)
+    public bool Load(IEnumerable<string> lines)
     {
         var readPoints = true;
         string? expansion = null;
@@ -166,6 +173,8 @@ public class Game : Observable<Game>
         IsInitialized = true;
 
         Notify();
+
+        return true;
     }
 
     private static Card GetCard(string expansion, string text)
@@ -238,21 +247,10 @@ public class Game : Observable<Game>
         if (string.IsNullOrWhiteSpace(name))
             return false;
 
-        Clear();
+        IsInitialized = false;
+        Actions = new(this);
         KingdomName = name;
         _box = expansion.Cards.ToList();
-
-        IsInitialized = true;
-
-        Actions.Discover(1);
-
-        return true;
-    }
-
-    public void Clear()
-    {
-        KingdomName = "";
-        _box = [];
         _discovered = [];
         _deck = new();
         _permanent = [];
@@ -263,9 +261,9 @@ public class Game : Observable<Game>
         _trash = [];
         _purged = [];
 
-        IsInitialized = false;
+        Actions.Discover(1);
 
-        Notify();
+        return IsInitialized = true;
     }
 
     public void Insert(Card card1, Card? card2)
@@ -284,5 +282,5 @@ public class Game : Observable<Game>
         Notify();
     }
 
-    internal void Notify() => Notify(this);
+    internal void Notify() => _notify?.Invoke();
 }

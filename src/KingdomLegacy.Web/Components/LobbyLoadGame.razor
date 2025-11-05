@@ -1,0 +1,22 @@
+﻿@inject Lobby Lobby
+
+<lead>Upload the saved file, Your Grace.</lead>
+
+<div class="d-flex flex-column mb-3">
+    <InputFile class="m-2 btn btn-success" title="Load game" OnChange="LoadGame" accept=".save" />
+    <Button Class="m-2 text-start" Type="ButtonType.Button" Color="ButtonColor.Danger" @onclick="ChooseGame">Cancel</Button>
+</div>
+
+@code {
+    private async Task LoadGame(InputFileChangeEventArgs args)
+    {
+        MemoryStream stream = new MemoryStream();
+        await args.File.OpenReadStream().CopyToAsync(stream);
+        var bytes = stream.ToArray();
+        var data = Encoding.Default.GetString(bytes);
+        Lobby.PlayLoaded(data);
+    }
+
+    private void ChooseGame() =>
+        Lobby.ChooseGame();
+}

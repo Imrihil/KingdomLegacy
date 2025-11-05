@@ -11,8 +11,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services
     .AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
-    .AddScoped<Game>()
-    .AddScoped<Resources>()
+    .AddScoped<Lobby>()
     .AddScoped<IStorage, LocalStorage>()
     .AddBlazorBootstrap()
     .AddBlazoredLocalStorage()

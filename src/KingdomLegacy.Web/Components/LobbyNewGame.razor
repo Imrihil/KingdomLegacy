@@ -1,0 +1,38 @@
+﻿@inject Lobby Lobby
+
+<lead>Name your kingdom, Your Grace.</lead>
+
+<div class="d-flex flex-column mb-3">
+    <EditForm class="d-flex flex-column" Model="@_newKingdomForm" OnValidSubmit="StartGame">
+        <TextInput Class="m-2 w-auto" @bind-Value="@_newKingdomForm.Name" Placeholder="Kingdom name" @ref="_input" />
+        <Button Class="m-2 text-start" Type="ButtonType.Submit" Color="ButtonColor.Success">Start</Button>
+    </EditForm>
+    <Button Class="m-2 text-start" Type="ButtonType.Button" Color="ButtonColor.Danger" @onclick=Cancel>Cancel</Button>
+</div>
+
+@code {
+    protected override Task OnInitializedAsync()
+    {
+        _newKingdomForm = new();
+        return base.OnInitializedAsync();
+    }
+
+    private TextInput? _input;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_input?.Element != null)
+            await _input.Element.FocusAsync();
+    }
+
+    private void Cancel(MouseEventArgs args) =>
+        Lobby.ChooseGame();
+
+    private void StartGame(EditContext args) =>
+        Lobby.PlayNew(_newKingdomForm.Name, Expansions.FeudalKingdom);
+
+    private NewKingdomForm _newKingdomForm = new();
+    private class NewKingdomForm
+    {
+        public string Name { get; set; } = "";
+    }
+}

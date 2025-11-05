@@ -97,4 +97,6 @@ public class Actions(Game game)
     private IAction[] GetAvailableActions(IEnumerable<IAction> actions) => actions
         .Where(action => action.Allowed)
         .ToArray();
+
+    internal void Clear() => _history.Clear();
 }

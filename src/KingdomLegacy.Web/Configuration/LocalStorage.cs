@@ -14,14 +14,12 @@ public class LocalStorage(ILocalStorageService service) : IStorage
     public async Task<T?> Load<T>(string key) =>
         await service.GetItemAsync<T>(key);
 
-    public async Task LoadGame(Game game)
+    public async Task<string?> LoadGame()
     {
         var data = await service.GetItemAsStringAsync(GameKey);
-        if (data == null)
-            return;
-
-        GameData = data = Regex.Unescape(data.Trim('"'));
-        game.Load(data);
+        return data == null 
+            ? null 
+            : (GameData = Regex.Unescape(data.Trim('"')));
     }
 
     public async Task Save<T>(string key, T value) =>

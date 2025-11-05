@@ -1,0 +1,23 @@
+﻿@inject Lobby Lobby
+
+<lead>
+    <h3>Hear ye, noble traveler!</h3>
+    <div class="mb-1">
+        <p class="mb-0">By decree of the Kingdom, we humbly request thy consent to store enchanted crumbs (called cookies) upon thy device.</p>
+        <p class="mb-0">They aid our scribes in crafting a smoother journey through these digital lands.</p>
+    </div>
+    <div class="mb-1">
+        <p class="mb-0">Pray, click “Accept” to proceed with honor and comfort.</p>
+    </div>
+</lead>
+
+<div class="d-flex flex-column mb-3">
+    <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" @onclick=AcceptCookies>Accept cookies</Button>
+</div>
+
+@code {
+    private Button? _button;
+
+    private async Task AcceptCookies() =>
+        await Lobby.CookiesAccepted();
+}

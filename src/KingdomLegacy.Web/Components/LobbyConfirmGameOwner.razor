@@ -1,0 +1,21 @@
+﻿@inject Lobby Lobby
+
+<lead>
+    <h3>Hear ye, brave keeper of realms!</h3>
+    <div class="mb-1">
+        <p class="mb-0">This humble site was forged for loyal holders of the paper Kingdom Legacy, to aid them in their noble quests and smooth the flow of play.</p>
+    </div>
+    <div class="mb-1">
+        <p class="mb-0">By royal decree, only those who possess the game may proceed.</p>
+        <p class="mb-0">Pray, confirm thy rightful ownership to continue thy adventure.</p>
+    </div>
+</lead>
+
+<div class="d-flex flex-column mb-3">
+    <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" @onclick=GameOwnerConfirmed>Confirm</Button>
+</div>
+
+@code {
+    private async Task GameOwnerConfirmed() =>
+        await Lobby.GameOwnerConfirmed();
+}

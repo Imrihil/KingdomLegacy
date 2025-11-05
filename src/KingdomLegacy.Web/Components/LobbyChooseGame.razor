@@ -1,0 +1,20 @@
+﻿@inject Lobby Lobby
+
+<lead>What do you want to do?</lead>
+
+<div class="d-flex flex-column mb-3">
+    <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" Disabled="@(Lobby.Game.IsInitialized != true)" @onclick=ContinueGame>Continue</Button>
+    <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" @onclick="LoadGame">Load game</Button>
+    <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Warning" @onclick=NewGame>New game</Button>
+</div>
+
+@code {
+    private void ContinueGame() =>
+        Lobby.ContinueGame();
+
+    private void NewGame() =>
+        Lobby.NewGame();
+
+    private void LoadGame() =>
+        Lobby.LoadGame();
+}
