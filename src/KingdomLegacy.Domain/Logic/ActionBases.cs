@@ -13,10 +13,11 @@ internal abstract class RecordedActionBase(Game game) : IAction
         if (!ExecuteInternal())
             return;
 
-        game.Actions._history.Add(this);
-        game.Notify();
+        Game.Actions._history.Add(this);
+        Game.Notify();
     }
 
+    protected Game Game { get; } = game;
     protected abstract bool ExecuteInternal();
 }
 
@@ -24,21 +25,23 @@ internal abstract class ReversibleCardActionBase(Game game, Card? card) : Record
 {
     protected State SourceState { get; set; }
     protected int SourceIndex { get; set; }
-    protected Card? Card { get; } = card;
+    public override bool Allowed => true;
+    public override bool Disabled => card == null;
+    protected Card Card { get; } = card ?? new Card();
 
     public new void Execute()
     {
-        if (Card == null)
+        if (!Allowed || Disabled)
             return;
 
         SourceState = Card.State;
-        SourceIndex = game.List(SourceState).IndexOf(Card);
+        SourceIndex = Game.List(SourceState).IndexOf(Card);
 
         if (!ExecuteInternal())
             return;
 
-        game.Actions._history.Add(this);
-        game.Notify();
+        Game.Actions._history.Add(this);
+        Game.Notify();
     }
 
     public void Undo()
@@ -46,16 +49,16 @@ internal abstract class ReversibleCardActionBase(Game game, Card? card) : Record
         if (!UndoInternal())
             return;
 
-        game.Actions._history.Remove(this);
-        game.Notify();
+        Game.Actions._history.Remove(this);
+        Game.Notify();
     }
 
     protected virtual bool UndoInternal()
     {
-        if (card != null && game.List(TargetState).Remove(card))
+        if (Card != null && Game.List(TargetState).Remove(Card))
         {
-            game.List(SourceState).Insert(SourceIndex, card);
-            card.State = SourceState;
+            Game.List(SourceState).Insert(SourceIndex, Card);
+            Card.State = SourceState;
             return true;
         }
 
@@ -70,8 +73,8 @@ internal abstract class ReversibleActionBase(Game game) : RecordedActionBase(gam
         if (!ExecuteInternal())
             return;
 
-        game.Actions._history.Add(this);
-        game.Notify();
+        Game.Actions._history.Add(this);
+        Game.Notify();
     }
 
     public void Undo()
@@ -79,8 +82,8 @@ internal abstract class ReversibleActionBase(Game game) : RecordedActionBase(gam
         if (!UndoInternal())
             return;
 
-        game.Actions._history.Remove(this);
-        game.Notify();
+        Game.Actions._history.Remove(this);
+        Game.Notify();
     }
 
     protected abstract bool UndoInternal();

@@ -7,15 +7,15 @@ internal abstract class DrawAction(Game game, int count) : RecordedActionBase(ga
 {
     public override State[] SourceStates => [State.DeckTop];
     public override State TargetState => State.Hand;
-    public override bool Allowed => game.DeckCount >= count;
+    public override bool Allowed => Game.DeckCount >= count;
     public override bool Disabled => false;
     public override string Text => $"+{count}";
     private List<Card> _cards = [];
     protected override bool ExecuteInternal()
     {
         var i = count;
-        while (i-- > 0 && game.DeckTop is Card card)
-            if (game.ChangeState(card, TargetState))
+        while (i-- > 0 && Game.DeckTop is Card card)
+            if (Game.ChangeState(card, TargetState))
                 _cards.Add(card);
 
         Description = $"Drew {string.Join(", ", _cards.Select(card => card.Id))}.";
