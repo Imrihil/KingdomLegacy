@@ -1,9 +1,8 @@
 ﻿@inherits LayoutComponentBase
 
-@inject ILocalStorageService Storage
+@inject IStorage Storage
 @inject IJSRuntime JS
 @inject Game GameContext
-@inject SavedGameData SavedGame
 
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
@@ -12,9 +11,6 @@
             @if (GameContext.IsInitialized)
             {
                 <GameResources />
-                <Button Class="m-2" Color="ButtonColor.Primary" @onclick="Save">
-                    Save
-                </Button>
                 <Button Class="m-2" Color="ButtonColor.Warning" @onclick="Download">
                     Download
                 </Button>
@@ -42,32 +38,22 @@
         base.OnInitialized();
     }
 
-    private async Task<string> Save()
-    {
-        var text = GameContext.Save();
-
-        await Storage.SetItemAsync("save", text);
-
-        return text;
-    }
-
     private async Task Download()
     {
-        var text = GameContext.Save();
+        await Storage.SaveGame(GameContext);
+        var data = Storage.GameData;
+        if (string.IsNullOrEmpty(data))
+            return;
 
-        using var stream = new MemoryStream(Encoding.Default.GetBytes(text));
+        using var stream = new MemoryStream(Encoding.Default.GetBytes(data));
         using var streamRef = new DotNetStreamReference(stream);
 
         await JS.InvokeVoidAsync("downloadFileFromStream", $"{GameContext.KingdomName}.save", streamRef);
-
-        await Storage.SetItemAsync("save", text);
     }
 
     private async Task Exit()
     {
-        var text = await Save();
-
-        await SavedGame.Update(text);
+        await Storage.SaveGame(GameContext);
 
         GameContext.Clear();
     }

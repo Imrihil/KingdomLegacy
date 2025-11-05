@@ -1,5 +1,6 @@
 ﻿@inject Game GameContext
 @inject Resources Resources
+@inject IStorage Storage
 
 <div class="d-flex flex-row">
     <div class="mx-2 d-flex lex-row">
@@ -12,7 +13,7 @@
         <NumberInput Class="my-2 p-0 points" TValue="int" @bind-Value="@Resources.Points" />
     </div>
 
-    @foreach (var action in GameContext.Actions.GetMainActions(Resources))
+    @foreach (var action in GameContext.Actions.GetMainActions(Resources, Storage))
     {
         <ActionButton Class="m-2" Action="@action" />
     }

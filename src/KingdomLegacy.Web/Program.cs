@@ -13,7 +13,7 @@ builder.Services
     .AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
     .AddScoped<Game>()
     .AddScoped<Resources>()
-    .AddScoped<SavedGameData>()
+    .AddScoped<IStorage, LocalStorage>()
     .AddBlazorBootstrap()
     .AddBlazoredLocalStorage()
     .AddBlazoredLocalStorage(config => config.JsonSerializerOptions.WriteIndented = true);

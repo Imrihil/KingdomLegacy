@@ -1,8 +1,7 @@
 ﻿@page "/"
 
 @inject Game GameContext
-@inject SavedGameData SavedGame
-@inject ILocalStorageService Storage
+@inject IStorage Storage
 
 <PageTitle>Kingdom Legacy</PageTitle>
 
@@ -90,7 +89,7 @@ else
             <lead>What do you want to do?</lead>
 
             <div class="d-flex flex-column mb-3">
-                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" Disabled="@string.IsNullOrEmpty(SavedGame.Data)" @onclick=ContinueGame>Continue</Button>
+                <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" Disabled="@string.IsNullOrEmpty(Storage.GameData)" @onclick=ContinueGame>Continue</Button>
                 <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Success" @onclick="() => _isGameLoading = true">Load game</Button>
                 <Button Class="m-2 text-start" Type="ButtonType.Link" Color="ButtonColor.Warning" @onclick=NewGame>New game</Button>
             </div>
@@ -136,12 +135,10 @@ else
     protected override async Task OnInitializedAsync()
     {
         GameContext.Subscribe(_ => StateHasChanged());
-        var data = await SavedGame.Update();
-        if (data != null)
-            GameContext.Load(data);
 
-        _isCookiesAccepted = await Storage.GetItemAsync<bool>("cookies-consent");
-        _isGameOwner = await Storage.GetItemAsync<bool>("game-owner");
+        await Storage.LoadGame(GameContext);
+        _isCookiesAccepted = await Storage.Load<bool>(LocalStorage.CookiesAcceptedKey);
+        _isGameOwner = await Storage.Load<bool>(LocalStorage.GameOwnerKey);
 
         await base.OnInitializedAsync();
     }
@@ -166,8 +163,8 @@ else
 
     private void ContinueGame(MouseEventArgs args)
     {
-        if (!string.IsNullOrEmpty(SavedGame.Data))
-            GameContext.Load(SavedGame.Data);
+        if (!string.IsNullOrEmpty(Storage.GameData))
+            GameContext.Load(Storage.GameData);
 
         _newKingdomForm = null;
     }
@@ -189,12 +186,12 @@ else
     private async Task AcceptCookies(MouseEventArgs args)
     {
         _isCookiesAccepted = true;
-        await Storage.SetItemAsync<bool>("cookies-consent", true);
+        await Storage.Save(LocalStorage.CookiesAcceptedKey, true);
     }
 
     private async Task ConfirmedGameOwner(MouseEventArgs args)
     {
         _isGameOwner = true;
-        await Storage.SetItemAsync<bool>("game-owner", true);
+        await Storage.Save(LocalStorage.GameOwnerKey, true);
     }
 }

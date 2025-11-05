@@ -57,7 +57,8 @@ public class Actions(Game game)
         }
     }
 
-    private static IAction? GetAction(Type type, Game game, Card card)
+    private static readonly IStorage NullStorage = new NullStorage();
+    private static IAction? GetAction(Type type, Game game, Card card, IStorage? storage = null)
     {
         var constructorParameters = type.GetConstructors().FirstOrDefault()?.GetParameters() ?? [];
         var args = new List<object>();
@@ -73,6 +74,9 @@ public class Actions(Game game)
         if (constructorParameters.Any(param => param.ParameterType == typeof(Resources)))
             args.Add(new Resources(game));
 
+        if (constructorParameters.Any(param => param.ParameterType == typeof(IStorage)))
+            args.Add(storage ?? NullStorage);
+
         return Activator.CreateInstance(type, args.ToArray()) as IAction;
     }
 
@@ -87,8 +91,8 @@ public class Actions(Game game)
 
     public IAction[] GetDeckActions() => GetAvailableActions([new ReshuffleAction(game)]);
 
-    public IAction[] GetMainActions(Resources resources) => GetAvailableActions(
-        [new UndoAction(game), new EndDiscoverAction(game), new EndTurnAction(game, resources), new EndRoundAction(game, resources)]);
+    public IAction[] GetMainActions(Resources resources, IStorage storage) => GetAvailableActions(
+        [new UndoAction(game), new EndDiscoverAction(game, storage), new EndTurnAction(game, resources, storage), new EndRoundAction(game, resources, storage)]);
 
     private IAction[] GetAvailableActions(IEnumerable<IAction> actions) => actions
         .Where(action => action.Allowed)

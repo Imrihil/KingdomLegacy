@@ -1,5 +1,5 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
-internal class EndDiscoverAction(Game game) : IAction
+internal class EndDiscoverAction(Game game, IStorage storage) : IAction
 {
     public State[] SourceStates => [];
     public State TargetState => State.Hand;
@@ -18,5 +18,7 @@ internal class EndDiscoverAction(Game game) : IAction
             game.Actions.Reshuffle();
             game.Actions.Draw4();
         }
+
+        storage.SaveGame(game);
     }
 }

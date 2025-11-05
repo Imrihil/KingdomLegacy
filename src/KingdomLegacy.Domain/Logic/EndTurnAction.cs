@@ -1,5 +1,5 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
-internal class EndTurnAction(Game game, Resources resources) : IAction
+internal class EndTurnAction(Game game, Resources resources, IStorage storage) : IAction
 {
     public State[] SourceStates => [];
     public State TargetState => State.Hand;
@@ -16,5 +16,7 @@ internal class EndTurnAction(Game game, Resources resources) : IAction
         game.Actions.Draw4();
 
         resources.Reset();
+
+        storage.SaveGame(game);
     }
 }
