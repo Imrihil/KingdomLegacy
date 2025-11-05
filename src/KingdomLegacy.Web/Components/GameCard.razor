@@ -32,7 +32,7 @@
                 </Button>
                 @foreach (var action in Actions ?? CardActions)
                 {
-                    <ActionButton Class="m-1 p-1 rounded-circle btn-card" Position="Position.Relative" Action="@action" />
+                    <ActionButton Class="m-1 p-1 rounded-circle btn-card" Position="Position.Relative" Action="action" />
                 }
             </div>
         </div>
@@ -98,8 +98,8 @@
 }
 
 @code {
-    [Parameter]
-    public Domain.Game? Game { get; set; }
+    [Parameter, EditorRequired]
+    public Game Game { get; set; }
 
     [Parameter]
     public Domain.Card? Card { get; set; }
@@ -116,7 +116,7 @@
     [Parameter]
     public IAction[]? Actions { get; set; }
 
-    private IAction[] CardActions => Card == null ? [] : Game?.Actions.GetCardActions(Card) ?? [];
+    private IAction[] CardActions => Card == null ? [] : Game.Actions.GetCardActions(Card);
     private IEnumerable<(Sticker, StickerTypeDetails?)> Stickers
     {
         get
