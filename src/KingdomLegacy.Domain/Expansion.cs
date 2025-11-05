@@ -7,7 +7,7 @@ public class Expansions
 
 public class Expansion(string name, int count)
 {
-    public List<Card> Cards { get; } = Load(name, count);
+    public IReadOnlyCollection<Card> Cards => Load(name, count);
 
     private static List<Card> Load(string name, int count) =>
         Enumerable.Range(0, count)

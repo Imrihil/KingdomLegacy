@@ -1,16 +1,19 @@
 ﻿using KingdomLegacy.Domain;
+using System.Diagnostics.CodeAnalysis;
 
 namespace KingdomLegacy.Web.Configuration;
 
 public class Lobby : Observable<Lobby>
 {
-    private IStorage _storage;
     public Game Game { get; private set; }
     public Resources Resources { get; private set; }
+
+    private IStorage _storage;
     private LobbyStage _stage;
     public LobbyStage Stage
     {
-        get => _stage; private set
+        get => _stage;
+        private set
         {
             _stage = value;
             Notify(this);
@@ -20,22 +23,21 @@ public class Lobby : Observable<Lobby>
     public Lobby(IStorage storage)
     {
         _storage = storage;
-        Game = new Game(() => Notify(this));
-        Resources = new Resources(Game);
+        CreateNewGame();
     }
 
-    private Dictionary<LobbyStage, LobbyStage[]> _allowedTransitions = new()
+    [MemberNotNull(nameof(Game))]
+    [MemberNotNull(nameof(Resources))]
+    private Game CreateNewGame()
     {
-        [LobbyStage.AcceptCookies] = [LobbyStage.ConfirmGameOwner],
-        [LobbyStage.ConfirmGameOwner] = [LobbyStage.ChooseGame],
-        [LobbyStage.ChooseGame] = [LobbyStage.LoadGame, LobbyStage.NewGame, LobbyStage.Play],
-        [LobbyStage.LoadGame] = [LobbyStage.ChooseGame, LobbyStage.Play],
-        [LobbyStage.NewGame] = [LobbyStage.ChooseGame, LobbyStage.Play],
-        [LobbyStage.Play] = [LobbyStage.ChooseGame]
-    };
+        Game = new Game(() => Notify(this));
+        Resources = new Resources(Game);
+        return Game;
+    }
 
     public async Task Initialize()
     {
+        CreateNewGame();
         Stage = LobbyStage.AcceptCookies;
         if (!await TryCookiesAccepted())
             return;
@@ -103,6 +105,7 @@ public class Lobby : Observable<Lobby>
         if (!IsTransitionAllowed(LobbyStage.Play))
             return;
 
+        CreateNewGame();
         if (Game.Load(data))
             Stage = LobbyStage.Play;
     }
@@ -112,6 +115,7 @@ public class Lobby : Observable<Lobby>
         if (!IsTransitionAllowed(LobbyStage.Play))
             return;
 
+        CreateNewGame();
         if (Game.Initialize(name, expansion))
             Stage = LobbyStage.Play;
     }
@@ -152,6 +156,16 @@ public class Lobby : Observable<Lobby>
 
         return false;
     }
+
+    private Dictionary<LobbyStage, LobbyStage[]> _allowedTransitions = new()
+    {
+        [LobbyStage.AcceptCookies] = [LobbyStage.ConfirmGameOwner],
+        [LobbyStage.ConfirmGameOwner] = [LobbyStage.ChooseGame],
+        [LobbyStage.ChooseGame] = [LobbyStage.LoadGame, LobbyStage.NewGame, LobbyStage.Play],
+        [LobbyStage.LoadGame] = [LobbyStage.ChooseGame, LobbyStage.Play],
+        [LobbyStage.NewGame] = [LobbyStage.ChooseGame, LobbyStage.Play],
+        [LobbyStage.Play] = [LobbyStage.ChooseGame]
+    };
 }
 
 public enum LobbyStage
