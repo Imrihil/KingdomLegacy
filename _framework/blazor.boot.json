@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "KingdomLegacy.Web",
   "resources": {
-    "hash": "sha256-S8CVpVcJhlzBaESSuifjxWHBXypB4rcri7TaocUz7y4=",
+    "hash": "sha256-tHvyU33wSWXxGTyroJSX8BnO+UpBHeWpIVZsqQZKY60=",
     "jsModuleNative": {
       "dotnet.native.js": "sha256-9Fzd5We95Rp03dEKIAbYjPDR3eWyLbmjMlYStvxyiok="
     },
@@ -20,8 +20,8 @@
     "assembly": {
       "BlazorBootstrap.wasm": "sha256-ITQwUw5RiwxKdd6M4G17bdlCt/7nx74B+rnAbL5w+/0=",
       "Blazored.LocalStorage.wasm": "sha256-OaMAAd5n7ORfyur5e3QIyEVKJ76MKIvwbg7/icnnYcU=",
-      "KingdomLegacy.Domain.wasm": "sha256-Sfua9qokd8dEgDTPtLtCP/mAzPdYCONO28lD52lvHbc=",
-      "KingdomLegacy.Web.wasm": "sha256-s76IKLjvfKj2WwwIlQJVBQ4J+MnK/EpPwrPt+VbxShM=",
+      "KingdomLegacy.Domain.wasm": "sha256-JVfRrJCFLc+yB3R8Ned0LrdyLS4aQmLuOMGDXprkQK0=",
+      "KingdomLegacy.Web.wasm": "sha256-TINvYxAzpBXtL709tmB1JL6YzX+285kSDYmtUORa46k=",
       "Microsoft.AspNetCore.Components.Forms.wasm": "sha256-FdpNzNis7sdKynZiPR+9ZoAUrFqHpqWfU2wocHpN7v8=",
       "Microsoft.AspNetCore.Components.wasm": "sha256-yiXxegIULYt521hWAMDjyLuHOwRz/2D10Ffd7jOq12w=",
       "Microsoft.AspNetCore.Components.Web.wasm": "sha256-BqSRS6aWuKqd/8Hh+BVO/0dTScp1gXpsGjrYTbdOKy8=",
@@ -29,7 +29,7 @@
       "Microsoft.Extensions.Configuration.Abstractions.wasm": "sha256-XR+WUfg8LtnrwdXFBnV+qO3ROyp6cYCfl1AZajIAheM=",
       "Microsoft.Extensions.Configuration.Json.wasm": "sha256-Nbv4DDWJLbUri+9QrX+3vnA2FV/Qux8Jm1buTARMlBs=",
       "Microsoft.Extensions.Configuration.wasm": "sha256-od574rRtVVRJj+24jbl8j3GdQFpxlJOpSx+pEMw1Q18=",
-      "Microsoft.Extensions.DependencyInjection.Abstractions.wasm": "sha256-cvUe0mBcYRUjB+Dy4MA+fyNI7IEme+3U0ewKOCKE1Ys=",
+      "Microsoft.Extensions.DependencyInjection.Abstractions.wasm": "sha256-Akyw7cnHZwt2aql7K7W3IheJMpo/vNwdmPJlww7YRpY=",
       "Microsoft.Extensions.DependencyInjection.wasm": "sha256-gPl1KWGxLIxxQgQ9BG1m/niMzqZGG651efBdnDY3kDc=",
       "Microsoft.Extensions.Logging.Abstractions.wasm": "sha256-ssFNY2Ai861hrwT+m7wbuHPLX6nsTeY/M/fevNYMQl8=",
       "Microsoft.Extensions.Logging.wasm": "sha256-KCdgvZvpkT0QTlCjj/PtlVlJnNw1mDlJAtaRSWXz0YM=",
