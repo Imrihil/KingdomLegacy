@@ -5,6 +5,7 @@ namespace KingdomLegacy.Domain;
 public class Game
 {
     public Actions Actions { get; private set; }
+    public GameConfig Config { get; } = new();
 
     private Action? _notify;
     public Game(Action? notify = null)
@@ -283,4 +284,10 @@ public class Game
     }
 
     internal void Notify() => _notify?.Invoke();
+
+    public class GameConfig
+    {
+        public int DiscoverCount { get; set; } = 2;
+        public int DiscoverId { get; set; } = 0;
+    }
 }

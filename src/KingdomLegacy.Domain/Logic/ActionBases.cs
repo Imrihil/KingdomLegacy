@@ -21,17 +21,17 @@ internal abstract class RecordedActionBase(Game game) : IAction
     protected abstract bool ExecuteInternal();
 }
 
-internal abstract class ReversibleCardActionBase(Game game, Card? card) : RecordedActionBase(game), IReversibleAction
+internal abstract class ReversibleCardActionBase(Game game) : RecordedActionBase(game), IReversibleAction
 {
     protected State SourceState { get; set; }
     protected int SourceIndex { get; set; }
     public override bool Allowed => true;
-    public override bool Disabled => card == null;
-    protected Card Card { get; } = card ?? new Card();
+    public override bool Disabled => Card == null;
+    protected abstract Card? Card { get; }
 
     public new void Execute()
     {
-        if (!Allowed || Disabled)
+        if (!Allowed || Disabled || Card == null)
             return;
 
         SourceState = Card.State;

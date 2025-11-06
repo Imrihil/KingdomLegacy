@@ -13,7 +13,7 @@ internal class EndRoundAction(Game game, Resources resources, IStorage storage) 
         foreach (var card in game.Hand.Concat(game.InPlay).Concat(game.Blocked).ToArray())
             game.Actions.Discard(card);
 
-        game.Actions.Discover(2);
+        game.Actions.Discover();
 
         resources.Reset();
 

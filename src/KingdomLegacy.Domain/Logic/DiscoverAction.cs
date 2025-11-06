@@ -1,15 +1,17 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
-internal class DiscoverAction(Game game, int count = 1) : ReversibleActionBase(game)
+internal class DiscoverAction(Game game, int? count = null) : ReversibleActionBase(game)
 {
+    private int Count => count ?? Game.Config.DiscoverCount;
     public override State[] SourceStates => [State.Box];
     public override State TargetState => State.Discovered;
     public override bool Allowed => true;
-    public override bool Disabled => Game.BoxCount < count;
-    public override string Text => $"+{count}";
+    public override bool Disabled => Game.BoxCount < Count;
+    public override string Text => $"+{Count}";
     private List<Card> _cards = [];
     protected override bool ExecuteInternal()
     {
-        while (count-- > 0 && Game.BoxNext is Card card)
+        var i = Count;
+        while (i-- > 0 && Game.BoxNext is Card card)
             if (Game.ChangeState(card, TargetState))
                 _cards.Add(card);
 

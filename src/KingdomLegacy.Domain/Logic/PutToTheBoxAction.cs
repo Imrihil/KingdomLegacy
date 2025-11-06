@@ -1,11 +1,12 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 internal class PutToTheBoxAction(Game game, Card card)
-    : ReversibleCardActionBase(game, card)
+    : ReversibleCardActionBase(game)
 {
     public override State[] SourceStates => [State.Hand, State.InPlay, State.Discarded];
     public override State TargetState => State.Box;
     public override int Order => 0;
     public override string Text => "⬓";
+    protected override Card Card { get; } = card;
 
     private Orientation _sourceOrientation;
     protected override bool ExecuteInternal()

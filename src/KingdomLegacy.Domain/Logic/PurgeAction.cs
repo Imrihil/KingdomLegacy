@@ -1,13 +1,13 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 internal class PurgeAction(Game game, Card card)
-    : ReversibleCardActionBase(game, card)
+    : ReversibleCardActionBase(game)
 {
     private State[] _sourceStates = [State.Permanent, State.Hand];
     public override State[] SourceStates => _sourceStates;
     public override State TargetState => State.Purged;
     public override int Order => 100;
     public override string Text => "★";
-
+    protected override Card Card { get; } = card;
     protected override bool ExecuteInternal()
     {
         Description = $"Purged {Card.Id}.";

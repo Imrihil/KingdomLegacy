@@ -6,16 +6,23 @@
     </div>
     <div class="me-1 mb-1 position-relative">
         <div class="game-card d-flex flex-column">
-            @foreach (var action in Game.Actions.GetBoxActions())
-            {
-                <ActionButton Class="my-1 p-1" Position="Position.Relative" Action="action" />
-            }
-            <div class="d-flex d-row">
-                <NumberInput Class="me-1 w-50" TValue="int" @bind-Value="_boxCardId" />
-                @foreach (var action in Game.Actions.GetBoxSpecialActions(_boxCardId))
-                {
-                    <ActionButton Class="my-1 p-1 w-50" Position="Position.Relative" Action="action" />
-                }
+            <div class="my-1 d-flex flex-column">
+                <div class="w-100">
+                    Discover next cards:
+                </div>
+                <EditForm class="d-flex flex-row" Model="@Game" OnValidSubmit="DiscoverAction.Execute">
+                    <NumberInput Class="me-1 w-50" TValue="int" @bind-Value="@Game.Config.DiscoverCount" />
+                    <Button Class="my-1 p-1 w-50" Type="ButtonType.Submit" Disabled="DiscoverAction.Disabled" Color="DiscoverAction.TargetState.GetButtonColor()">@DiscoverAction.Text</Button>
+                </EditForm>
+            </div>
+            <div class="my-1 d-flex flex-column">
+                <div class="w-100">
+                    Discover by ID:
+                </div>
+                <EditForm class="d-flex flex-row" Model="@Game" OnValidSubmit="DiscoverByIdAction.Execute">
+                    <NumberInput Class="me-1 w-50" TValue="int" @bind-Value="@Game.Config.DiscoverId" />
+                    <Button Class="my-1 p-1 w-50" Type="ButtonType.Submit" Disabled="DiscoverByIdAction.Disabled" Color="DiscoverByIdAction.TargetState.GetButtonColor()">@DiscoverByIdAction.Text</Button>
+                </EditForm>
             </div>
         </div>
     </div>
@@ -26,4 +33,7 @@
     public Game Game { get; set; }
 
     private int _boxCardId;
+    private IAction DiscoverAction => Game.Actions.GetDiscover();
+
+    private IAction DiscoverByIdAction => Game.Actions.GetDiscoverById();
 }

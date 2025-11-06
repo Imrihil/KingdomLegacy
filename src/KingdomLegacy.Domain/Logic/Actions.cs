@@ -7,7 +7,7 @@ public class Actions(Game game)
     public IReadOnlyCollection<IAction> History => _history.AsReadOnly();
     //internal List<IAction> _undoHistory = [];
 
-    public void Discover(int count) =>
+    public void Discover(int? count = null) =>
         new DiscoverAction(game, count).Execute();
 
     public void Reshuffle() =>
@@ -83,16 +83,16 @@ public class Actions(Game game)
     public IAction[] GetCardActions(Card card) =>
         GetAvailableActions(_stateActionTypes[card.State].Select(type => GetAction(type, game, card)).OfType<IAction>());
 
-    public IAction[] GetBoxActions() => GetAvailableActions(
-        [new DiscoverAction(game, 1), new DiscoverAction(game, 2), new DiscoverAction(game, 5), new DiscoverAction(game, 10)]);
-
-    public IAction[] GetBoxSpecialActions(int id) => GetAvailableActions(
-        [new DiscoverByIdAction(game, id)]);
-
     public IAction[] GetDeckActions() => GetAvailableActions([new ReshuffleAction(game)]);
 
     public IAction[] GetMainActions(Resources resources, IStorage storage) => GetAvailableActions(
         [new UndoAction(game), new EndDiscoverAction(game, storage), new EndTurnAction(game, resources, storage), new EndRoundAction(game, resources, storage)]);
+
+    public IAction GetDiscover() => 
+        new DiscoverAction(game);
+
+    public IAction GetDiscoverById() => 
+        new DiscoverByIdAction(game);
 
     private IAction[] GetAvailableActions(IEnumerable<IAction> actions) => actions
         .Where(action => action.Allowed)
