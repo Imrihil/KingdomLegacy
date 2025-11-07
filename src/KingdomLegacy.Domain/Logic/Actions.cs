@@ -10,6 +10,9 @@ public class Actions(Game game)
     public void Discover(int? count = null) =>
         new DiscoverAction(game, count).Execute();
 
+    public void EndDiscover(IStorage storage) =>
+        new EndDiscoverAction(game, storage).Execute();
+
     public void Reshuffle() =>
         new ReshuffleAction(game).Execute();
 

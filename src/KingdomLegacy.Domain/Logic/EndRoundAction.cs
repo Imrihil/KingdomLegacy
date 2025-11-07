@@ -10,12 +10,17 @@ internal class EndRoundAction(Game game, Resources resources, IStorage storage) 
     public string Description => "Round finished.";
     public void Execute()
     {
-        foreach (var card in game.Hand.Concat(game.InPlay).Concat(game.Blocked).ToArray())
-            game.Actions.Discard(card);
-
-        game.Actions.Discover();
-
         resources.Reset();
+        if (game.Config.DiscoverCount > 0)
+        {
+            foreach (var card in game.Hand.Concat(game.InPlay).Concat(game.Blocked).ToArray())
+                game.Actions.Discard(card);
+            game.Actions.Discover();
+        }
+        else
+        {
+            game.Actions.Reshuffle();
+        }
 
         storage.SaveGame(game);
     }

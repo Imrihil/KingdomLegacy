@@ -162,6 +162,7 @@ public class Game
                     readPoints = false;
                 }
                 Expansion = parts.Length > 1 ? parts[1].Trim() : Expansions.FeudalKingdom.Name;
+                Config.DiscoverCount = parts.Length > 2 && int.TryParse(parts[2], out var discoverCount) ? discoverCount : 2;
                 continue;
             }
 
@@ -216,7 +217,7 @@ public class Game
     public string Save()
     {
         var sb = new StringBuilder(KingdomName).AppendLine();
-        sb.AppendLine($"{Points.ToString()}\t{Expansion}");
+        sb.AppendLine($"{Points.ToString()}\t{Expansion}\t{Config.DiscoverCount}");
         sb.Append(string.Join($"{Environment.NewLine}{Environment.NewLine}",
             All.GroupBy(card => card.Expansion)
             .Select(SaveExpansion)));

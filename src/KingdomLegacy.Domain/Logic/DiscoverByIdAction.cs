@@ -4,7 +4,7 @@ internal class DiscoverByIdAction(Game game)
 {
     public override State[] SourceStates => [State.Box];
     public override State TargetState => State.Discovered;
-    public override string Text => $"+[{Card?.Id}]";
+    public override string Text => Card != null ? $"+[{Card?.Id}]" : "⦸";
     protected override Card? Card => Game.BoxById(Game.Config.DiscoverId);
     protected override bool ExecuteInternal()
     {
