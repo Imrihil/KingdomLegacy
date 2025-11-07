@@ -7,10 +7,11 @@ public class Expansions
 
 public class Expansion(string name, int count)
 {
-    public IReadOnlyCollection<Card> Cards => Load(name, count);
+    public string Name { get; } = name;
+    public IReadOnlyCollection<Card> Cards => Load(count);
 
-    private static List<Card> Load(string name, int count) =>
+    private List<Card> Load(int count) =>
         Enumerable.Range(0, count)
-        .Select(i => new Card { Id = i, Expansion = name, Orientation = Orientation.L1, State = State.Box })
+        .Select(i => new Card { Id = i, Expansion = Name, Orientation = Orientation.L1, State = State.Box })
         .ToList();
 }

@@ -6,6 +6,7 @@ public class Game
 {
     public Actions Actions { get; private set; }
     public GameConfig Config { get; } = new();
+    public string Expansion { get; set; }
 
     private Action? _notify;
     public Game(Action? notify = null)
@@ -154,11 +155,13 @@ public class Game
 
             if (readPoints)
             {
-                if (int.TryParse(line, out var points))
+                var parts = line.Split('\t');
+                if (parts.Length > 0 && int.TryParse(parts[0], out var points))
                 {
                     Points = points;
                     readPoints = false;
                 }
+                Expansion = parts.Length > 1 ? parts[1].Trim() : Expansions.FeudalKingdom.Name;
                 continue;
             }
 
@@ -213,7 +216,7 @@ public class Game
     public string Save()
     {
         var sb = new StringBuilder(KingdomName).AppendLine();
-        sb.AppendLine(Points.ToString());
+        sb.AppendLine($"{Points.ToString()}\t{Expansion}");
         sb.Append(string.Join($"{Environment.NewLine}{Environment.NewLine}",
             All.GroupBy(card => card.Expansion)
             .Select(SaveExpansion)));
@@ -227,6 +230,7 @@ public class Game
         foreach (var card in expansion)
         {
             sb.Append($"{card.Id}\t{(int)card.Orientation}\t{(int)card.State}");
+
             foreach (var sticker in card.Stickers)
                 sb.Append($"\t{(int)sticker.Type};{sticker.X};{sticker.Y}");
 
@@ -249,6 +253,7 @@ public class Game
             return false;
 
         IsInitialized = false;
+        Expansion = expansion.Name;
         Actions = new(this);
         KingdomName = name;
         _box = expansion.Cards.ToList();
