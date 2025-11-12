@@ -6,7 +6,7 @@ public class Game
 {
     public Actions Actions { get; private set; }
     public GameConfig Config { get; } = new();
-    public string Expansion { get; set; }
+    public string Expansion { get; set; } = string.Empty;
 
     private Action? _notify;
     public Game(Action? notify = null)
@@ -19,11 +19,12 @@ public class Game
     public bool IsInitialized { get; internal set; }
     public int Points { get; set; }
 
-    private List<Card> _box = new();
+    private Dictionary<string, List<Card>> _box = new();
     public int BoxCount => _box.Count;
-    internal Card? BoxNext => _box.Count > 0 ? _box[0] : null;
+    internal Card? BoxNext => _box.TryGetValue(Expansion, out var cards) && cards.Count > 0 ? cards[0] : null;
     internal Card? BoxById(int id) =>
-        _box.FirstOrDefault(card => card.Id == id);
+        _box.TryGetValue(Expansion, out var cards) ? cards.FirstOrDefault(card => card.Id == id) : null;
+    public IReadOnlyCollection<string> Expansions => _box.Keys;
 
     private List<Card> _discovered = [];
     public IReadOnlyCollection<Card> Discovered => _discovered.AsReadOnly();
@@ -86,6 +87,7 @@ public class Game
     public IReadOnlyCollection<Card> Purged => _purged.ToArray();
 
     internal IEnumerable<Card> All => _box
+        .Aggregate((IEnumerable<Card>)[], (cards, source) => cards.Concat(source.Value))
         .Concat(Deck)
         .Concat(_discovered)
         .Concat(_permanent)
@@ -96,9 +98,9 @@ public class Game
         .Concat(_trash)
         .Concat(_purged);
 
-    internal List<Card> List(State state) => state switch
+    internal List<Card> List(State state, string expansion) => state switch
     {
-        State.Box => _box,
+        State.Box => _box.TryGetValue(expansion, out var cards) ? cards : [],
         State.Discovered => _discovered,
         State.Deck => _deck,
         State.DeckTop => _deck,
@@ -114,10 +116,10 @@ public class Game
 
     internal bool ChangeState(Card card, State state, bool placeOnBottom = false)
     {
-        if (!List(card.State).Remove(card))
+        if (!List(card.State, card.Expansion).Remove(card))
             return false;
 
-        var cards = List(state);
+        var cards = List(state, card.Expansion);
         card.State = state;
         var isReverted = States.AllReverted.Contains(state);
         if (isReverted && !placeOnBottom || !isReverted && placeOnBottom)
@@ -212,7 +214,7 @@ public class Game
     }
 
     private void AddToCollection(Card card) =>
-        List(card.State).Add(card);
+        List(card.State, card.Expansion).Add(card);
 
     public string Save()
     {
@@ -257,7 +259,10 @@ public class Game
         Expansion = expansion.Name;
         Actions = new(this);
         KingdomName = name;
-        _box = expansion.Cards.ToList();
+        _box = new Dictionary<string, List<Card>>
+        {
+            [expansion.Name] = expansion.Cards.ToList()
+        };
         _discovered = [];
         _deck = new();
         _permanent = [];
@@ -281,7 +286,7 @@ public class Game
         if (card1.State != card2?.State)
             return;
 
-        var list = List(card1.State);
+        var list = List(card1.State, card1.Expansion);
         var index1 = list.IndexOf(card1);
         if (list.Remove(card2))
             list.Insert(index1, card2);
