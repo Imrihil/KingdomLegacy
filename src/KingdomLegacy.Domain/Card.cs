@@ -1,13 +1,13 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace KingdomLegacy.Domain;
-public record Card : IComparable<Card>
+public record Card : IComparable<Card>, IEquatable<Card>
 {
     public const int Width = 373;
     public const int Height = 520;
 
     public int Id { get; set; }
-    public string Expansion { get; set; } = string.Empty;
+    public ExpansionType Expansion { get; set; }
     public Orientation Orientation { get; set; }
     public State State { get; set; }
     public List<Sticker> Stickers { get; set; } = [];
@@ -37,4 +37,10 @@ public record Card : IComparable<Card>
 
     public void RemoveSticker(Sticker sticker) =>
         Stickers.Remove(sticker);
+
+    public virtual bool Equals(Card? other) =>
+        Id.Equals(other?.Id) && Expansion.Equals(other?.Expansion);
+
+    public override int GetHashCode() =>
+        Id.GetHashCode() * 7 + Expansion.GetHashCode();
 }

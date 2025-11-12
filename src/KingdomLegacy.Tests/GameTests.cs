@@ -33,7 +33,7 @@ FeudalKingdom
 17	1	0");
 
         _game.IsInitialized.Should().BeTrue();
-        _game.BoxCount.Should().Be(5);
+        _game.BoxCount.Should().Be(127);
         _game.DeckCount.Should().Be(8);
         _game.InPlay.Count.Should().Be(0);
         _game.Hand.Count.Should().Be(4);

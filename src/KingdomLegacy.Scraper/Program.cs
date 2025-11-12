@@ -52,7 +52,6 @@ async Task<IEnumerable<string>> GetExpansions()
     return expansions;
 }
 
-
 async Task DownloadExpansion(string expansionPath)
 {
     Console.WriteLine($"Downloading expansion {expansionPath}...");

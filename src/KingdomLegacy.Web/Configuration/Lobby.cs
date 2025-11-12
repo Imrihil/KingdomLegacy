@@ -110,13 +110,13 @@ public class Lobby : Observable<Lobby>
             Stage = LobbyStage.Play;
     }
 
-    public void PlayNew(string name, Expansion expansion)
+    public void PlayNew(string name)
     {
         if (!IsTransitionAllowed(LobbyStage.Play))
             return;
 
         CreateNewGame();
-        if (Game.Initialize(name, expansion))
+        if (Game.Initialize(name))
             Stage = LobbyStage.Play;
     }
 

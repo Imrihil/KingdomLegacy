@@ -195,3 +195,8 @@ code {
 .top-75 {
     top: 75% !important;
 }
+
+.carousel-control-next,
+.carousel-control-prev /*, .carousel-indicators */ {
+    filter: invert(0%) !important;
+}
