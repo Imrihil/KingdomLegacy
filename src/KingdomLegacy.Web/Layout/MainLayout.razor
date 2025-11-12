@@ -8,14 +8,14 @@
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
         <div class="w-100 d-flex flex-row">
-            <h2 class="me-2 my-auto">@(string.IsNullOrEmpty(Game.KingdomName) ? "Kingdom Legacy" : Game.KingdomName)</h2>
+            <h2 class="me-3 my-auto">@(string.IsNullOrEmpty(Game.KingdomName) ? "Kingdom Legacy" : Game.KingdomName)</h2>
             @if (Lobby.Stage == LobbyStage.Play)
             {
                 <GameResources Lobby="Lobby" />
-                <Button Class="m-2" Color="ButtonColor.Warning" @onclick="Download">
+                <Button Class="m-3" Color="ButtonColor.Warning" @onclick="Download">
                     Download
                 </Button>
-                <Button Class="m-2" Color="ButtonColor.Danger" @onclick="Exit">
+                <Button Class="m-3" Color="ButtonColor.Danger" @onclick="Exit">
                     Exit
                 </Button>
             }
