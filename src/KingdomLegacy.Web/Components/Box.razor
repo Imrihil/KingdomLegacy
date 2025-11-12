@@ -1,3 +1,4 @@
+
 <div class="d-flex flex-column">
     <div class="pe-1">
         <div class="p-2 w-100 d-flex flex-row justify-content-between rounded-ts rounded-te text-bg-dark" style="height: 50px;">
@@ -6,6 +7,14 @@
     </div>
     <div class="me-1 mb-1 position-relative">
         <div class="game-card d-flex flex-column">
+            <Carousel Class="mt-3 mb-2" Style="padding-left: 50px;" Onslid="ChangeExpansion">
+                @foreach (var expansion in Domain.Expansions.All)
+                {
+                    <CarouselItem Active="@(Game.Expansion == expansion)">
+                        <h4 class="m-0">@expansion.Name()</h4>
+                    </CarouselItem>
+                }
+            </Carousel>
             <div class="my-1 d-flex flex-column">
                 <div class="w-100">
                     Discover next cards:
@@ -36,4 +45,9 @@
     private IAction DiscoverAction => Game.Actions.GetDiscover();
 
     private IAction DiscoverByIdAction => Game.Actions.GetDiscoverById();
+
+    private void ChangeExpansion(CarouselEventArgs args)
+    {
+        Game.Expansion = Domain.Expansions.All.ElementAt(args.To);
+    }
 }

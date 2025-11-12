@@ -6,7 +6,7 @@ public class Game
 {
     public Actions Actions { get; private set; }
     public GameConfig Config { get; } = new();
-    public string Expansion { get; set; }
+    public ExpansionType Expansion { get; set; }
 
     private Action? _notify;
     public Game(Action? notify = null)
@@ -19,11 +19,12 @@ public class Game
     public bool IsInitialized { get; internal set; }
     public int Points { get; set; }
 
-    private List<Card> _box = new();
-    public int BoxCount => _box.Count;
-    internal Card? BoxNext => _box.Count > 0 ? _box[0] : null;
+    private Dictionary<ExpansionType, List<Card>> _box = new();
+    public int BoxCount => _box.TryGetValue(Expansion, out var cards) ? cards.Count : 0;
+    internal Card? BoxNext => _box.TryGetValue(Expansion, out var cards) && cards.Count > 0 ? cards[0] : null;
     internal Card? BoxById(int id) =>
-        _box.FirstOrDefault(card => card.Id == id);
+        _box.TryGetValue(Expansion, out var cards) ? cards.FirstOrDefault(card => card.Id == id) : null;
+    public IReadOnlyCollection<ExpansionType> Expansions => _box.Keys;
 
     private List<Card> _discovered = [];
     public IReadOnlyCollection<Card> Discovered => _discovered.AsReadOnly();
@@ -86,6 +87,7 @@ public class Game
     public IReadOnlyCollection<Card> Purged => _purged.ToArray();
 
     internal IEnumerable<Card> All => _box
+        .Aggregate((IEnumerable<Card>)[], (cards, source) => cards.Concat(source.Value))
         .Concat(Deck)
         .Concat(_discovered)
         .Concat(_permanent)
@@ -96,9 +98,9 @@ public class Game
         .Concat(_trash)
         .Concat(_purged);
 
-    internal List<Card> List(State state) => state switch
+    internal List<Card> List(State state, ExpansionType expansion) => state switch
     {
-        State.Box => _box,
+        State.Box => _box.TryGetValue(expansion, out var cards) ? cards : [],
         State.Discovered => _discovered,
         State.Deck => _deck,
         State.DeckTop => _deck,
@@ -114,10 +116,10 @@ public class Game
 
     internal bool ChangeState(Card card, State state, bool placeOnBottom = false)
     {
-        if (!List(card.State).Remove(card))
+        if (!List(card.State, card.Expansion).Remove(card))
             return false;
 
-        var cards = List(state);
+        var cards = List(state, card.Expansion);
         card.State = state;
         var isReverted = States.AllReverted.Contains(state);
         if (isReverted && !placeOnBottom || !isReverted && placeOnBottom)
@@ -137,6 +139,7 @@ public class Game
     public bool Load(string data)
     {
         IsInitialized = false;
+        _box = Domain.Expansions.All.ToDictionary(expansion => expansion, _ => new List<Card>());
         Actions = new(this);
         return Load(data.Split(Environment.NewLine));
     }
@@ -144,7 +147,7 @@ public class Game
     public bool Load(IEnumerable<string> lines)
     {
         var readPoints = true;
-        string? expansion = null;
+        ExpansionType? expansion = null;
         foreach (var line in lines)
         {
             if (string.IsNullOrEmpty(KingdomName))
@@ -161,7 +164,7 @@ public class Game
                     Points = points;
                     readPoints = false;
                 }
-                Expansion = parts.Length > 1 ? parts[1].Trim() : Expansions.FeudalKingdom.Name;
+                Expansion = parts.Length > 1 && int.TryParse(parts[1].Trim(), out var value) ? (ExpansionType)value : ExpansionType.FeudalKingdom;
                 Config.DiscoverCount = parts.Length > 2 && int.TryParse(parts[2], out var discoverCount) ? discoverCount : 2;
                 continue;
             }
@@ -169,10 +172,20 @@ public class Game
             if (string.IsNullOrWhiteSpace(line))
                 expansion = null;
             else if (expansion == null)
-                expansion = line.Trim();
+                expansion = (int.TryParse(line.Trim(), out var value) ? (ExpansionType?)value : null)
+                    ?? (Enum.TryParse<ExpansionType>(line.Trim(), out var enumValue) ? enumValue : null);
             else
-                AddToCollection(GetCard(expansion, line));
+                AddToCollection(GetCard(expansion.Value, line));
         }
+
+        var all = All.ToList();
+        foreach (var missingCard in Domain.Expansions.All
+            .SelectMany(expansion => expansion.Load())
+            .Where(card => !all.Contains(card)))
+            _box[missingCard.Expansion].Add(missingCard);
+
+        foreach (var (_, cards) in _box)
+            cards.Sort();
 
         DeckReshuffleExceptTop();
         IsInitialized = true;
@@ -182,7 +195,7 @@ public class Game
         return true;
     }
 
-    private static Card GetCard(string expansion, string text)
+    private static Card GetCard(ExpansionType expansion, string text)
     {
         var parts = text.Split('\t');
         if (parts.Length < 3)
@@ -212,7 +225,7 @@ public class Game
     }
 
     private void AddToCollection(Card card) =>
-        List(card.State).Add(card);
+        List(card.State, card.Expansion).Add(card);
 
     public string Save()
     {
@@ -225,9 +238,9 @@ public class Game
         return sb.ToString();
     }
 
-    private string SaveExpansion(IGrouping<string, Card> expansion)
+    private string SaveExpansion(IGrouping<ExpansionType, Card> expansion)
     {
-        var sb = new StringBuilder(expansion.Key).AppendLine();
+        var sb = new StringBuilder($"{expansion.Key:d}").AppendLine();
         foreach (var card in expansion)
         {
             sb.Append($"{card.Id}\t{(int)card.Orientation}\t{(int)card.State}");
@@ -241,7 +254,7 @@ public class Game
         return sb.ToString();
     }
 
-    public bool Initialize(string? name, Expansion expansion)
+    public bool Initialize(string? name)
     {
         if (name == null)
             return false;
@@ -254,10 +267,12 @@ public class Game
             return false;
 
         IsInitialized = false;
-        Expansion = expansion.Name;
+        Expansion = ExpansionType.FeudalKingdom;
         Actions = new(this);
         KingdomName = name;
-        _box = expansion.Cards.ToList();
+        _box = Domain.Expansions.All.ToDictionary(
+            expansion => expansion,
+            expansion => expansion.Load());
         _discovered = [];
         _deck = new();
         _permanent = [];
@@ -281,7 +296,7 @@ public class Game
         if (card1.State != card2?.State)
             return;
 
-        var list = List(card1.State);
+        var list = List(card1.State, card1.Expansion);
         var index1 = list.IndexOf(card1);
         if (list.Remove(card2))
             list.Insert(index1, card2);

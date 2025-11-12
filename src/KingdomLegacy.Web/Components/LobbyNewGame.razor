@@ -29,7 +29,7 @@
         Lobby.ChooseGame();
 
     private void StartGame(EditContext args) =>
-        Lobby.PlayNew(_newKingdomForm.Name, Expansions.FeudalKingdom);
+        Lobby.PlayNew(_newKingdomForm.Name);
 
     private NewKingdomForm _newKingdomForm = new();
     private class NewKingdomForm

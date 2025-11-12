@@ -35,7 +35,7 @@ internal abstract class ReversibleCardActionBase(Game game) : RecordedActionBase
             return;
 
         SourceState = Card.State;
-        SourceIndex = Game.List(SourceState).IndexOf(Card);
+        SourceIndex = Game.List(SourceState, Card.Expansion).IndexOf(Card);
 
         if (!ExecuteInternal())
             return;
@@ -55,9 +55,9 @@ internal abstract class ReversibleCardActionBase(Game game) : RecordedActionBase
 
     protected virtual bool UndoInternal()
     {
-        if (Card != null && Game.List(TargetState).Remove(Card))
+        if (Card != null && Game.List(TargetState, Card.Expansion).Remove(Card))
         {
-            Game.List(SourceState).Insert(SourceIndex, Card);
+            Game.List(SourceState, Card.Expansion).Insert(SourceIndex, Card);
             Card.State = SourceState;
             return true;
         }
