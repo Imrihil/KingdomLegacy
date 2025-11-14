@@ -10,14 +10,15 @@ Before playing, make sure to read the official rules available [here (PDF)](http
 
 The virtual table is divided into the following color-coded areas:
 
-- **Box**  
-- **Discover**  
-- **Deck**  
-- **Permanent**  
-- **In Play**  
-- **Hand**  
-- **Discarded**  
-- **Trashed**
+- **Box**
+- **Discover**
+- **Deck**
+- **Permanent**
+- **Stay in play**
+- **Play**
+- **Discard**
+- **Trash**
+- **Purged**
 
 Each area has a distinct color, and most **buttons** on cards move them between these areas according to the color scheme.
 

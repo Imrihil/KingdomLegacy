@@ -5,10 +5,10 @@ public enum State
     Discovered,
     Deck,
     DeckTop,
-    Hand,
-    InPlay,
+    Played,
+    StayInPlay,
     Discarded,
-    Removed,
+    Destroyed,
     Permanent,
     Blocked,
     Purged
@@ -17,9 +17,9 @@ public enum State
 public static class States
 {
     public static readonly State[] All = Enum.GetValues<State>().ToArray();
-    public static readonly State[] AllNotRemoved = All.Where(state => state != State.Removed && state != State.Purged).ToArray();
+    public static readonly State[] AllNotRemoved = All.Where(state => state != State.Destroyed && state != State.Purged).ToArray();
 
-    public static readonly HashSet<State> AllReverted = [State.Box, State.Deck, State.DeckTop, State.Hand, State.Blocked, State.Discarded, State.Removed, State.Purged];
+    public static readonly HashSet<State> AllReverted = [State.Box, State.Deck, State.DeckTop, State.Played, State.Blocked, State.Discarded, State.Destroyed, State.Purged];
 
     public static int Order(this State state) => state switch
     {
@@ -28,11 +28,11 @@ public static class States
         State.Deck => 2,
         State.DeckTop => 3,
         State.Permanent => 4,
-        State.InPlay => 5,
-        State.Hand => 6,
+        State.StayInPlay => 5,
+        State.Played => 6,
         State.Blocked => 7,
         State.Discarded => 8,
-        State.Removed => 9,
+        State.Destroyed => 9,
         State.Purged => 10,
         _ => int.MaxValue,
     };

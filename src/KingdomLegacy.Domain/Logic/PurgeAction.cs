@@ -2,7 +2,7 @@
 internal class PurgeAction(Game game, Card card)
     : ReversibleCardActionBase(game)
 {
-    private State[] _sourceStates = [State.Permanent, State.Hand];
+    private State[] _sourceStates = [State.Permanent, State.Played];
     public override State[] SourceStates => _sourceStates;
     public override State TargetState => State.Purged;
     public override int Order => 100;

@@ -6,7 +6,7 @@ internal class Draw8Action(Game game) : DrawAction(game, 8);
 internal abstract class DrawAction(Game game, int count) : RecordedActionBase(game)
 {
     public override State[] SourceStates => [State.DeckTop];
-    public override State TargetState => State.Hand;
+    public override State TargetState => State.Played;
     public override bool Allowed => Game.DeckCount >= count;
     public override bool Disabled => false;
     public override string Text => $"+{count}";

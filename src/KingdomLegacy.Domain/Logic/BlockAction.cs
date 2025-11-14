@@ -2,7 +2,7 @@
 internal class BlockAction(Game game, Card card)
     : ReversibleCardActionBase(game)
 {
-    public override State[] SourceStates => [State.Hand, State.InPlay];
+    public override State[] SourceStates => [State.Played, State.StayInPlay];
     public override State TargetState => State.Blocked;
     public override int Order => 10;
     public override string Text => "⦸";

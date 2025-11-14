@@ -2,7 +2,7 @@
 internal class PlaceToDeckTop(Game game, Card card)
     : ReversibleCardActionBase(game)
 {
-    public override State[] SourceStates => [State.Discarded];
+    public override State[] SourceStates => [State.StayInPlay, State.Played, State.Discarded];
     public override State TargetState => State.DeckTop;
     public override int Order => 7;
     public override string Text => "⊡";

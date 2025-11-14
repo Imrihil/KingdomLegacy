@@ -11,7 +11,7 @@ public class ActionsTests
         var actions = new Actions(new Game());
         var cardActions = actions.GetCardActions(new Card()
         {
-            State = State.Hand
+            State = State.Played
         });
         cardActions.Should().Contain(action => typeof(FlipAndDiscard).IsInstanceOfType(action));
     }

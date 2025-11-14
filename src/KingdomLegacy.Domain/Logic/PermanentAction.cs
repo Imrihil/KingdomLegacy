@@ -2,7 +2,7 @@
 internal class PermanentAction(Game game, Card card)
     : ReversibleCardActionBase(game)
 {
-    public override State[] SourceStates => [State.Discovered, State.InPlay];
+    public override State[] SourceStates => [State.Discovered, State.StayInPlay];
     public override State TargetState => State.Permanent;
     public override string Text => "∞";
     protected override Card Card { get; } = card;

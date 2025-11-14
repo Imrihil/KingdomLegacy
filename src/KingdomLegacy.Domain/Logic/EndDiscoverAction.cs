@@ -2,7 +2,7 @@
 internal class EndDiscoverAction(Game game, IStorage storage) : IAction
 {
     public State[] SourceStates => [];
-    public State TargetState => State.Hand;
+    public State TargetState => State.Played;
     public int Order => 0;
     public bool Allowed => game.Discovered.Count > 0;
     public bool Disabled => false;
