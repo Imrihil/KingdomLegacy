@@ -4,7 +4,7 @@
     <Cards Name="Deck" Game="Game" Values="Game.Deck" BackgroundColor="text-bg-primary" IsCollapsed="true" Disabled="@(Game.Discovered.Count > 0)" EmptyActions="Game.Actions.GetDeckActions()" />
     <Cards Name="Permanent" Game="Game" Values="Game.Permanent" BackgroundColor="text-bg-light" />
     <Cards Name="Stay in play" Game="Game" Values="Game.StayInPlay" BackgroundColor="text-bg-secondary" Disabled="@(Game.Discovered.Count > 0)" />
-    <Cards Name="Play" Game="Game" Values="Game.Played" BackgroundColor="text-bg-success" Disabled="@(Game.Discovered.Count > 0)" />
+    <Cards Name="In play" Game="Game" Values="Game.Played" BackgroundColor="text-bg-success" Disabled="@(Game.Discovered.Count > 0)" />
     <Cards Name="Block" Game="Game" Values="Game.Blocked" BackgroundColor="text-bg-dark" IsCollapsed="true" Disabled="@(Game.Discovered.Count > 0)" />
     <Cards Name="Discard" Game="Game" Values="Game.Discarded" BackgroundColor="text-bg-warning" IsCollapsed="true" Disabled="@(Game.Discovered.Count > 0)" IsSummary=true />
     <Cards Name="Trash" Game="Game" Values="Game.Destroyed" BackgroundColor="text-bg-danger" IsCollapsed="true" Disabled="@(Game.Discovered.Count > 0)" />
