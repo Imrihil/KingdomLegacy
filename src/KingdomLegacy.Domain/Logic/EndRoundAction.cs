@@ -1,6 +1,7 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
-internal class EndRoundAction(Game game, Resources resources, IStorage storage) : IAction
+internal class EndRoundAction(Game game, IStorage storage) : IAction
 {
+    public string Name => ShouldDiscover() ? $"Discard all and discover {game.Config.DiscoverCount}" : "Reshuffle all";
     public State[] SourceStates => [];
     public State TargetState => State.Played;
     public int Order => 0;
@@ -10,10 +11,10 @@ internal class EndRoundAction(Game game, Resources resources, IStorage storage) 
     public string Description => "Round finished.";
     public void Execute()
     {
-        resources.Reset();
-        if (game.Config.DiscoverCount > 0)
+        game.Resources.Reset();
+        if (ShouldDiscover())
         {
-            foreach (var card in game.Hand.Concat(game.InPlay).Concat(game.Blocked).ToArray())
+            foreach (var card in game.Played.Concat(game.StayInPlay).Concat(game.Blocked).ToArray())
                 game.Actions.Discard(card);
             game.Actions.Discover();
         }
@@ -24,4 +25,6 @@ internal class EndRoundAction(Game game, Resources resources, IStorage storage) 
 
         storage.SaveGame(game);
     }
+
+    private bool ShouldDiscover() => game.Config.DiscoverCount > 0;
 }

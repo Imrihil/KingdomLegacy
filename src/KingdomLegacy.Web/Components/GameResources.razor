@@ -2,16 +2,16 @@
 
 <div class="d-flex flex-row">
     <div class="mx-3 d-flex lex-row">
-        <NumberInput Class="mx-1 my-2 p-0 coins" TValue="int" @bind-Value="Resources.Coins" />
-        <NumberInput Class="mx-1 my-2 p-0 wood" TValue="int" @bind-Value="Resources.Wood" />
-        <NumberInput Class="mx-1 my-2 p-0 stones" TValue="int" @bind-Value="Resources.Stones" />
-        <NumberInput Class="mx-1 my-2 p-0 steel" TValue="int" @bind-Value="Resources.Steel" />
-        <NumberInput Class="mx-1 my-2 p-0 goods" TValue="int" @bind-Value="Resources.Goods" />
-        <NumberInput Class="mx-1 my-2 p-0 swords" TValue="int" @bind-Value="Resources.Swords" />
-        <NumberInput Class="mx-1 my-2 p-0 points" TValue="int" @bind-Value="Resources.Points" />
+        <NumberInput Class="mx-1 my-2 p-0 coins" TValue="int" @bind-Value="Game.Resources.Coins" />
+        <NumberInput Class="mx-1 my-2 p-0 wood" TValue="int" @bind-Value="Game.Resources.Wood" />
+        <NumberInput Class="mx-1 my-2 p-0 stones" TValue="int" @bind-Value="Game.Resources.Stones" />
+        <NumberInput Class="mx-1 my-2 p-0 steel" TValue="int" @bind-Value="Game.Resources.Steel" />
+        <NumberInput Class="mx-1 my-2 p-0 goods" TValue="int" @bind-Value="Game.Resources.Goods" />
+        <NumberInput Class="mx-1 my-2 p-0 swords" TValue="int" @bind-Value="Game.Resources.Swords" />
+        <NumberInput Class="mx-1 my-2 p-0 points" TValue="int" @bind-Value="Game.Resources.Points" />
     </div>
 
-    @foreach (var action in Game.Actions.GetMainActions(Resources, Storage))
+    @foreach (var action in Game.Actions.GetMainActions(Storage))
     {
         <ActionButton Class="m-3" Position="Position.Relative" Action="action" />
     }
@@ -21,5 +21,4 @@
     [Parameter, EditorRequired]
     public Lobby Lobby { get; set; }
     private Game Game => Lobby.Game;
-    private Resources Resources => Lobby.Resources;
 }

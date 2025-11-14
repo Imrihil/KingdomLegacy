@@ -1,6 +1,7 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
-internal class EndTurnAction(Game game, Resources resources, IStorage storage) : IAction
+internal class EndTurnAction(Game game, IStorage storage) : IAction
 {
+    public string Name => "Discard played & draw 4";
     public State[] SourceStates => [];
     public State TargetState => State.Played;
     public int Order => 0;
@@ -10,12 +11,10 @@ internal class EndTurnAction(Game game, Resources resources, IStorage storage) :
     public string Description => "Turn finished.";
     public void Execute()
     {
-        foreach (var card in game.Hand.ToArray())
+        foreach (var card in game.Played.ToArray())
             game.Actions.Discard(card);
 
         game.Actions.Draw4();
-
-        resources.Reset();
 
         storage.SaveGame(game);
     }

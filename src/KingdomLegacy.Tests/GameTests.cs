@@ -35,10 +35,10 @@ FeudalKingdom
         _game.IsInitialized.Should().BeTrue();
         _game.BoxCount.Should().Be(127);
         _game.DeckCount.Should().Be(8);
-        _game.InPlay.Count.Should().Be(0);
-        _game.Hand.Count.Should().Be(4);
+        _game.StayInPlay.Count.Should().Be(0);
+        _game.Played.Count.Should().Be(4);
         _game.Discarded.Count.Should().Be(0);
-        _game.Trashed.Count.Should().Be(1);
+        _game.Destroyed.Count.Should().Be(1);
         _game.Purged.Count.Should().Be(0);
         _game.Points.Should().Be(1);
     }

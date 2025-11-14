@@ -2,6 +2,7 @@
 internal class PutToTheBoxAction(Game game, Card card)
     : ReversibleCardActionBase(game)
 {
+    public override string Name => "Put back to the box";
     public override State[] SourceStates => [State.Played, State.StayInPlay, State.Discarded];
     public override State TargetState => State.Box;
     public override int Order => 0;

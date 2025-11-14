@@ -1,6 +1,7 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 internal class UndoAction(Game game) : IAction
 {
+    public string Name => "Undo last action";
     public State[] SourceStates => [];
     public State TargetState => default;
     public int Order => 0;

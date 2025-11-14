@@ -1,6 +1,7 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 internal abstract class RecordedActionBase(Game game) : IAction
 {
+    public abstract string Name { get; }
     public abstract State[] SourceStates { get; }
     public abstract State TargetState { get; }
     public virtual int Order => 0;

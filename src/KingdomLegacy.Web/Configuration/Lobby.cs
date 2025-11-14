@@ -6,7 +6,6 @@ namespace KingdomLegacy.Web.Configuration;
 public class Lobby : Observable<Lobby>
 {
     public Game Game { get; private set; }
-    public Resources Resources { get; private set; }
 
     private IStorage _storage;
     private LobbyStage _stage;
@@ -27,11 +26,9 @@ public class Lobby : Observable<Lobby>
     }
 
     [MemberNotNull(nameof(Game))]
-    [MemberNotNull(nameof(Resources))]
     private Game CreateNewGame()
     {
         Game = new Game(() => Notify(this));
-        Resources = new Resources(Game);
         return Game;
     }
 

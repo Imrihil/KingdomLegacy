@@ -5,6 +5,7 @@ internal class Draw4Action(Game game) : DrawAction(game, 4);
 internal class Draw8Action(Game game) : DrawAction(game, 8);
 internal abstract class DrawAction(Game game, int count) : RecordedActionBase(game)
 {
+    public override string Name => "Play";
     public override State[] SourceStates => [State.DeckTop];
     public override State TargetState => State.Played;
     public override bool Allowed => Game.DeckCount >= count;
@@ -18,7 +19,9 @@ internal abstract class DrawAction(Game game, int count) : RecordedActionBase(ga
             if (Game.ChangeState(card, TargetState))
                 _cards.Add(card);
 
-        Description = $"Drew {string.Join(", ", _cards.Select(card => card.Id))}.";
+        Game.Resources.Reset();
+
+        Description = $"Played {string.Join(", ", _cards.Select(card => card.Id))}.";
 
         return true;
     }

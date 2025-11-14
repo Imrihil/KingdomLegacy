@@ -88,8 +88,8 @@ public class Actions(Game game)
 
     public IAction[] GetDeckActions() => GetAvailableActions([new ReshuffleAction(game)]);
 
-    public IAction[] GetMainActions(Resources resources, IStorage storage) => GetAvailableActions(
-        [new UndoAction(game), new EndDiscoverAction(game, storage), new EndTurnAction(game, resources, storage), new EndRoundAction(game, resources, storage)]);
+    public IAction[] GetMainActions(IStorage storage) => GetAvailableActions(
+        [new UndoAction(game), new EndDiscoverAction(game, storage), new EndTurnAction(game, storage), new EndRoundAction(game, storage)]);
 
     public IAction GetDiscover() => 
         new DiscoverAction(game);

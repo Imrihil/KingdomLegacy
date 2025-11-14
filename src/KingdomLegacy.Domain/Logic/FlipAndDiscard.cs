@@ -1,6 +1,7 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 internal class FlipAndDiscard(Game game, Card card) : IAction
 {
+    public string Name => "Flip & discard";
     public State[] SourceStates => [State.Played, State.StayInPlay];
     public State TargetState => State.Discarded;
     public int Order => 3;

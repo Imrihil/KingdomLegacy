@@ -2,6 +2,7 @@
 internal class DiscoverByIdAction(Game game)
     : ReversibleCardActionBase(game)
 {
+    public override string Name => "Discover by id";
     public override State[] SourceStates => [State.Box];
     public override State TargetState => State.Discovered;
     public override string Text => Card != null ? $"+[{Card?.Id}]" : "⦸";

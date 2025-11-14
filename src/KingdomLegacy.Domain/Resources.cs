@@ -1,5 +1,5 @@
 ﻿namespace KingdomLegacy.Domain;
-public class Resources(Game game) : Observable<Resources>
+public record Resources(Game game)
 {
     private int _coins;
     public int Coins
@@ -10,7 +10,6 @@ public class Resources(Game game) : Observable<Resources>
             if (value < 0)
                 return;
             _coins = value;
-            Notify(this);
         }
     }
 
@@ -23,7 +22,6 @@ public class Resources(Game game) : Observable<Resources>
             if (value < 0)
                 return;
             _wood = value;
-            Notify(this);
         }
     }
 
@@ -36,7 +34,6 @@ public class Resources(Game game) : Observable<Resources>
             if (value < 0)
                 return;
             _stones = value;
-            Notify(this);
         }
     }
 
@@ -49,7 +46,6 @@ public class Resources(Game game) : Observable<Resources>
             if (value < 0)
                 return;
             _steel = value;
-            Notify(this);
         }
     }
 
@@ -62,7 +58,6 @@ public class Resources(Game game) : Observable<Resources>
             if (value < 0)
                 return;
             _goods = value;
-            Notify(this);
         }
     }
 
@@ -75,7 +70,6 @@ public class Resources(Game game) : Observable<Resources>
             if (value < 0)
                 return;
             _swords = value;
-            Notify(this);
         }
     }
 
@@ -88,7 +82,6 @@ public class Resources(Game game) : Observable<Resources>
                 return;
 
             game.Points = value;
-            Notify(this);
         }
     }
 
@@ -100,6 +93,5 @@ public class Resources(Game game) : Observable<Resources>
         _steel = 0;
         _goods = 0;
         _swords = 0;
-        Notify(this);
     }
 }

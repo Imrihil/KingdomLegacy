@@ -1,6 +1,7 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 public interface IAction
 {
+    string Name { get; }
     State[] SourceStates { get; }
     State TargetState { get; }
     int Order { get; }

@@ -2,6 +2,7 @@
 internal class PlaceToDeckBottom(Game game, Card card)
     : ReversibleCardActionBase(game)
 {
+    public override string Name => "Place on a deck bottom";
     public override State[] SourceStates => [State.StayInPlay, State.Played, State.Discarded];
     public override State TargetState => State.DeckTop;
     public override int Order => 8;
@@ -9,7 +10,7 @@ internal class PlaceToDeckBottom(Game game, Card card)
     protected override Card Card { get; } = card;
     protected override bool ExecuteInternal()
     {
-        Description = $"Placed on deck bottom {Card.Id}.";
+        Description = $"Placed on a deck bottom {Card.Id}.";
 
         return Game.ChangeState(Card, TargetState, true);
     }

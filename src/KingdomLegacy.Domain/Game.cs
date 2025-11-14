@@ -5,6 +5,7 @@ namespace KingdomLegacy.Domain;
 public class Game
 {
     public Actions Actions { get; private set; }
+    public Resources Resources { get; private set; }
     public GameConfig Config { get; } = new();
     public ExpansionType Expansion { get; set; }
 
@@ -12,6 +13,7 @@ public class Game
     public Game(Action? notify = null)
     {
         Actions = new(this);
+        Resources = new(this);
         _notify = notify;
     }
 
@@ -62,11 +64,11 @@ public class Game
         _deck = newDeck;
     }
 
-    private List<Card> _hand = [];
-    public IReadOnlyCollection<Card> Hand => _hand.AsReadOnly();
+    private List<Card> _played = [];
+    public IReadOnlyCollection<Card> Played => _played.AsReadOnly();
 
-    private List<Card> _inPlay = [];
-    public IReadOnlyCollection<Card> InPlay => _inPlay.AsReadOnly();
+    private List<Card> _stayInPlay = [];
+    public IReadOnlyCollection<Card> StayInPlay => _stayInPlay.AsReadOnly();
 
     private List<Card> _blocked = [];
     public IReadOnlyCollection<Card> Blocked => _blocked.AsReadOnly();
@@ -75,9 +77,9 @@ public class Game
     public Card? DiscardedLast => _discarded.Count > 0 ? _discarded[^1] : null;
     public IReadOnlyCollection<Card> Discarded => _discarded.AsReadOnly();
 
-    private List<Card> _trash = [];
-    public Card? TrashedLast => _trash.Count > 0 ? _trash[0] : null;
-    public IReadOnlyCollection<Card> Trashed => _trash.ToArray();
+    private List<Card> _destroyed = [];
+    public Card? DestroyedLast => _destroyed.Count > 0 ? _destroyed[0] : null;
+    public IReadOnlyCollection<Card> Destroyed => _destroyed.ToArray();
 
     private List<Card> _permanent = [];
     public IReadOnlyCollection<Card> Permanent => _permanent.AsReadOnly();
@@ -91,11 +93,11 @@ public class Game
         .Concat(Deck)
         .Concat(_discovered)
         .Concat(_permanent)
-        .Concat(_inPlay)
-        .Concat(_hand)
+        .Concat(_stayInPlay)
+        .Concat(_played)
         .Concat(_blocked)
         .Concat(_discarded)
-        .Concat(_trash)
+        .Concat(_destroyed)
         .Concat(_purged);
 
     internal List<Card> List(State state, ExpansionType expansion) => state switch
@@ -104,10 +106,10 @@ public class Game
         State.Discovered => _discovered,
         State.Deck => _deck,
         State.DeckTop => _deck,
-        State.Played => _hand,
-        State.StayInPlay => _inPlay,
+        State.Played => _played,
+        State.StayInPlay => _stayInPlay,
         State.Discarded => _discarded,
-        State.Destroyed => _trash,
+        State.Destroyed => _destroyed,
         State.Permanent => _permanent,
         State.Blocked => _blocked,
         State.Purged => _purged,
@@ -141,6 +143,7 @@ public class Game
         IsInitialized = false;
         _box = Domain.Expansions.All.ToDictionary(expansion => expansion, _ => new List<Card>());
         Actions = new(this);
+        Resources = new(this);
         return Load(data.Split(Environment.NewLine));
     }
 
@@ -269,6 +272,7 @@ public class Game
         IsInitialized = false;
         Expansion = ExpansionType.FeudalKingdom;
         Actions = new(this);
+        Resources = new(this);
         KingdomName = name;
         _box = Domain.Expansions.All.ToDictionary(
             expansion => expansion,
@@ -276,11 +280,11 @@ public class Game
         _discovered = [];
         _deck = new();
         _permanent = [];
-        _inPlay = [];
-        _hand = [];
+        _stayInPlay = [];
+        _played = [];
         _blocked = [];
         _discarded = [];
-        _trash = [];
+        _destroyed = [];
         _purged = [];
 
         Actions.Discover(1);

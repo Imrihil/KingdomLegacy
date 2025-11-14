@@ -1,6 +1,8 @@
-﻿<Button Class="@Class" Type="Type" Color="Action.TargetState.GetButtonColor()" Position="Position" Disabled="Action.Disabled" @onclick="() => Action.Execute()">
-    @Action.Text
-</Button>
+﻿<Tooltip Title="@Action.Name">
+    <Button Class="@Class" Type="Type" Color="Action.TargetState.GetButtonColor()" Position="Position" Disabled="Action.Disabled" @onclick="() => Action.Execute()">
+        @Action.Text
+    </Button>
+</Tooltip>
 
 @code {
     [Parameter]

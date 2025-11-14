@@ -1,6 +1,7 @@
 ﻿namespace KingdomLegacy.Domain.Logic;
 internal class ReshuffleAction(Game game) : RecordedActionBase(game)
 {
+    public override string Name => "Reshuffle";
     public override State[] SourceStates => [];
     public override State TargetState => State.Deck;
     public override bool Allowed => Game.Deck.Count == 0;
@@ -11,8 +12,8 @@ internal class ReshuffleAction(Game game) : RecordedActionBase(game)
     {
         _cards = Game.Deck
             .Concat(Game.Discovered)
-            .Concat(Game.Hand)
-            .Concat(Game.InPlay)
+            .Concat(Game.Played)
+            .Concat(Game.StayInPlay)
             .Concat(Game.Discarded)
             .OrderBy(card => card.Id)
             .ToArray();
