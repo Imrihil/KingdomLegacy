@@ -4,7 +4,7 @@ internal class FlipAction(Game game, Card card) : ReversibleActionBase(game)
     public override string Name => "Flip";
     public override State[] SourceStates => States.AllNotRemoved;
     public override State TargetState => card.State;
-    public override int Order => 1;
+    public override int Order => 3;
     public override bool Allowed => true;
     public override bool Disabled => false;
     public override string Text => "⇒";

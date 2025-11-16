@@ -28,8 +28,8 @@ public class Actions(Game game)
     public void Rotate(Card card) =>
         new RotateAction(game, card).Execute();
 
-    // TODO: Redo
-    // public void Redo()
+    public void Reset(Card card) =>
+        new ResetAction(game, card).Execute();
 
     private static readonly Type[] _allActionTypes = Assembly.GetAssembly(typeof(IAction))?
         .GetTypes().Where(type => type.IsAssignableTo(typeof(IAction)) && !type.IsAbstract).ToArray() ?? [];

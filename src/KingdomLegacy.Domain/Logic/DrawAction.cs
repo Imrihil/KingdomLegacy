@@ -3,7 +3,7 @@ internal class Draw1Action(Game game) : DrawAction(game, 1);
 internal class Draw2Action(Game game) : DrawAction(game, 2);
 internal class Draw4Action(Game game) : DrawAction(game, 4);
 internal class Draw8Action(Game game) : DrawAction(game, 8);
-internal abstract class DrawAction(Game game, int count) : RecordedActionBase(game)
+internal abstract class DrawAction(Game game, int count) : ReversibleActionBase(game)
 {
     public override string Name => "Play";
     public override State[] SourceStates => [State.DeckTop];
@@ -22,6 +22,15 @@ internal abstract class DrawAction(Game game, int count) : RecordedActionBase(ga
         Game.Resources.Reset();
 
         Description = $"Played {string.Join(", ", _cards.Select(card => card.Id))}.";
+
+        return true;
+    }
+
+    protected override bool UndoInternal()
+    {
+        foreach (var card in ((IEnumerable<Card>)_cards).Reverse())
+            if (!Game.ChangeState(card, State.DeckTop))
+                return false;
 
         return true;
     }

@@ -123,6 +123,9 @@ public class Game
 
         var cards = List(state, card.Expansion);
         card.State = state;
+        if ((state == State.Deck || state == State.DeckTop) && DeckTop is Card oldTopCard)
+            oldTopCard.State = State.Deck;
+
         var isReverted = States.AllReverted.Contains(state);
         if (isReverted && !placeOnBottom || !isReverted && placeOnBottom)
             cards.Insert(0, card);
