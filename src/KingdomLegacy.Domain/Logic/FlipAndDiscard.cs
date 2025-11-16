@@ -2,10 +2,10 @@
 internal class FlipAndDiscard(Game game, Card card) : IAction
 {
     public string Name => "Flip & discard";
-    public State[] SourceStates => [State.Played, State.StayInPlay];
+    public State[] SourceStates => [State.Played, State.StayInPlay, State.Blocked];
     public State TargetState => State.Discarded;
     public int Order => 3;
-    public bool Allowed => card.State == State.Played || card.State == State.StayInPlay;
+    public bool Allowed => true;
     public bool Disabled => false;
     public string Text => "⇒";
     public string? Description => null;
