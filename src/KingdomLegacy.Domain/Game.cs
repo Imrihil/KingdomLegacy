@@ -147,10 +147,12 @@ public class Game
         _box = Domain.Expansions.All.ToDictionary(expansion => expansion, _ => new List<Card>());
         Actions = new(this);
         Resources = new(this);
-        return Load(data.Split(Environment.NewLine));
+        return data.Contains($"{Environment.NewLine}{Environment.NewLine}{Environment.NewLine}")
+            ? LoadV1(data.Split(Environment.NewLine))
+            : LoadV2(data.Split(Environment.NewLine));
     }
 
-    public bool Load(IEnumerable<string> lines)
+    public bool LoadV1(IEnumerable<string> lines)
     {
         var readPoints = true;
         ExpansionType? expansion = null;
@@ -201,20 +203,83 @@ public class Game
         return true;
     }
 
-    private static Card GetCard(ExpansionType expansion, string text)
+    public bool LoadV2(IEnumerable<string> lines)
     {
-        var parts = text.Split('\t');
-        if (parts.Length < 3)
-            throw new FormatException("Invalid card data format.");
-
-        return new Card
+        var readPoints = true;
+        foreach (var line in lines)
         {
-            Id = int.Parse(parts[0]),
-            Expansion = expansion,
-            Orientation = (Orientation)int.Parse(parts[1]),
-            State = (State)int.Parse(parts[2]),
-            Stickers = parts[3..].Select(GetSticker).ToList()
-        };
+            if (string.IsNullOrEmpty(KingdomName))
+            {
+                KingdomName = line.Trim();
+                continue;
+            }
+
+            if (readPoints)
+            {
+                var parts = line.Split('\t');
+                if (parts.Length > 0 && int.TryParse(parts[0], out var points))
+                {
+                    Points = points;
+                    readPoints = false;
+                }
+                Expansion = parts.Length > 1 && int.TryParse(parts[1].Trim(), out var value) ? (ExpansionType)value : ExpansionType.FeudalKingdom;
+                Config.DiscoverCount = parts.Length > 2 && int.TryParse(parts[2], out var discoverCount) ? discoverCount : 2;
+                continue;
+            }
+
+            if (!string.IsNullOrWhiteSpace(line))
+                AddToCollection(GetCard(null, line));
+        }
+
+        var all = All.ToList();
+        foreach (var missingCard in Domain.Expansions.All
+            .SelectMany(expansion => expansion.Load())
+            .Where(card => !all.Contains(card)))
+            _box[missingCard.Expansion].Add(missingCard);
+
+        foreach (var (_, cards) in _box)
+            cards.Sort();
+
+        DeckReshuffleExceptTop();
+        IsInitialized = true;
+
+        Notify();
+
+        return true;
+    }
+
+    private static Card GetCard(ExpansionType? expansion, string text)
+    {
+        if (expansion == null)
+        {
+            var parts = text.Split('\t');
+            if (parts.Length < 4)
+                throw new FormatException("Invalid card data format.");
+
+            return new Card
+            {
+                Id = int.Parse(parts[1]),
+                Expansion = (ExpansionType)int.Parse(parts[0]),
+                Orientation = (Orientation)int.Parse(parts[2]),
+                State = (State)int.Parse(parts[3]),
+                Stickers = parts[4..].Select(GetSticker).ToList()
+            };
+        }
+        else
+        {
+            var parts = text.Split('\t');
+            if (parts.Length < 3)
+                throw new FormatException("Invalid card data format.");
+
+            return new Card
+            {
+                Id = int.Parse(parts[0]),
+                Expansion = expansion.Value,
+                Orientation = (Orientation)int.Parse(parts[1]),
+                State = (State)int.Parse(parts[2]),
+                Stickers = parts[3..].Select(GetSticker).ToList()
+            };
+        }
     }
 
     private static Sticker GetSticker(string text)
@@ -237,19 +302,9 @@ public class Game
     {
         var sb = new StringBuilder(KingdomName).AppendLine();
         sb.AppendLine($"{Points.ToString()}\t{Expansion}\t{Config.DiscoverCount}");
-        sb.Append(string.Join($"{Environment.NewLine}{Environment.NewLine}",
-            All.GroupBy(card => card.Expansion)
-            .Select(SaveExpansion)));
-
-        return sb.ToString();
-    }
-
-    private string SaveExpansion(IGrouping<ExpansionType, Card> expansion)
-    {
-        var sb = new StringBuilder($"{expansion.Key:d}").AppendLine();
-        foreach (var card in expansion)
+        foreach (var card in All)
         {
-            sb.Append($"{card.Id}\t{(int)card.Orientation}\t{(int)card.State}");
+            sb.Append($"{card.Expansion:d}\t{card.Id}\t{(int)card.Orientation}\t{(int)card.State}");
 
             foreach (var sticker in card.Stickers)
                 sb.Append($"\t{(int)sticker.Type};{sticker.X};{sticker.Y}");
