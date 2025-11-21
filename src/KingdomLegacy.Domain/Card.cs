@@ -24,7 +24,15 @@ public record Card : IComparable<Card>, IEquatable<Card>
     public void Rotate() =>
         Orientation = Orientation.Rotate();
 
-    public int CompareTo(Card? other) => Id.CompareTo(other?.Id);
+    public int CompareTo(Card? other)
+    {
+        var expansion = Expansion.CompareTo(other?.Expansion);
+        if (expansion != 0)
+            return expansion;
+
+        var id = Id.CompareTo(other?.Id);
+        return id;
+    }
 
     public Sticker AddSticker(StickerType type, int offsetX, int offsetY)
     {
