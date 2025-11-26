@@ -97,14 +97,16 @@ public class Lobby : Observable<Lobby>
         Stage = LobbyStage.Play;
     }
 
-    public void PlayLoaded(string data)
+    public Game? PlayLoaded(string data)
     {
         if (!IsTransitionAllowed(LobbyStage.Play))
-            return;
+            return null;
 
         CreateNewGame();
         if (Game.Load(data))
             Stage = LobbyStage.Play;
+
+        return Game;
     }
 
     public void PlayNew(string name)

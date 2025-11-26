@@ -1,4 +1,6 @@
-﻿<lead>Upload the saved file, Your Grace.</lead>
+﻿@inject IStorage Storage
+
+<lead>Upload the saved file, Your Grace.</lead>
 
 <div class="d-flex flex-column mb-3">
     <InputFile class="m-2 btn btn-success" title="Load game" OnChange="LoadGame" accept=".save" />
@@ -15,7 +17,9 @@
         await args.File.OpenReadStream().CopyToAsync(stream);
         var bytes = stream.ToArray();
         var data = Encoding.Default.GetString(bytes);
-        Lobby.PlayLoaded(data);
+        var game = Lobby.PlayLoaded(data);
+        if (game != null)
+            await Storage.SaveGame(game);
     }
 
     private void ChooseGame() =>
